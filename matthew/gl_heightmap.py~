@@ -1,0 +1,213 @@
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
+from OpenGL.GL import *
+
+import Image
+import sys
+import math
+import time
+import random
+
+from camera import *
+
+
+WINDOW_WIDTH = 400
+WINDOW_HEIGHT = 400
+MOVEMENT_SPEED = .2
+
+class TerrainGenerator:
+
+
+    def __init__(self):
+        self.key_down = [False] * 256
+        #self.myCamera = Camera(rX = 30, pX = 0, pY = -50, pZ = 150)
+        self.myCamera = Camera(rX = 0, pX = 0, pY = 20.5, pZ = 5)
+        self.start_time = time.time()
+        self.frame_count = 0
+
+        #self.hm = self.randomTerrain(100, 100)
+        self.hm = self.loadTerrain("../heightmaps/small_hill.bmp")
+
+        self.openGLInit()
+
+
+    def keyPressed(self, key, x, y):
+        self.key_down[ord(key)] = True
+
+    def keyReleased(self, key, x, y):
+        self.key_down[ord(key)] = False
+
+
+    def checkKeypresses(self):
+        if self.key_down[ord('w')]:
+            self.myCamera.moveForward(MOVEMENT_SPEED)
+        if self.key_down[ord('a')]:
+            self.myCamera.strafeLeft(MOVEMENT_SPEED)
+        if self.key_down[ord('s')]:
+            self.myCamera.moveBackward(MOVEMENT_SPEED)
+        if self.key_down[ord('d')]:
+            self.myCamera.strafeRight(MOVEMENT_SPEED)
+        if self.key_down[ord('q')]:
+            self.myCamera.diveDown(MOVEMENT_SPEED)
+        if self.key_down[ord('e')]:
+            self.myCamera.flyUp(MOVEMENT_SPEED)
+        if self.key_down[ord('x')]:
+            sys.exit(1)
+
+
+    def mouseMoved(self, x, y):
+        self.myCamera.look(x, y)
+
+
+    def setColor(self, height):
+        # fColor = -0.15 + height / 256.0
+        percent1 = (height - (100 - 10)) / (10 * 2.)
+        # print "PER", percent1
+        fColor = 0.2 + (percent1 * .2)
+        # print "FCOLOR: ", fColor
+        glColor3f(fColor, 0, 0);
+
+
+
+    def loadTerrain(self, filename):
+        im = Image.open(filename)
+        result = []
+        for y in range(im.size[1]):
+            row = []
+            for x in range(im.size[0]):
+                pix = (im.getpixel((y, x)) / 255.) * 20
+                row.append(pix)
+            result.append(row)
+        return result
+
+
+    def randomTerrain(self, width, height):
+        base = 100
+        diff = 10
+        result = []
+        for y in range(height):
+            row = []
+            for x in range(width):
+                #row.append(base + random.randint(-diff, diff))
+                row.append(base)
+                #row.append(base + diff)
+            result.append(row)
+                
+        return result
+
+
+
+    def renderTerrain(self):
+        terrainWidth = 50
+        terrainHeight = 50
+        glColor3f(0, 0, 1)
+        glTranslatef(-terrainWidth / 2, 0, -terrainHeight/2)
+
+
+        for x in range(0, terrainWidth-1):
+        #for x in range(0, 2):
+            glBegin(GL_QUAD_STRIP)
+            glVertex3f(x, self.hm[0][x], 1)
+            glVertex3f(x+1, self.hm[1][x], 1)
+            for y in range(0, terrainHeight-1):
+            #for y in range(10, 20):
+
+                #glVertex3f(x+0, height, y+1)
+                #glVertex3f(x+1, height, y+1)
+                glVertex3f(x, self.hm[y][x], y)
+                glVertex3f(x+1, self.hm[y][x+1], y)
+
+                #print "RENDERING: ", x, y-1, x+1, y-1, x, y, x+1, y, height
+
+            glEnd()
+        #sys.exit(1)
+
+
+
+
+    def renderTerrain2(self): 
+        # hm = [[100] * 10, [150] * 10, [180] * 10, [200] * 10, [250] * 10]   
+        # hm = [[100] * 10, [100] * 10, [100] * 10, [100] * 10, [100] * 10]   
+
+        # hm = randomTerrain(50, 50)
+    
+        height = len(self.hm)
+        width = len(self.hm[0])
+        STEP = 3
+
+        glColor3f(155, 150, 150);    
+        for y in range(height-1):
+            glBegin(GL_TRIANGLE_STRIP)
+
+            height = self.hm[y][0]
+            glVertex3f(0, y, height)
+
+            height2 = self.hm[y+1][0]
+            glVertex3f(0, y+STEP, height2)
+
+            for x in range(width-1):
+                height3 = self.hm[y][x+1]
+                # self.setColor(height3)
+                glVertex3f(x+STEP, y, height3)
+
+                height4 = self.hm[y+1][x+1]
+                #self.setColor(height4)
+                glVertex3f(x+STEP, y+STEP, height4)
+            glEnd()
+
+
+    def openGLInit(self):
+        glutInit()
+        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
+        glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT)
+        glutCreateWindow("Terrain Generator")
+
+        glClearColor(1, 1, 1, 1)
+
+        glutDisplayFunc(self.display)
+        glutIdleFunc(self.display)
+        glMatrixMode(GL_PROJECTION)
+        gluPerspective(45., 1., .1, 500.)
+        glMatrixMode(GL_MODELVIEW)
+        glShadeModel(GL_SMOOTH)
+        glutKeyboardFunc(self.keyPressed)
+        glutKeyboardUpFunc(self.keyReleased)
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        #glEnable(GL_CULL_FACE)
+        #glutMotionFunc(self.mouseMoved)
+        glutPassiveMotionFunc(self.mouseMoved)
+        # glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF)
+        glutSetCursor(GLUT_CURSOR_NONE)
+        glutMainLoop()
+
+
+    def calculateFPS(self):
+        elapsed_time = time.time() - self.start_time
+        if elapsed_time > 0:
+            print "FPS: %.2f" % (self.frame_count / elapsed_time)
+
+    def renderCubes(self):
+        glColor3f(1.0, 0, 0)
+        for i in range(20):
+            glTranslate(i, 0, 0)
+            glutSolidCube(.8)
+
+    def display(self):
+        self.frame_count += 1
+
+        self.calculateFPS()
+        self.checkKeypresses()
+        glLoadIdentity()
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+        self.myCamera.render()
+        self.renderTerrain()
+
+        #self.renderCubes()
+
+        glutSwapBuffers()
+
+
+if __name__ == '__main__': 
+	tg = TerrainGenerator()
+
+
