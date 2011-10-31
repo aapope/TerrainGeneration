@@ -32,16 +32,8 @@ class RenderWorld:
         glutSetCursor(GLUT_CURSOR_NONE)
         glutPassiveMotionFunc(self.mouseMove)
 
-        glNewList(1, GL_COMPILE)
-        glBegin(GL_TRIANGLES)
-        glVertex3f(0, .1, 0)
-        glVertex3f(-.1, -.1, 0)
-        glVertex3f(.1, -.1, 0)
-        glEnd()
-        glEndList()
+        self.get_lists()
         
-
-
         glutMainLoop()
 
     def set_up_graphics(self):
@@ -67,8 +59,6 @@ class RenderWorld:
         glLoadIdentity()
         self.camera.move()
         self.camera.renderCamera()
-        glCallList(1)
-        glTranslate(-.5, 0, 0)
         glCallList(1)
         glutSwapBuffers()
        
@@ -115,6 +105,21 @@ class RenderWorld:
         self.camera.keys[key.lower()] = False
         if not glutGetModifiers() == GLUT_ACTIVE_SHIFT:
             self.camera.keys["shift"] = False
+
+    def get_lists(self):        
+        glNewList(1, GL_COMPILE)
+        
+        triangle_coords = []#call to other class to load in the height data
+
+        for coord in triangle_coords:
+            glBegin(GL_TRIANGLES)
+            glVertex3f(0, .1, 0)
+            glVertex3f(-.1, -.1, 0)
+            glVertex3f(.1, -.1, 0)
+            glEnd()
+
+        glEndList()
+
 
 if __name__ == '__main__':
     RENDER = RenderWorld()
