@@ -7,7 +7,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from Camera import Camera
-
+from LoadTerrain import LoadTerrain
 
 class RenderWorld:
     '''This is the class that renders maze.
@@ -32,7 +32,8 @@ class RenderWorld:
         glutSetCursor(GLUT_CURSOR_NONE)
         glutPassiveMotionFunc(self.mouseMove)
 
-        self.get_lists()
+        load = LoadTerrain('matthew/fractal.bmp')
+        load.createRenderList(load.load())
         
         glutMainLoop()
 
@@ -48,7 +49,7 @@ class RenderWorld:
         glMatrixMode(GL_PROJECTION)
         gluPerspective(45,1,.15,100)
         glMatrixMode(GL_MODELVIEW)
-
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         glEnable(GL_DEPTH_TEST)
 
     def display(self, x=0, y=0):
@@ -91,11 +92,10 @@ class RenderWorld:
             self.camera.rotate(3,0,0)
         elif key == 'k':
             self.camera.rotate(-3,0,0)
-        elif key == 'm':
-            if self.soundboard.paused:
-                self.soundboard.unpauseMusic()
-            else:
-                self.soundboard.pauseMusic()
+        elif key == ' ':
+            self.camera.pos_Y += .1
+        elif key == 'c':
+            self.camera.pos_Y -= .1
         elif key == 'x':
             exit(0)
 
@@ -105,21 +105,6 @@ class RenderWorld:
         self.camera.keys[key.lower()] = False
         if not glutGetModifiers() == GLUT_ACTIVE_SHIFT:
             self.camera.keys["shift"] = False
-
-    def get_lists(self):        
-        glNewList(1, GL_COMPILE)
-        
-        triangle_coords = []#call to other class to load in the height data
-
-        for coord in triangle_coords:
-            glBegin(GL_TRIANGLES)
-            glVertex3f(0, .1, 0)
-            glVertex3f(-.1, -.1, 0)
-            glVertex3f(.1, -.1, 0)
-            glEnd()
-
-        glEndList()
-
 
 if __name__ == '__main__':
     RENDER = RenderWorld()

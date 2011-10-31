@@ -38,12 +38,11 @@ class Terrain:
                 row.append(pix)
             self.heights.append(row)
 
-        #self.buildRenderList()
+        self.buildRenderList()
 
 
-    def render(self):
-
-        #glNewList(2, GL_COMPILE_AND_EXECUTE)
+    def buildRenderList(self):
+        glNewList(2, GL_COMPILE)
         glMaterial(GL_FRONT, GL_DIFFUSE, (.1, .6, .34));
         glColor3f(0, .4, .1)
 
@@ -58,9 +57,9 @@ class Terrain:
                 glVertex3f(x, self.heights[y][x], y)
                 glVertex3f(x+1, self.heights[y][x+1], y)
             glEnd()
-        #glEndList()
+        glEndList()
 
-    def render2(self):
+    def render(self):
         glCallList(2)
 
 if __name__ == '__main__': 

@@ -27,7 +27,7 @@ class GameEngine:
 
         self.openGLInit()
         self.terrain = Terrain()
-        self.terrain.load("fractal_small.bmp")
+        self.terrain.load("fractal.bmp")
         self.run()
 
 
