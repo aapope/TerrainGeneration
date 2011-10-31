@@ -11,9 +11,9 @@ class Camera:
     while detecting collision'''
 
     SPEED = 0
-    WALK = .3
-    SPRINT = 1
-    ROTATE = 2
+    WALK = .01
+    SPRINT = .5
+    ROTATE = .5
     WIDTH = .8
 
     def __init__(self, x=0, y=0, z=0):
@@ -33,6 +33,12 @@ class Camera:
         self.keys["a"] = False
         self.keys["s"] = False
         self.keys["d"] = False
+        self.keys["i"] = False
+        self.keys["j"] = False
+        self.keys["k"] = False
+        self.keys["l"] = False
+        self.keys["c"] = False
+        self.keys[" "] = False
         self.keys["shift"] = False
         
     def renderCamera(self):
@@ -111,6 +117,19 @@ class Camera:
             tmp_Z += z
             tmp_X += x
             moved = True
+        if tmp_keys['i']:
+            self.rot_X += self.ROTATE
+        if tmp_keys['j']:
+            self.rot_Y += self.ROTATE 
+        if tmp_keys['k']:
+            self.rot_X -= self.ROTATE
+        if tmp_keys['l']:
+            self.rot_Y -= self.ROTATE
+        if tmp_keys['c']:
+            tmp_Y += self.SPEED
+        if tmp_keys[' ']:
+            tmp_Y -= self.SPEED
+
         return (tmp_X, tmp_Y, tmp_Z)
     
     def get_camera_distance(self, x2, y2, z2):
