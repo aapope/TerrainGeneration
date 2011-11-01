@@ -6,6 +6,7 @@ __date__ = "21 October 2011"
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
+import Image
 from Camera import Camera
 from LoadTerrain import LoadTerrain
 
@@ -33,10 +34,11 @@ class RenderWorld:
         glutPassiveMotionFunc(self.mouseMove)
 
         if not filename == None:
-            load = LoadTerrain(filename)
+            self.load = LoadTerrain(filename)
         else:
-            load = LoadTerrain('matthew/fractal.bmp')
-        load.createRenderList(load.load())
+            self.load = LoadTerrain('matthew/fractal.bmp')
+        self.heights = self.load.load()
+        self.load.createRenderList(self.heights)
         
         glutMainLoop()
 
@@ -50,9 +52,16 @@ class RenderWorld:
         glutCreateWindow('Terrains!')
 
         glMatrixMode(GL_PROJECTION)
-        gluPerspective(45,1,.15,100)
+        gluPerspective(45,1,.1,1500)
         glMatrixMode(GL_MODELVIEW)
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        
+        
+
+        self.floor_texture = Image.open("checkerboard.bmp")
+        self.ix, self.iy = self.floor_texture.size
+        self.floor = self.floor_texture.tostring("raw", "RGBX", 0, -1)
+        
+        #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         glEnable(GL_DEPTH_TEST)
 
     def display(self, x=0, y=0):
@@ -63,7 +72,10 @@ class RenderWorld:
         glLoadIdentity()
         self.camera.move()
         self.camera.renderCamera()
+        #self.load.rawDraw(self.heights)
         glCallList(1)
+        glDisable(GL_TEXTURE_2D)
+
         glutSwapBuffers()
        
     def mouseMove(self, x, y):
