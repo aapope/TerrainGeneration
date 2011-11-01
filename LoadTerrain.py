@@ -26,7 +26,10 @@ class LoadTerrain:
 
             # Across the columns
             for x in range(self.width):
-                pix = (self.im.getpixel((y, x)) / 255.) * self.Y_FACTOR
+                try:
+                    pix = (self.im.getpixel((y, x)) / 255.) * self.Y_FACTOR
+                except:
+                    pass
                 row.append(pix)
             heights.append(row)
 

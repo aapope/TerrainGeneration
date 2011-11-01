@@ -32,7 +32,7 @@ class RenderWorld:
         glutSetCursor(GLUT_CURSOR_NONE)
         glutPassiveMotionFunc(self.mouseMove)
 
-        load = LoadTerrain('matthew/fractal.bmp')
+        load = LoadTerrain('australia.bmp')
         load.createRenderList(load.load())
         
         glutMainLoop()
@@ -44,7 +44,7 @@ class RenderWorld:
         glutInit()
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
         glutInitWindowSize(self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
-        glutCreateWindow('Mazeworld!')
+        glutCreateWindow('Terrains!')
 
         glMatrixMode(GL_PROJECTION)
         gluPerspective(45,1,.15,100)
