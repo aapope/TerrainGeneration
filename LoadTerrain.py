@@ -38,15 +38,19 @@ class LoadTerrain:
 
     def createRenderList(self, heights):
         glNewList(1, GL_COMPILE)
-        texture = self.loadTexture('checkerboard.bmp')
+        texture = self.loadTexture('fractal.bmp')
         self.applyTexture(texture)
         for y in range(1, len(heights)):
             glBegin(GL_TRIANGLE_STRIP)
             for x in range(len(heights[y])):
-                glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])), y*self.Z_FACTOR/float(len(heights)))
-                glVertex3f(x*self.X_FACTOR, heights[y][x], y*self.Z_FACTOR)
-                glTexCoord2f(x*self.X_FACTOR/float(len(heights[y-1])), y*self.Z_FACTOR/float(len(heights)))
-                glVertex3f(x*self.X_FACTOR, heights[y-1][x], y-1*self.Z_FACTOR)
+                #glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])),-(len(heights)-y)*self.Z_FACTOR/float(len(heights)))
+                glTexCoord2f(-(len(heights)-y)*self.Z_FACTOR/float(len(heights)),-x*self.X_FACTOR/float(len(heights[y])))
+                #glVertex3f(y*self.Z_FACTOR, heights[y][x], x*self.X_FACTOR)
+                glVertex3f(x*self.X_FACTOR, heights[y][x], -y*self.Z_FACTOR)
+                glTexCoord2f(-(len(heights)-y)*self.Z_FACTOR/float(len(heights)),-x*self.X_FACTOR/float(len(heights[y-1])))
+                #glTexCoord2f(x*self.X_FACTOR/float(len(heights[y-1])),-(len(heights)-y)*self.Z_FACTOR/float(len(heights)))
+                #glVertex3f((y-1)*self.Z_FACTOR, heights[y][x], x*self.X_FACTOR)
+                glVertex3f(x*self.X_FACTOR, heights[y-1][x], -(y-1)*self.Z_FACTOR)
             glEnd()
         glEndList()
 

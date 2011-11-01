@@ -18,12 +18,12 @@ class Camera:
 
     def __init__(self, x=0, y=0, z=0):
         '''Initializes everything, including sound'''
-        self.pos_X = x
-        self.pos_Y = y
+        self.pos_X = x#100
+        self.pos_Y = y#50
         self.pos_Z = z
         self.start_pos=(x,y,z)
-        self.rot_X = 0
-        self.rot_Y = 0
+        self.rot_X = 0#-45
+        self.rot_Y = 0#-120
         self.rot_Z = 0
         self.mouse_x = 0
         self.mouse_y = 0

@@ -56,11 +56,6 @@ class RenderWorld:
         glMatrixMode(GL_MODELVIEW)
         
         
-
-        self.floor_texture = Image.open("checkerboard.bmp")
-        self.ix, self.iy = self.floor_texture.size
-        self.floor = self.floor_texture.tostring("raw", "RGBX", 0, -1)
-        
         #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         glEnable(GL_DEPTH_TEST)
 
