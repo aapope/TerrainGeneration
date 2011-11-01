@@ -17,7 +17,7 @@ class RenderWorld:
     WINDOW_HEIGHT = 700
     MAP_SIZE =100
 
-    def __init__(self):
+    def __init__(self, filename):
         '''Sets up camera, modes, lighting, sounds, and objects.'''
         self.set_up_graphics()
         self.camera = Camera(0,0,0)
@@ -32,7 +32,10 @@ class RenderWorld:
         glutSetCursor(GLUT_CURSOR_NONE)
         glutPassiveMotionFunc(self.mouseMove)
 
-        load = LoadTerrain('australia.bmp')
+        if not filename == None:
+            load = LoadTerrain(filename)
+        else:
+            load = LoadTerrain('matthew/fractal.bmp')
         load.createRenderList(load.load())
         
         glutMainLoop()
@@ -84,18 +87,6 @@ class RenderWorld:
             self.camera.keys[key.lower()] = True
         if glutGetModifiers() == GLUT_ACTIVE_SHIFT:
             self.camera.keys["shift"] = True
-        if key == 'j':
-            self.camera.rotate(0,3,0)
-        elif key == 'l':
-            self.camera.rotate(0,-3,0)
-        elif key == 'i':
-            self.camera.rotate(3,0,0)
-        elif key == 'k':
-            self.camera.rotate(-3,0,0)
-        elif key == ' ':
-            self.camera.pos_Y += .1
-        elif key == 'c':
-            self.camera.pos_Y -= .1
         elif key == 'x':
             exit(0)
 
@@ -107,4 +98,7 @@ class RenderWorld:
             self.camera.keys["shift"] = False
 
 if __name__ == '__main__':
-    RENDER = RenderWorld()
+    if len(sys.argv) == 0:
+        RENDER = RenderWorld(sys.argv[1])
+    else:
+        RENDER = RenderWorld(None)
