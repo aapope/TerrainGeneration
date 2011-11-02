@@ -56,7 +56,7 @@ class RenderWorld:
         glMatrixMode(GL_MODELVIEW)
         
         
-        #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         glEnable(GL_DEPTH_TEST)
 
     def display(self, x=0, y=0):
@@ -68,8 +68,9 @@ class RenderWorld:
         self.camera.move()
         self.camera.renderCamera()
         #self.load.rawDraw(self.heights)
+        #glEnable(GL_TEXTURE_2D)
         glCallList(1)
-        glDisable(GL_TEXTURE_2D)
+        #glDisable(GL_TEXTURE_2D)
 
         glutSwapBuffers()
        
