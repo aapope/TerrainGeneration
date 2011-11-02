@@ -56,7 +56,7 @@ class RenderWorld:
         glMatrixMode(GL_MODELVIEW)
         
         
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         glEnable(GL_DEPTH_TEST)
 
     def display(self, x=0, y=0):

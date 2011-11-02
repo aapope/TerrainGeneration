@@ -40,7 +40,7 @@ class LoadTerrain:
 
     def createRenderList(self, heights):
         rend = RenderTexture(heights)
-        self.texture = self.loadTexture('data/textures/fractal.bmp')#rend.run(heights))
+        self.texture = self.loadTexture(rend.run(heights))
         index = glGenLists(1)
         glNewList(index, GL_COMPILE)
         self.applyTexture(self.texture)
@@ -50,7 +50,7 @@ class LoadTerrain:
             for x in range(len(heights[y])):
                 glTexCoord2f(-(len(heights)-y)*self.Z_FACTOR/float(len(heights)),-x*self.X_FACTOR/float(len(heights[y])))
                 glVertex3f(x*self.X_FACTOR, heights[y][x], -y*self.Z_FACTOR)
-                glTexCoord2f(-(len(heights)-y)*self.Z_FACTOR/float(len(heights)),-x*self.X_FACTOR/float(len(heights[y-1])))
+                glTexCoord2f(-(len(heights)-y+1)*self.Z_FACTOR/float(len(heights)),-x*self.X_FACTOR/float(len(heights[y-1])))
                 glVertex3f(x*self.X_FACTOR, heights[y-1][x], -(y-1)*self.Z_FACTOR)
                 '''self.newTexture(heights[y][x],0)
                 glBegin(GL_TRIANGLE_STRIP)
