@@ -38,7 +38,7 @@ class RenderWorld:
         else:
             self.load = LoadTerrain('matthew/fractal.bmp')
         self.heights = self.load.load()
-        self.load.createRenderList(self.heights)
+        self.index = self.load.createRenderList(self.heights)
         
         glutMainLoop()
 
@@ -68,7 +68,7 @@ class RenderWorld:
         self.camera.move()
         self.camera.renderCamera()
         #self.load.rawDraw(self.heights)
-        glCallList(1)
+        glCallList(self.index)
         glDisable(GL_TEXTURE_2D)
 
         glutSwapBuffers()

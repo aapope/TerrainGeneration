@@ -18,7 +18,7 @@ class LoadTerrain:
     def load(self):
         '''Load a heightmap bitmap file into the Terrain.
         Store the terrain as a list of rectangles (openGL quads).
-'''      
+        '''      
         heights = []
         
         # Down the rows
@@ -37,8 +37,9 @@ class LoadTerrain:
         return heights
 
     def createRenderList(self, heights):
-        glNewList(1, GL_COMPILE)
         texture = self.loadTexture('fractal.bmp')
+        index = glGenLists(1)
+        glNewList(index, GL_COMPILE)
         self.applyTexture(texture)
         for y in range(1, len(heights)):
             glBegin(GL_TRIANGLE_STRIP)
@@ -53,6 +54,7 @@ class LoadTerrain:
                 glVertex3f(x*self.X_FACTOR, heights[y-1][x], -(y-1)*self.Z_FACTOR)
             glEnd()
         glEndList()
+        return index
 
     def loadTexture(self, filename):
         texId = 0
