@@ -21,12 +21,20 @@ class RenderTexture:
         images = {}
         images['tundra'] = []
         images['tundra'].append(Image.open('data/textures/tundra.bmp'))
+        images['tundra'].append(Image.open('data/textures/tundra1.bmp'))
 
         images['deciduous'] = []
         images['deciduous'].append(Image.open('data/textures/deciduous.bmp'))
+        images['deciduous'].append(Image.open('data/textures/deciduous1.bmp'))
+        images['deciduous'].append(Image.open('data/textures/deciduous2.bmp'))
+        images['deciduous'].append(Image.open('data/textures/deciduous3.bmp'))
 
         images['savanna'] = []
         images['savanna'].append(Image.open('data/textures/savanna.bmp'))
+        images['savanna'].append(Image.open('data/textures/savanna1.bmp'))
+        images['savanna'].append(Image.open('data/textures/savanna2.bmp'))
+        images['savanna'].append(Image.open('data/textures/savanna3.bmp'))
+        images['savanna'].append(Image.open('data/textures/savanna4.bmp'))
 
         for key, value in images.items():
             for im in value:
