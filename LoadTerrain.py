@@ -38,10 +38,10 @@ class LoadTerrain:
         return heights
 
     def createRenderList(self, heights):
-        tex_list = self.loadTexture(['tundra.bmp', 'deciduous.bmp', 'savanna.bmp'])
+        self.tex_list = self.loadTexture(['tundra.bmp', 'deciduous.bmp', 'savanna.bmp'])
         index = glGenLists(1)
         glNewList(index, GL_COMPILE)
-        self.applyTexture(tex_list[1])
+        self.applyTexture(self.tex_list[1])
         for y in range(1, len(heights)):
             #glBegin(GL_TRIANGLE_STRIP)
             for x in range(0, len(heights[y])-1):
@@ -87,5 +87,12 @@ class LoadTerrain:
         #glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
 
 
-    def newTexture(altitude, percip):
-        pass
+    def newTexture(self, altitude, percip):
+        d_temp = altitude / 6.5
+        temp = 20 - d_temp
+        if temp <= 18:
+            self.applyTexture(self.tex_list[0])
+        elif temp < 20:
+            self.applyTexture(self.tex_list[1])
+        else:
+            self.applyTexture(self.tex_list[2])
