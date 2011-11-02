@@ -2,12 +2,14 @@ import Image
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
+from RenderTexture import RenderTexture
 
 class LoadTerrain:
     X_FACTOR = 1
     Y_FACTOR = 25
     Z_FACTOR = 1
     MAP_SIZE = 100
+    counter = 1
 
     def __init__(self, filename):
         self.im = Image.open(filename)
@@ -18,7 +20,7 @@ class LoadTerrain:
     def load(self):
         '''Load a heightmap bitmap file into the Terrain.
         Store the terrain as a list of rectangles (openGL quads).
-'''      
+        '''      
         heights = []
         
         # Down the rows
@@ -37,28 +39,38 @@ class LoadTerrain:
         return heights
 
     def createRenderList(self, heights):
-        glNewList(1, GL_COMPILE)
-        texture = self.loadTexture('fractal.bmp')
-        self.applyTexture(texture)
+        rend = RenderTexture(heights)
+        self.texture = self.loadTexture('data/textures/fractal.bmp')#rend.run(heights))
+        index = glGenLists(1)
+        glNewList(index, GL_COMPILE)
+        self.applyTexture(self.texture)
+
         for y in range(1, len(heights)):
             glBegin(GL_TRIANGLE_STRIP)
             for x in range(len(heights[y])):
-                #glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])),-(len(heights)-y)*self.Z_FACTOR/float(len(heights)))
                 glTexCoord2f(-(len(heights)-y)*self.Z_FACTOR/float(len(heights)),-x*self.X_FACTOR/float(len(heights[y])))
-                #glVertex3f(y*self.Z_FACTOR, heights[y][x], x*self.X_FACTOR)
                 glVertex3f(x*self.X_FACTOR, heights[y][x], -y*self.Z_FACTOR)
                 glTexCoord2f(-(len(heights)-y)*self.Z_FACTOR/float(len(heights)),-x*self.X_FACTOR/float(len(heights[y-1])))
-                #glTexCoord2f(x*self.X_FACTOR/float(len(heights[y-1])),-(len(heights)-y)*self.Z_FACTOR/float(len(heights)))
-                #glVertex3f((y-1)*self.Z_FACTOR, heights[y][x], x*self.X_FACTOR)
                 glVertex3f(x*self.X_FACTOR, heights[y-1][x], -(y-1)*self.Z_FACTOR)
+                '''self.newTexture(heights[y][x],0)
+                glBegin(GL_TRIANGLE_STRIP)
+                glTexCoord2f(0,0)
+                glVertex3f(x*self.X_FACTOR, heights[y][x], -y*self.Z_FACTOR)
+                glTexCoord2f(0,1)
+                glVertex3f(x*self.X_FACTOR, heights[y-1][x], -(y-1)*self.Z_FACTOR)
+                glTexCoord2f(1,0)
+                glVertex3f((x+1)*self.X_FACTOR, heights[y][x+1], -y*self.Z_FACTOR)
+                glTexCoord2f(1,1)
+                glVertex3f((x+1)*self.X_FACTOR, heights[y-1][x+1], -(y-1)*self.Z_FACTOR)'''
             glEnd()
         glEndList()
+        return index
 
-    def loadTexture(self, filename):
+    def loadTexture(self, filenames):
         texId = 0
         glGenTextures(1, texId)
         glBindTexture(GL_TEXTURE_2D, texId)
-        self.images.append(Image.open(filename))
+        self.images.append(Image.open(filenames))
         glTexImage2D(GL_TEXTURE_2D, 0, 3, self.images[-1].size[0], self.images[-1].size[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, self.images[-1].tostring("raw","RGBX",0,-1))
         return texId
 
@@ -75,3 +87,14 @@ class LoadTerrain:
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
         #glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+
+
+    def newTexture(self, altitude, percip):
+        d_temp = altitude / 6.5
+        temp = 20 - d_temp
+        if temp <= 18:
+            self.applyTexture(self.tex_list[0])
+        elif temp < 20:
+            self.applyTexture(self.tex_list[1])
+        else:
+            self.applyTexture(self.tex_list[2])
