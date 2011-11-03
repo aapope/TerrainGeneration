@@ -6,49 +6,32 @@ class RenderTexture:
     SIZE = 10
 
     def __init__(self, heights):
-        self.size = (len(heights), len(heights[0]))
-        self.texture = Image.new("RGB", (self.size[1]*self.SIZE, self.size[0]*self.SIZE))
+        self.size = (len(heights)*self.SIZE, len(heights[0])*self.SIZE)
+        self.texture = Image.new("RGB", (self.size[1], self.size[0]))
 
     def run(self, heights):
-        images = self.load_bitmaps()
-        self.create_textures(images, heights, self.size)
+        #images = self.load_bitmaps()
+        self.load_bitmaps()
+        self.create_texture(self.texture.load(), heights, self.size)
         path = 'data/textures/texture'+str(self.counter)+'.bmp'
         self.texture.save(path)
         self.counter += 1
         return path
         
     def load_bitmaps(self):
-        images = {}
-        images['tundra'] = []
-        images['tundra'].append(Image.open('data/textures/tundra.bmp'))
-        images['tundra'].append(Image.open('data/textures/tundra1.bmp'))
+        self.images = {}
+        self.images['tundra'] = (Image.open('data/textures/tundra1.bmp').load(),Image.open('data/textures/tundra1.bmp').size)
 
-        images['deciduous'] = []
-        images['deciduous'].append(Image.open('data/textures/deciduous.bmp'))
-        images['deciduous'].append(Image.open('data/textures/deciduous1.bmp'))
-        images['deciduous'].append(Image.open('data/textures/deciduous2.bmp'))
-        images['deciduous'].append(Image.open('data/textures/deciduous3.bmp'))
+        self.images['deciduous'] = (Image.open('data/textures/near_treeline.jpg').load(),Image.open('data/textures/near_treeline.jpg').size)
 
-        images['savanna'] = []
-        images['savanna'].append(Image.open('data/textures/savanna.bmp'))
-        images['savanna'].append(Image.open('data/textures/savanna1.bmp'))
-        images['savanna'].append(Image.open('data/textures/savanna2.bmp'))
-        images['savanna'].append(Image.open('data/textures/savanna3.bmp'))
-        images['savanna'].append(Image.open('data/textures/savanna4.bmp'))
+        self.images['savanna'] = (Image.open('data/textures/savanna1.bmp').load(),Image.open('data/textures/savanna1.bmp').size)
 
-        for key, value in images.items():
-            for im in value:
-                im.resize((self.SIZE,self.SIZE))        
-        return images
-        
-    def create_textures(self, images, heights, size):
+    def create_texture(self, pix, heights, size):
         for y in range(size[0]):
             for x in range(size[1]):
-                h = heights[y][x]
-                tex = self.texture_type(h, 0)
-                im = choice(images[tex])
-                self.texture.paste(im, (y*self.SIZE,x*self.SIZE))
-
+                pixl, sizel = self.images[self.texture_type(heights[y/self.SIZE][x/self.SIZE], 0)]
+                pix[y,x] = pixl[x%sizel[0], y%sizel[1]]
+            
     def texture_type(self, altitude, percip):
         d_temp = altitude / 6.5
         temp = 20 - d_temp
