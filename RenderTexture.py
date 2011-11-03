@@ -1,5 +1,6 @@
 from PIL import Image, ImageDraw
 from random import choice
+import random
 
 class RenderTexture:
     counter = 1
@@ -30,7 +31,19 @@ class RenderTexture:
         for y in range(size[0]):
             for x in range(size[1]):
                 pixl, sizel = self.images[self.texture_type(heights[y/self.SIZE][x/self.SIZE], 0)]
-                pix[y,x] = pixl[x%sizel[0], y%sizel[1]]
+                pix[y,x] = self.randomize_color(pixl[x%sizel[0], y%sizel[1]], 25)
+
+    def randomize_color(self, color, randomness=10):
+        r,g,b = color
+        r += random.randint(-randomness, randomness)
+        g += random.randint(-randomness, randomness)
+        b += random.randint(-randomness, randomness)
+
+        r = min(max(r, 0), 255)
+        g = min(max(g, 0), 255)
+        b = min(max(b, 0), 255)
+
+        return (r,g,b)
             
     def texture_type(self, altitude, percip):
         d_temp = altitude / 6.5

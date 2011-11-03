@@ -36,7 +36,7 @@ class RenderWorld:
         if not filename == None:
             self.load = LoadTerrain(filename)
         else:
-            self.load = LoadTerrain('data/heightmaps/fractal.bmp')#noisy.bmp')
+            self.load = LoadTerrain('matthew/test.bmp')#noisy.bmp')
         self.heights = self.load.load()
         self.index = self.load.createRenderList(self.heights)
         
