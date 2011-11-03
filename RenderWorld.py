@@ -21,7 +21,7 @@ class RenderWorld:
     def __init__(self, filename):
         '''Sets up camera, modes, lighting, sounds, and objects.'''
         self.set_up_graphics()
-        self.camera = Camera(0,0,0)
+        self.camera = Camera(0,20,0)
 
         glutIdleFunc(self.display)
         glutDisplayFunc(self.display)
@@ -36,7 +36,7 @@ class RenderWorld:
         if not filename == None:
             self.load = LoadTerrain(filename)
         else:
-            self.load = LoadTerrain('data/heightmaps/fractal.bmp')
+            self.load = LoadTerrain('data/heightmaps/noisy.bmp')
         self.heights = self.load.load()
         self.index = self.load.createRenderList(self.heights)
         
