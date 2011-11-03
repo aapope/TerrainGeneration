@@ -105,7 +105,7 @@ class HeightMap:
 
 
     def diamond_square_tile(self, direction=RIGHT):
-        '''Do diamond square so that the result lines up with a given "other" Heightmap on a particular side.
+        '''Create a new HeightMap that lines up with this Heightmap on a particular side.
         This is used for tiling the Heightmaps in a relatively seamless way.'''
         
         # New tile is the same size as the existing Heightmap
@@ -168,11 +168,13 @@ def main(size, filename):
     hm = HeightMap(size, size)
     hm.diamond_square()
 
+    # Create 4 new Heightmaps
     hm_right = hm.diamond_square_tile(RIGHT)
     hm_left = hm.diamond_square_tile(LEFT)
     hm_up = hm.diamond_square_tile(UP)
     hm_down = hm.diamond_square_tile(DOWN)
 
+    # Save all Heightmaps to .bmp files
     hm.save(filename)
     hm_right.save("RIGHT" + filename)
     hm_left.save("LEFT" + filename)
@@ -180,8 +182,9 @@ def main(size, filename):
     hm_down.save("DOWN" + filename)
 
 
-
 if __name__=="__main__":
     import sys
     # main(int(sys.argv[1]), int(sys.argv[2]), sys.argv[3])
     main(129, sys.argv[1])
+
+
