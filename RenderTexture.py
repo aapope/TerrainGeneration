@@ -1,12 +1,15 @@
 from PIL import Image, ImageDraw
 from random import choice
-import random
+import random, numpy
 
 class RenderTexture:
 
     counter = 1
+    SIZE = 20
+    SL = (-1,1,-1,1,-1,1)#Sun location: (left, right, bottom, top, near, far)
 
     def __init__(self, heights, scale):
+ #       self.SIZE = scale[0]
         self.size = (len(heights)*scale[2], len(heights[0])*scale[0])
         self.texture = Image.new("RGB", (self.size[1], self.size[0]))
         self.scale = scale
@@ -60,3 +63,5 @@ class RenderTexture:
             return 'deciduous'
         else:
             return 'savanna'
+
+
