@@ -56,15 +56,16 @@ class LoadTerrain:
         for y in range(1, len(heights)):
             glBegin(GL_TRIANGLE_STRIP)
             for x in range(len(heights[y])):
-                #glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])*self.X_FACTOR),-y*self.Z_FACTOR/float(len(heights)*self.Z_FACTOR))
-                glTexCoord2f(-(len(heights)-y)*self.Z_FACTOR/float(len(heights)),-x*self.X_FACTOR/float(len(heights[y])))
+                glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])*self.X_FACTOR),-y*self.Z_FACTOR/float(len(heights)*self.Z_FACTOR))
+                #glTexCoord2f(-(len(heights)-y)*self.Z_FACTOR/float(len(heights)),-x*self.X_FACTOR/float(len(heights[y])))
                 pt = (x*self.X_FACTOR, heights[y][x], -y*self.Z_FACTOR)
                 #calculate the point's normal
                 norm = calc_vert_normals(pt,face_norms)
                 glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
 
-                glTexCoord2f(-(len(heights)-y+1)*self.Z_FACTOR/float(len(heights)),-x*self.X_FACTOR/float(len(heights[y-1])))
+                glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])*self.X_FACTOR),-(y-1)*self.Z_FACTOR/float(len(heights)*self.Z_FACTOR))
+                #glTexCoord2f(-(len(heights)-y+1)*self.Z_FACTOR/float(len(heights)),-x*self.X_FACTOR/float(len(heights[y-1])))
                 pt = (x*self.X_FACTOR, heights[y-1][x], -(y-1)*self.Z_FACTOR)
                 norm = calc_vert_normals(pt, face_norms)
                 glNormal3f(norm[0],norm[1],norm[2])
