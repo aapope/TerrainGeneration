@@ -16,7 +16,7 @@ class RenderWorld:
     '''
     WINDOW_WIDTH = 700
     WINDOW_HEIGHT = 700
-    MAP_SIZE =100
+    MAP_SIZE = 100
 
     def __init__(self, filename):
         '''Sets up camera, modes, lighting, sounds, and objects.'''
@@ -36,7 +36,7 @@ class RenderWorld:
         if not filename == None:
             self.load = LoadTerrain(filename)
         else:
-            self.load = LoadTerrain('matthew/test.bmp')#noisy.bmp')
+            self.load = LoadTerrain('data/heightmaps/fractal.bmp')
         self.heights = self.load.load()
         self.index = self.load.createRenderList(self.heights)
         
@@ -52,7 +52,7 @@ class RenderWorld:
         glutCreateWindow('Terrains!')
 
         glMatrixMode(GL_PROJECTION)
-        gluPerspective(45,1,.1,1500)
+        gluPerspective(45,1,.1,3000)
         glMatrixMode(GL_MODELVIEW)
         
         
@@ -81,6 +81,13 @@ class RenderWorld:
         tmp_y = (self.camera.mouse_y - y)/factor
         if tmp_x > self.camera.ROTATE:
             tmp_x = self.camera.ROTATE
+        elif tmp_x < -self.camera.ROTATE:
+            tmp_x = -self.camera.ROTATE
+        if tmp_y > self.camera.ROTATE:
+            tmp_y = self.camera.ROTATE
+        elif tmp_y < -self.camera.ROTATE:
+            tmp_y = -self.camera.ROTATE
+
         self.camera.rotate(tmp_y, tmp_x, 0)
         x = self.WINDOW_WIDTH/2
         y = self.WINDOW_HEIGHT/2
