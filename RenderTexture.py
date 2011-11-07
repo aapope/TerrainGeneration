@@ -1,10 +1,11 @@
 from PIL import Image, ImageDraw
 from random import choice
-import random
+import random, numpy
 
 class RenderTexture:
     counter = 1
-    SIZE = 10
+    SIZE = 20
+    SL = (-1,1,-1,1,-1,1)#Sun location: (left, right, bottom, top, near, far)
 
     def __init__(self, heights):
         self.size = (len(heights)*self.SIZE, len(heights[0])*self.SIZE)
@@ -54,3 +55,5 @@ class RenderTexture:
             return 'deciduous'
         else:
             return 'savanna'
+
+

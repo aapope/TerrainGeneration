@@ -21,6 +21,7 @@ class RenderWorld:
     def __init__(self, filename):
         '''Sets up camera, modes, lighting, sounds, and objects.'''
         self.set_up_graphics()
+        self.set_up_lighting()
         self.camera = Camera(0,20,0)
 
         glutIdleFunc(self.display)
@@ -36,7 +37,7 @@ class RenderWorld:
         if not filename == None:
             self.load = LoadTerrain(filename)
         else:
-            self.load = LoadTerrain('matthew/test.bmp')#noisy.bmp')
+            self.load = LoadTerrain('data/heightmaps/fractal.bmp')#noisy.bmp')
         self.heights = self.load.load()
         self.index = self.load.createRenderList(self.heights)
         
@@ -55,9 +56,23 @@ class RenderWorld:
         gluPerspective(45,1,.1,1500)
         glMatrixMode(GL_MODELVIEW)
         
-        
+        glShadeModel(GL_SMOOTH)
         #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         glEnable(GL_DEPTH_TEST)
+
+    def set_up_lighting(self):
+        self.diffuse_pos1 = (-1,.5,-1,0)
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, (1, 1, 1, 1))
+        glLightfv(GL_LIGHT0, GL_POSITION, self.diffuse_pos1)
+
+        
+        glLightfv(GL_LIGHT1, GL_AMBIENT, (.3, .3, .3, 1))
+        glLightfv(GL_LIGHT1, GL_POSITION, (1,1,1,1))
+        
+        
+        glEnable(GL_LIGHTING)
+        glEnable(GL_LIGHT0)
+        glEnable(GL_LIGHT1)
 
     def display(self, x=0, y=0):
         '''Called for every refresh; redraws the floor and objects
@@ -67,11 +82,17 @@ class RenderWorld:
         glLoadIdentity()
         self.camera.move()
         self.camera.renderCamera()
+        self.renderLightSource()
         #self.load.rawDraw(self.heights)
         glCallList(self.index)
         glDisable(GL_TEXTURE_2D)
 
         glutSwapBuffers()
+
+    def renderLightSource(self):
+        '''Resets the light sources to the right position.'''
+        glLightfv(GL_LIGHT0, GL_POSITION, self.diffuse_pos1)
+
        
     def mouseMove(self, x, y):
         '''Called when the mouse is moved.'''
