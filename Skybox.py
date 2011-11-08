@@ -5,7 +5,7 @@ import Image
 
 class Skybox:
     #5 is the top; 3 has the sun
-    FILES = ['data/textures/sky1.bmp', 'data/textures/sky2.bmp', 'data/textures/sky3.bmp', 'data/textures/sky4.bmp', 'data/textures/sky5.bmp']
+    FILES = ['data/textures/box/sky1.bmp', 'data/textures/box/sky2.bmp', 'data/textures/box/sky3.bmp', 'data/textures/box/sky4.bmp', 'data/textures/box/sky5.bmp']
     
     def __init__(self, (x, y, z)):
         self.x = x
