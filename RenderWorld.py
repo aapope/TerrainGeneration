@@ -46,7 +46,8 @@ class RenderWorld:
         self.heights = self.load.load()
         self.index = self.load.createRenderList(self.heights)
         
-        self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
+        #self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
+        self.skybox = Skybox((5000, 5000, 5000))
         self.sky_index = self.skybox.createCallList(1, 3)
         
         glutMainLoop()
@@ -61,7 +62,7 @@ class RenderWorld:
         glutCreateWindow('Terrains!')
 
         glMatrixMode(GL_PROJECTION)
-        gluPerspective(45,1,.1,3000)
+        gluPerspective(45,1,.1,6000)
         glMatrixMode(GL_MODELVIEW)
 
         #glClearColor(.529,.8078,.980,0)

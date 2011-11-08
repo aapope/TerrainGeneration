@@ -10,7 +10,7 @@ class LoadTerrain:
     Y_FACTOR = 350
     Z_FACTOR = 10
     MAP_SIZE = 100
-    SEA_LEVEL = Y_FACTOR/20
+    SEA_LEVEL = -10
     counter = 1
 
     def __init__(self, filename):
@@ -43,7 +43,7 @@ class LoadTerrain:
     def createRenderList(self, heights):
         rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
         self.texture = self.loadTexture(rend.run(heights), 0)
-        water = 'data/textures/water.bmp'
+        water = 'data/textures/water/water.bmp'
         water_tex = self.loadTexture(water, 1)
         #face_norms is dict of face (3-tuple of vertices defining face, counterclockwise
         #starting from the upper left) : face normal
@@ -70,14 +70,6 @@ class LoadTerrain:
                 norm = vert_norms[pt]
                 glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
-
-                '''self.newTexture(heights[y][x],0)
-                glBegin(GL_TRIANGLE_STRIP)
-                glTexCoord2f(0,0)
->>>>>>> 01864d7bd1ab817d291a0ebab20acbe988e7d36f
-                glVertex3f(x*self.X_FACTOR, heights[y][x], -y*self.Z_FACTOR)
-                glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])*self.X_FACTOR),-(y-1)*self.Z_FACTOR/float(len(heights)*self.Z_FACTOR))
-                glVertex3f(x*self.X_FACTOR, heights[y-1][x], -(y-1)*self.Z_FACTOR)'''
             glEnd()
                 
 
