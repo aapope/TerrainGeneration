@@ -16,7 +16,10 @@ def get_vector(v0, v1):
 
 def calc_face_normals(heights, x_scale, z_scale):
     '''dict of face normals with vertex : array of face normals it's a part of'''
+    #vertex : normal
     face_normals = {}
+    #points on face (tuple, clockwise starting with the upper left vertex) : normal
+    face = {}
     for z in range(0, len(heights)-1):
         for x in range(0, len(heights[z])-1):
             p0 = ((x+1)*x_scale, heights[z][x+1], -z*z_scale)
@@ -53,18 +56,24 @@ def calc_face_normals(heights, x_scale, z_scale):
                 face_normals[p3] = [f1]
             else:
                 face_normals[p3].append(f1)
-    return face_normals
+            
+            face[(p2, p0, p1)] = f0
+            face[(p0, p3, p2)] = f1
 
-def calc_vert_normals(point, face_normals):
+    for point in face_normals.iterkeys():
+        face_normals[point] = calc_vert_normals(face_normals[point])
+    return (face, face_normals)
+
+def calc_vert_normals(normals):
     avg = [0,0,0]
-    for face in face_normals[point]:
+    for face in normals:
         avg[0] += face[0]
         avg[1] += face[1]
         avg[2] += face[2]
 
-    leng = len(face_normals[point])
+    leng = len(normals)
     avg[0] /= leng
     avg[1] /= leng
     avg[2] /= leng
 
-    return (avg[0],avg[1],avg[2])
+    return normalize(numpy.array([avg[0],avg[1],avg[2]]))
