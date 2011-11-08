@@ -43,7 +43,8 @@ class LoadTerrain:
     def createRenderList(self, heights):
         rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
         self.texture = self.loadTexture(rend.run(heights), 0)
-
+        water = 'data/textures/water/water.bmp'
+        water_tex = self.loadTexture(water, 1)
         #face_norms is dict of face (3-tuple of vertices defining face, counterclockwise
         #starting from the upper left) : face normal
         #vert_norms is dict of vertex : normal
@@ -57,22 +58,37 @@ class LoadTerrain:
             glBegin(GL_TRIANGLE_STRIP)
             for x in range(len(heights[y])):
                 glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])*self.X_FACTOR),-y*self.Z_FACTOR/float(len(heights)*self.Z_FACTOR))
-                #glTexCoord2f(-(len(heights)-y)*self.Z_FACTOR/float(len(heights)),-x*self.X_FACTOR/float(len(heights[y])))
                 pt = (x*self.X_FACTOR, heights[y][x], -y*self.Z_FACTOR)
                 norm = vert_norms[pt]
                 glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
 
                 glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])*self.X_FACTOR),-(y-1)*self.Z_FACTOR/float(len(heights)*self.Z_FACTOR))
-                #glTexCoord2f(-(len(heights)-y+1)*self.Z_FACTOR/float(len(heights)),-x*self.X_FACTOR/float(len(heights[y-1])))
                 pt = (x*self.X_FACTOR, heights[y-1][x], -(y-1)*self.Z_FACTOR)
                 norm = vert_norms[pt]
                 glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
             glEnd()
+                
+
+        '''Water plane'''
+        self.applyTexture(water_tex)
+        tile_size = Image.open(water).size
+        xlen = len(heights[0])*self.X_FACTOR
+        zlen = len(heights)*self.Z_FACTOR
+        glBegin(GL_QUADS)
+        glTexCoord2f(0,0)
+        glVertex3f(0, self.SEA_LEVEL, 0)
+        glTexCoord2f(xlen/tile_size[0],0)
+        glVertex3f(xlen, self.SEA_LEVEL, 0)
+        glTexCoord2f(xlen/tile_size[0],zlen/tile_size[1])
+        glVertex3f(xlen, self.SEA_LEVEL, -zlen)
+        glTexCoord2f(0,zlen/tile_size[1])
+        glVertex3f(0, self.SEA_LEVEL, -zlen)
+        glEnd()
+
         glEndList()
         return index
-
 
     def loadTexture(self, filenames, i):
         texId = i

@@ -41,13 +41,15 @@ class Camera:
         self.keys[" "] = False
         self.keys["shift"] = False
         
-    def renderCamera(self):
+    def renderTranslateCamera(self):
+        glTranslatef(-self.pos_X, -self.pos_Y, -self.pos_Z)
+
+    def renderRotateCamera(self):
         '''Translates and rotates the camera to the correct position'''
         glRotatef(-self.rot_X , 1.0, 0.0, 0.0)
         glRotatef(-self.rot_Y , 0.0, 1.0, 0.0)
         glRotatef(-self.rot_Z , 0.0, 0.0, 1.0)
-        glTranslatef(-self.pos_X, -self.pos_Y, -self.pos_Z)
-
+        
     def move(self):
         '''Controls the movement of the player.'''
         tmp_keys = self.keys.copy()
