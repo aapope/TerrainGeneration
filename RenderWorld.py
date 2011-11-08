@@ -62,7 +62,7 @@ class RenderWorld:
         glutCreateWindow('Terrains!')
 
         glMatrixMode(GL_PROJECTION)
-        gluPerspective(45,1,.1,6000)
+        gluPerspective(45,1,.1,8000)
         glMatrixMode(GL_MODELVIEW)
 
         #glClearColor(.529,.8078,.980,0)
@@ -144,6 +144,10 @@ class RenderWorld:
             self.poly_view = False
         if key == 'p':
             exit(0)
+        if key == GLUT_KEY_PAGE_UP:
+            self.camera.SPEED += 1
+        if key == GLUT_KEY_PAGE_DOWN:
+            self.camera.SPEED -= 1
 
     def keyUp(self, key, x, y):
         '''Called when a key is released.'''
