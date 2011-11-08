@@ -66,10 +66,21 @@ class RenderWorld:
         glMatrixMode(GL_MODELVIEW)
 
         #glClearColor(.529,.8078,.980,0)
+        glEnable(GL_NORMALIZE)
+
+        glEnable (GL_DEPTH_TEST)
+        glEnable (GL_FOG)
+        glFogi (GL_FOG_MODE, GL_EXP2)
+        glFogfv (GL_FOG_COLOR, (.9,.9,.9,1))
+        glFogf (GL_FOG_DENSITY, .0001)
+        glHint (GL_FOG_HINT, GL_NICEST)
+        #glFogf(GL_FOG_START, 100)
+        #glFogf(GL_FOG_END, 10000)
+
 
         glShadeModel(GL_SMOOTH)
         #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-        glEnable(GL_DEPTH_TEST)
+        #glEnable(GL_DEPTH_TEST)
 
     def set_up_lighting(self):
         self.diffuse_pos1 = (-1,.5,-1,0)
@@ -101,6 +112,7 @@ class RenderWorld:
         glCallList(self.sky_index)
         glDisable(GL_TEXTURE_2D)
 
+        
         glutSwapBuffers()
 
     def renderLightSource(self):
