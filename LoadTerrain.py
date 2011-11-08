@@ -45,9 +45,10 @@ class LoadTerrain:
         self.texture = self.loadTexture(rend.run(heights), 0)
         water = 'data/textures/water.bmp'
         water_tex = self.loadTexture(water, 1)
-        #Calculate the normals for each face, stored in a dict of 
-        #point : norms offaces with that point
-        face_norms = calc_face_normals(heights, self.X_FACTOR, self.Z_FACTOR)
+        #face_norms is dict of face (3-tuple of vertices defining face, counterclockwise
+        #starting from the upper left) : face normal
+        #vert_norms is dict of vertex : normal
+        face_norms, vert_norms = calc_face_normals(heights, self.X_FACTOR, self.Z_FACTOR)
         index = glGenLists(1)
         glNewList(index, GL_COMPILE)
 
@@ -59,15 +60,14 @@ class LoadTerrain:
                 glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])*self.X_FACTOR),-y*self.Z_FACTOR/float(len(heights)*self.Z_FACTOR))
                 #glTexCoord2f(-(len(heights)-y)*self.Z_FACTOR/float(len(heights)),-x*self.X_FACTOR/float(len(heights[y])))
                 pt = (x*self.X_FACTOR, heights[y][x], -y*self.Z_FACTOR)
-                #calculate the point's normal
-                norm = calc_vert_normals(pt,face_norms)
+                norm = vert_norms[pt]
                 glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
 
                 glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])*self.X_FACTOR),-(y-1)*self.Z_FACTOR/float(len(heights)*self.Z_FACTOR))
                 #glTexCoord2f(-(len(heights)-y+1)*self.Z_FACTOR/float(len(heights)),-x*self.X_FACTOR/float(len(heights[y-1])))
                 pt = (x*self.X_FACTOR, heights[y-1][x], -(y-1)*self.Z_FACTOR)
-                norm = calc_vert_normals(pt, face_norms)
+                norm = vert_norms[pt]
                 glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
 
