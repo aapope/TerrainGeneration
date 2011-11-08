@@ -55,7 +55,9 @@ class RenderWorld:
         glMatrixMode(GL_PROJECTION)
         gluPerspective(45,1,.1,1500)
         glMatrixMode(GL_MODELVIEW)
-        
+
+        glClearColor(.529,.8078,.980,0)
+
         glShadeModel(GL_SMOOTH)
         #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         glEnable(GL_DEPTH_TEST)

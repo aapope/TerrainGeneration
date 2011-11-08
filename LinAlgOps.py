@@ -67,4 +67,4 @@ def calc_vert_normals(point, face_normals):
     avg[1] /= leng
     avg[2] /= leng
 
-    return (avg[0],avg[1],avg[2])
+    return normalize(numpy.array([avg[0],avg[1],avg[2]]))
