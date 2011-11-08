@@ -10,7 +10,7 @@ class LoadTerrain:
     Y_FACTOR = 350
     Z_FACTOR = 10
     MAP_SIZE = 100
-    SEA_LEVEL = -10
+    SEA_LEVEL = 1
     counter = 1
 
     def __init__(self, filename):
