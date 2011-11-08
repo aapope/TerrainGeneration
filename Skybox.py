@@ -5,11 +5,11 @@ import Image
 
 class Skybox:
     #5 is the top; 3 has the sun
-    FILES = ['data/textures/box/sky1.bmp', 'data/textures/box/sky2.bmp', 'data/textures/box/sky3.bmp', 'data/textures/box/sky4.bmp', 'data/textures/box/sky5.bmp']
+    FILES = ['data/textures/box/1sky1.bmp', 'data/textures/box/1sky2.bmp', 'data/textures/box/1sky3.bmp', 'data/textures/box/1sky4.bmp', 'data/textures/box/1sky5.bmp']
     
     def __init__(self, (x, y, z)):
         self.x = x
-        self.y = (x+z)/2
+        self.y = x/2.06
         self.z = -z
         self.texs = []
 
@@ -53,18 +53,18 @@ class Skybox:
         
         self.applyTexture(ids[4])
         glBegin(GL_QUADS)
-        glTexCoord2f(0, 0) ; glVertex3f(0,self.y,0)
-        glTexCoord2f(1, 0) ; glVertex3f(self.x,self.y,0)
-        glTexCoord2f(1, 1) ; glVertex3f(self.x,self.y,self.z)
-        glTexCoord2f(0, 1) ; glVertex3f(0,self.y,self.z)
+        glTexCoord2f(1, 0) ; glVertex3f(0,self.y,0)
+        glTexCoord2f(1, 1) ; glVertex3f(self.x,self.y,0)
+        glTexCoord2f(0, 1) ; glVertex3f(self.x,self.y,self.z)
+        glTexCoord2f(0, 0) ; glVertex3f(0,self.y,self.z)
         glEnd()
 
 
         glBegin(GL_QUADS)
-        glTexCoord2f(0, 0) ; glVertex3f(0,0,0)
-        glTexCoord2f(1, 0) ; glVertex3f(self.x,0,0)
-        glTexCoord2f(1, 1) ; glVertex3f(self.x,0,self.z)
-        glTexCoord2f(0, 1) ; glVertex3f(0,0,self.z)
+        glTexCoord2f(0, 0) ; glVertex3f(0,-1,0)
+        glTexCoord2f(1, 0) ; glVertex3f(self.x,-1,0)
+        glTexCoord2f(1, 1) ; glVertex3f(self.x,-1,self.z)
+        glTexCoord2f(0, 1) ; glVertex3f(0,-1,self.z)
         glEnd()
 
         glEndList()
