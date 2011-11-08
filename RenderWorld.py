@@ -9,7 +9,7 @@ from OpenGL.GLUT import *
 import Image
 from Camera import Camera
 from LoadTerrain import LoadTerrain
-#from Skybox import Skybox
+from Skybox import Skybox
 
 class RenderWorld:
     '''This is the class that renders maze.
@@ -45,8 +45,8 @@ class RenderWorld:
         self.heights = self.load.load()
         self.index = self.load.createRenderList(self.heights)
         
-        #self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
-        #self.sky_index = self.skybox.createCallList(1, 3)
+        self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
+        self.sky_index = self.skybox.createCallList(1, 3)
         
         glutMainLoop()
 
@@ -96,7 +96,7 @@ class RenderWorld:
         glEnable(GL_LIGHT1)
         glCallList(self.index)
         glDisable(GL_LIGHTING)
-        #glCallList(self.sky_index)
+        glCallList(self.sky_index)
         glDisable(GL_TEXTURE_2D)
 
         glutSwapBuffers()
