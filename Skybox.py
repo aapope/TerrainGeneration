@@ -5,8 +5,9 @@ import Image
 
 class Skybox:
     #5 is the top; 3 has the sun
-    FILES = ['data/textures/box/1sky1.bmp', 'data/textures/box/1sky2.bmp', 'data/textures/box/1sky3.bmp', 'data/textures/box/1sky4.bmp', 'data/textures/box/1sky5.bmp']
-    
+    FILES = ['data/textures/box/1sky1.bmp', 'data/textures/box/1sky2.bmp', 'data/textures/box/1sky3.bmp', 'data/textures/box/1sky4.bmp', 'data/textures/box/1sky5.bmp', 'data/textures/water/water.bmp']
+    SEA_LEVEL = 1
+
     def __init__(self, (x, y, z)):
         self.x = x
         self.y = x/2.06
@@ -59,12 +60,23 @@ class Skybox:
         glTexCoord2f(0, 0) ; glVertex3f(0,self.y,self.z)
         glEnd()
 
-
+        self.applyTexture(ids[5])
+        '''glBegin(GL_QUADS)
+        glTexCoord2f(0, 0) ; glVertex3f(0,1,0)
+        glTexCoord2f(1, 0) ; glVertex3f(self.x,1,0)
+        glTexCoord2f(1, 1) ; glVertex3f(self.x,1,self.z)
+        glTexCoord2f(0, 1) ; glVertex3f(0,1,self.z)
+        glEnd()'''
+        tile_size = Image.open(self.FILES[5]).size
         glBegin(GL_QUADS)
-        glTexCoord2f(0, 0) ; glVertex3f(0,-1,0)
-        glTexCoord2f(1, 0) ; glVertex3f(self.x,-1,0)
-        glTexCoord2f(1, 1) ; glVertex3f(self.x,-1,self.z)
-        glTexCoord2f(0, 1) ; glVertex3f(0,-1,self.z)
+        glTexCoord2f(0,0)
+        glVertex3f(0, self.SEA_LEVEL, 0)
+        glTexCoord2f(self.x/tile_size[0],0)
+        glVertex3f(self.x, self.SEA_LEVEL, 0)
+        glTexCoord2f(self.x/tile_size[0],self.z/tile_size[1])
+        glVertex3f(self.x, self.SEA_LEVEL, self.z)
+        glTexCoord2f(0,self.z/tile_size[1])
+        glVertex3f(0, self.SEA_LEVEL, self.z)
         glEnd()
 
         glEndList()
