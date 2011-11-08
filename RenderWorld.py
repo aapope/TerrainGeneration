@@ -27,6 +27,7 @@ class RenderWorld:
         self.set_up_graphics()
         self.set_up_lighting()
         self.camera = Camera(0,20,0)
+        self.poly_view = False
 
         glutIdleFunc(self.display)
         glutDisplayFunc(self.display)
@@ -134,7 +135,13 @@ class RenderWorld:
             self.camera.keys[key.lower()] = True
         if glutGetModifiers() == GLUT_ACTIVE_SHIFT:
             self.camera.keys["shift"] = True
-        elif key == 'x':
+        if key == 'x' and not self.poly_view:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+            self.poly_view = True
+        elif key == 'x' and self.poly_view:
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+            self.poly_view = False
+        if key == 'p':
             exit(0)
 
     def keyUp(self, key, x, y):

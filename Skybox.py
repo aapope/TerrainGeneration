@@ -9,7 +9,7 @@ class Skybox:
     
     def __init__(self, (x, y, z)):
         self.x = x
-        self.y = y+20
+        self.y = (x+z)/2
         self.z = -z
         self.texs = []
 
