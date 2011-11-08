@@ -35,6 +35,8 @@ class RenderTexture:
         self.images['dirt'] = (Image.open('data/textures/dirt/'+img).load(),Image.open('data/textures/dirt/'+img).size)
         img = self.get_rand_img('data/textures/treeline') 
         self.images['treeline'] = (Image.open('data/textures/treeline/'+img).load(),Image.open('data/textures/treeline/'+img).size)
+        img = self.get_rand_img('data/textures/treeline') 
+        self.images['treeline'] = (Image.open('data/textures/treeline/'+img).load(),Image.open('data/textures/treeline/'+img).size)
 
     def create_texture(self, pix, heights):
         for y in range(self.size[0]):
