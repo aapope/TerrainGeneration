@@ -3,18 +3,21 @@ from random import choice
 import random, numpy
 
 class RenderTexture:
+
     counter = 1
     SIZE = 20
     SL = (-1,1,-1,1,-1,1)#Sun location: (left, right, bottom, top, near, far)
 
-    def __init__(self, heights):
-        self.size = (len(heights)*self.SIZE, len(heights[0])*self.SIZE)
+    def __init__(self, heights, scale):
+ #       self.SIZE = scale[0]
+        self.size = (len(heights)*scale[2], len(heights[0])*scale[0])
         self.texture = Image.new("RGB", (self.size[1], self.size[0]))
+        self.scale = scale
 
     def run(self, heights):
         #images = self.load_bitmaps()
         self.load_bitmaps()
-        self.create_texture(self.texture.load(), heights, self.size)
+        self.create_texture(self.texture.load(), heights)
         path = 'data/textures/texture'+str(self.counter)+'.bmp'
         self.texture.save(path)
         self.counter += 1
@@ -24,15 +27,17 @@ class RenderTexture:
         self.images = {}
         self.images['tundra'] = (Image.open('data/textures/tundra1.bmp').load(),Image.open('data/textures/tundra1.bmp').size)
 
-        self.images['deciduous'] = (Image.open('data/textures/near_treeline.jpg').load(),Image.open('data/textures/near_treeline.jpg').size)
+        self.images['deciduous'] = (Image.open('data/textures/grass.jpg').load(),Image.open('data/textures/grass.jpg').size)
 
-        self.images['savanna'] = (Image.open('data/textures/savanna1.bmp').load(),Image.open('data/textures/savanna1.bmp').size)
+        self.images['savanna'] = (Image.open('data/textures/sand.jpg').load(),Image.open('data/textures/sand.jpg').size)
 
-    def create_texture(self, pix, heights, size):
-        for y in range(size[0]):
-            for x in range(size[1]):
-                pixl, sizel = self.images[self.texture_type(heights[y/self.SIZE][x/self.SIZE], 0)]
-                pix[y,x] = self.randomize_color(pixl[x%sizel[0], y%sizel[1]], 25)
+    def create_texture(self, pix, heights):
+        for y in range(self.size[0]):
+            for x in range(self.size[1]):
+                #print 'Mapping ' +  str(self.texture_type(heights[x/self.scale[0]][y/self.scale[2]], 0)) +" "+ str(x/self.scale[0])+","+str(y/self.scale[2])+' to '+ str(x)+","+str(y)
+                pixl, sizel = self.images[self.texture_type(heights[x/self.scale[0]][y/self.scale[2]], 0)]
+                #pix[y,x] = self.randomize_color(pixl[x%sizel[0], y%sizel[1]], 25)
+                pix[y,x] = pixl[x%sizel[0], y%sizel[1]]
 
     def randomize_color(self, color, randomness=10):
         r,g,b = color
@@ -47,11 +52,14 @@ class RenderTexture:
         return (r,g,b)
             
     def texture_type(self, altitude, percip):
-        d_temp = altitude / 6.5
+        temp_blend = .04
+        max_elevation = 5000
+        elevation = max_elevation*(altitude/float(self.scale[1]))
+        d_temp = (elevation/1000) / 6.5 + random.uniform(-temp_blend,temp_blend)
         temp = 20 - d_temp
-        if temp <= 18:
+        if temp <= 19.5:
             return 'tundra'
-        elif temp < 20:
+        elif temp < 19.9:
             return 'deciduous'
         else:
             return 'savanna'

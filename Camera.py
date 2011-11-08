@@ -13,7 +13,7 @@ class Camera:
     SPEED = 0
     WALK = .01
     SPRINT = .5
-    ROTATE = .1
+    ROTATE = 2
     WIDTH = .8
 
     def __init__(self, x=0, y=0, z=0):
@@ -118,13 +118,13 @@ class Camera:
             tmp_X += x
             moved = True
         if tmp_keys['i']:
-            self.rot_X += self.ROTATE
+            self.rot_X += self.ROTATE/2
         if tmp_keys['j']:
-            self.rot_Y += self.ROTATE 
+            self.rot_Y += self.ROTATE/2
         if tmp_keys['k']:
-            self.rot_X -= self.ROTATE
+            self.rot_X -= self.ROTATE/2
         if tmp_keys['l']:
-            self.rot_Y -= self.ROTATE
+            self.rot_Y -= self.ROTATE/2
         if tmp_keys['c']:
             tmp_Y += self.SPEED
         if tmp_keys[' ']:

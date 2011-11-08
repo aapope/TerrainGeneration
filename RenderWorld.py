@@ -9,6 +9,7 @@ from OpenGL.GLUT import *
 import Image
 from Camera import Camera
 from LoadTerrain import LoadTerrain
+from Skybox import Skybox
 
 class RenderWorld:
     '''This is the class that renders maze.
@@ -16,7 +17,10 @@ class RenderWorld:
     '''
     WINDOW_WIDTH = 700
     WINDOW_HEIGHT = 700
-    MAP_SIZE =100
+    X_FACTOR = 10
+    Y_FACTOR = 350
+    Z_FACTOR = 10
+    MAP_SIZE = 100
 
     def __init__(self, filename):
         '''Sets up camera, modes, lighting, sounds, and objects.'''
@@ -37,9 +41,12 @@ class RenderWorld:
         if not filename == None:
             self.load = LoadTerrain(filename)
         else:
-            self.load = LoadTerrain('data/heightmaps/fractal.bmp')#noisy.bmp')
+            self.load = LoadTerrain('data/heightmaps/fractal.bmp')
         self.heights = self.load.load()
         self.index = self.load.createRenderList(self.heights)
+        
+        self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
+        self.sky_index = self.skybox.createCallList(1, 3)
         
         glutMainLoop()
 
@@ -53,7 +60,7 @@ class RenderWorld:
         glutCreateWindow('Terrains!')
 
         glMatrixMode(GL_PROJECTION)
-        gluPerspective(45,1,.1,1500)
+        gluPerspective(45,1,.1,3000)
         glMatrixMode(GL_MODELVIEW)
 
         glClearColor(.529,.8078,.980,0)
@@ -68,13 +75,11 @@ class RenderWorld:
         glLightfv(GL_LIGHT0, GL_POSITION, self.diffuse_pos1)
 
         
-        glLightfv(GL_LIGHT1, GL_AMBIENT, (.3, .3, .3, 1))
+        glLightfv(GL_LIGHT1, GL_AMBIENT, (1, 1, 1, .95))
         glLightfv(GL_LIGHT1, GL_POSITION, (1,1,1,1))
         
         
-        glEnable(GL_LIGHTING)
-        glEnable(GL_LIGHT0)
-        glEnable(GL_LIGHT1)
+        
 
     def display(self, x=0, y=0):
         '''Called for every refresh; redraws the floor and objects
@@ -86,7 +91,12 @@ class RenderWorld:
         self.camera.renderCamera()
         self.renderLightSource()
         #self.load.rawDraw(self.heights)
+        glEnable(GL_LIGHTING)
+        glEnable(GL_LIGHT0)
+        glEnable(GL_LIGHT1)
         glCallList(self.index)
+        glDisable(GL_LIGHTING)
+        glCallList(self.sky_index)
         glDisable(GL_TEXTURE_2D)
 
         glutSwapBuffers()
@@ -104,6 +114,13 @@ class RenderWorld:
         tmp_y = (self.camera.mouse_y - y)/factor
         if tmp_x > self.camera.ROTATE:
             tmp_x = self.camera.ROTATE
+        elif tmp_x < -self.camera.ROTATE:
+            tmp_x = -self.camera.ROTATE
+        if tmp_y > self.camera.ROTATE:
+            tmp_y = self.camera.ROTATE
+        elif tmp_y < -self.camera.ROTATE:
+            tmp_y = -self.camera.ROTATE
+
         self.camera.rotate(tmp_y, tmp_x, 0)
         x = self.WINDOW_WIDTH/2
         y = self.WINDOW_HEIGHT/2
