@@ -6,7 +6,7 @@ import Image
 class Skybox:
     #5 is the top; 3 has the sun
     FILES = ['data/textures/box/1sky1.bmp', 'data/textures/box/1sky2.bmp', 'data/textures/box/1sky3.bmp', 'data/textures/box/1sky4.bmp', 'data/textures/box/1sky5.bmp', 'data/textures/water/water.bmp']
-    SEA_LEVEL = 1
+    SEA_LEVEL = 1.5
 
     def __init__(self, (x, y, z)):
         self.x = x
