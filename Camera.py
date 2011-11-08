@@ -11,7 +11,7 @@ class Camera:
     while detecting collision'''
 
     SPEED = 0
-    WALK = .01
+    WALK = .1
     SPRINT = .5
     ROTATE = 2
     WIDTH = .8
@@ -118,13 +118,13 @@ class Camera:
             tmp_X += x
             moved = True
         if tmp_keys['i']:
-            self.rot_X += self.ROTATE/2
+            self.rot_X += self.ROTATE*(self.SPEED+1)/4
         if tmp_keys['j']:
-            self.rot_Y += self.ROTATE/2
+            self.rot_Y += self.ROTATE*(self.SPEED+1)/4
         if tmp_keys['k']:
-            self.rot_X -= self.ROTATE/2
+            self.rot_X -= self.ROTATE*(self.SPEED+1)/4
         if tmp_keys['l']:
-            self.rot_Y -= self.ROTATE/2
+            self.rot_Y -= self.ROTATE*(self.SPEED+1)/4
         if tmp_keys['c']:
             tmp_Y += self.SPEED
         if tmp_keys[' ']:
