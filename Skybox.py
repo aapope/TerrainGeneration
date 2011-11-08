@@ -61,12 +61,6 @@ class Skybox:
         glEnd()
 
         self.applyTexture(ids[5])
-        '''glBegin(GL_QUADS)
-        glTexCoord2f(0, 0) ; glVertex3f(0,1,0)
-        glTexCoord2f(1, 0) ; glVertex3f(self.x,1,0)
-        glTexCoord2f(1, 1) ; glVertex3f(self.x,1,self.z)
-        glTexCoord2f(0, 1) ; glVertex3f(0,1,self.z)
-        glEnd()'''
         tile_size = Image.open(self.FILES[5]).size
         glBegin(GL_QUADS)
         glTexCoord2f(0,0)

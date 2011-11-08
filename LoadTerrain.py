@@ -43,8 +43,7 @@ class LoadTerrain:
     def createRenderList(self, heights):
         rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
         self.texture = self.loadTexture(rend.run(heights), 0)
-        #water = 'data/textures/water/water.bmp'
-        #water_tex = self.loadTexture(water, 1)
+
         #face_norms is dict of face (3-tuple of vertices defining face, counterclockwise
         #starting from the upper left) : face normal
         #vert_norms is dict of vertex : normal
@@ -71,12 +70,6 @@ class LoadTerrain:
                 glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
             glEnd()
-                
-
-        '''Water plane'''
-        #self.applyTexture(water_tex)
-        
-
         glEndList()
         return index
 
