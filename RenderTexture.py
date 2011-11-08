@@ -11,16 +11,21 @@ class RenderTexture:
     def __init__(self, heights, scale):
  #       self.SIZE = scale[0]
         self.size = (len(heights)*scale[2], len(heights[0])*scale[0])
+	#print "Scale", scale
+	#print "Size",self.size
         self.texture = Image.new("RGB", (self.size[1], self.size[0]))
         self.scale = scale
 
-    def run(self, heights):
+    def run(self, heights, name):
+	path = 'data/textures/texture'+name+'.bmp'	
+	#try:
+	#	f = open(path)
+	#except IOError:
         #images = self.load_bitmaps()
         self.load_bitmaps()
         self.create_texture(self.texture.load(), heights)
-        path = 'data/textures/texture'+str(self.counter)+'.bmp'
         self.texture.save(path)
-        self.counter += 1
+        #self.counter += 1
         return path
         
     def load_bitmaps(self):

@@ -9,7 +9,7 @@ from OpenGL.GLUT import *
 import Image
 from Camera import Camera
 from LoadTerrain import LoadTerrain
-from Skybox import Skybox
+from World import World
 
 class RenderWorld:
     '''This is the class that renders maze.
@@ -17,18 +17,13 @@ class RenderWorld:
     '''
     WINDOW_WIDTH = 700
     WINDOW_HEIGHT = 700
-    X_FACTOR = 10
-    Y_FACTOR = 350
-    Z_FACTOR = 10
-    MAP_SIZE = 100
+    MAP_SIZE =100
 
     def __init__(self, filename):
         '''Sets up camera, modes, lighting, sounds, and objects.'''
         self.set_up_graphics()
-        self.set_up_lighting()
-        self.camera = Camera(0,20,0)
-        self.poly_view = False
-
+        self.camera = Camera(10,20,-10)	
+	
         glutIdleFunc(self.display)
         glutDisplayFunc(self.display)
 
@@ -42,14 +37,9 @@ class RenderWorld:
         if not filename == None:
             self.load = LoadTerrain(filename)
         else:
-            self.load = LoadTerrain('data/heightmaps/fractal.bmp')
-        self.heights = self.load.load()
-        self.index = self.load.createRenderList(self.heights)
-        
-        self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
-        self.sky_index = self.skybox.createCallList(1, 3)
-        
-        glutMainLoop()
+            self.world = World()
+	
+	glutMainLoop()
 
     def set_up_graphics(self):
         '''Sets up OpenGL to provide double buffering, RGB coloring,
@@ -61,51 +51,31 @@ class RenderWorld:
         glutCreateWindow('Terrains!')
 
         glMatrixMode(GL_PROJECTION)
-        gluPerspective(45,1,.1,3000)
+        gluPerspective(45,1,.1,1500)
         glMatrixMode(GL_MODELVIEW)
-
-        #glClearColor(.529,.8078,.980,0)
-
-        glShadeModel(GL_SMOOTH)
+        
+        
         #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         glEnable(GL_DEPTH_TEST)
-
-    def set_up_lighting(self):
-        self.diffuse_pos1 = (-1,.5,-1,0)
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, (1, 1, 1, 1))
-        glLightfv(GL_LIGHT0, GL_POSITION, self.diffuse_pos1)
-
-        
-        glLightfv(GL_LIGHT1, GL_AMBIENT, (1, 1, 1, .95))
-        glLightfv(GL_LIGHT1, GL_POSITION, (1,1,1,1))
-        
-        
-        
 
     def display(self, x=0, y=0):
         '''Called for every refresh; redraws the floor and objects
         based on the camera angle. Calls collision detection, handles
         the appropriate objects for keys, doors, etc.'''
+	#print "loopdy loop"
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
         self.camera.move()
         self.camera.renderCamera()
-        self.renderLightSource()
         #self.load.rawDraw(self.heights)
-        glEnable(GL_LIGHTING)
-        glEnable(GL_LIGHT0)
-        glEnable(GL_LIGHT1)
-        glCallList(self.index)
-        glDisable(GL_LIGHTING)
-        glCallList(self.sky_index)
+	for index in self.world.index_list:
+		glCallList(index) 
+       
+	#print "ROT:", self.camera.rot_X, self.camera.rot_Y, self.camera.rot_Z
+	self.world.update_loc(self.camera.pos_X, self.camera.pos_Y, self.camera.pos_Z)
         glDisable(GL_TEXTURE_2D)
 
         glutSwapBuffers()
-
-    def renderLightSource(self):
-        '''Resets the light sources to the right position.'''
-        glLightfv(GL_LIGHT0, GL_POSITION, self.diffuse_pos1)
-
        
     def mouseMove(self, x, y):
         '''Called when the mouse is moved.'''
@@ -115,13 +85,6 @@ class RenderWorld:
         tmp_y = (self.camera.mouse_y - y)/factor
         if tmp_x > self.camera.ROTATE:
             tmp_x = self.camera.ROTATE
-        elif tmp_x < -self.camera.ROTATE:
-            tmp_x = -self.camera.ROTATE
-        if tmp_y > self.camera.ROTATE:
-            tmp_y = self.camera.ROTATE
-        elif tmp_y < -self.camera.ROTATE:
-            tmp_y = -self.camera.ROTATE
-
         self.camera.rotate(tmp_y, tmp_x, 0)
         x = self.WINDOW_WIDTH/2
         y = self.WINDOW_HEIGHT/2
@@ -135,13 +98,7 @@ class RenderWorld:
             self.camera.keys[key.lower()] = True
         if glutGetModifiers() == GLUT_ACTIVE_SHIFT:
             self.camera.keys["shift"] = True
-        if key == 'x' and not self.poly_view:
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-            self.poly_view = True
-        elif key == 'x' and self.poly_view:
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-            self.poly_view = False
-        if key == 'p':
+        elif key == 'x':
             exit(0)
 
     def keyUp(self, key, x, y):
