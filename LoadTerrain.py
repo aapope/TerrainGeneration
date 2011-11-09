@@ -6,14 +6,14 @@ from RenderTexture import RenderTexture
 from LinAlgOps import *
 
 class LoadTerrain:
-    X_FACTOR = 10
-    Y_FACTOR = 350
-    Z_FACTOR = 10
-    MAP_SIZE = 100
+    X_FACTOR = 1
+    Y_FACTOR = 1
+    Z_FACTOR = 1
     SEA_LEVEL = 4
     counter = 1
 
-    def __init__(self, filename):
+    def __init__(self, filename, scale):
+        self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR = scale
         self.im = Image.open(filename)
         self.width = self.im.size[0]
         self.height = self.im.size[1]
