@@ -17,9 +17,9 @@ class RenderWorld:
     '''
     WINDOW_WIDTH = 700
     WINDOW_HEIGHT = 700
-    X_FACTOR = 10
+    X_FACTOR = 1
     Y_FACTOR = 35
-    Z_FACTOR = 10
+    Z_FACTOR = 1
     MAP_SIZE = 100
 
     def __init__(self, filename):
