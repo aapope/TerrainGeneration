@@ -35,8 +35,8 @@ class RenderTexture:
         self.images['savanna'] = (Image.open('data/textures/savanna/'+img).load(),Image.open('data/textures/savanna/'+img).size)
         img = self.get_rand_img('data/textures/dirt') 
         self.images['dirt'] = (Image.open('data/textures/dirt/'+img).load(),Image.open('data/textures/dirt/'+img).size)
-        #img = self.get_rand_img('data/textures/treeline') 
-        #self.images['treeline'] = (Image.open('data/textures/treeline/'+img).load(),Image.open('data/textures/treeline/'+img).size)
+        img = self.get_rand_img('data/textures/treeline') 
+        self.images['treeline'] = (Image.open('data/textures/treeline/'+img).load(),Image.open('data/textures/treeline/'+img).size)
         img = self.get_rand_img('data/textures/mountain') 
         self.images['mountain'] = (Image.open('data/textures/mountain/'+img).load(),Image.open('data/textures/mountain/'+img).size)
         img = self.get_rand_img('data/textures/grass') 
@@ -79,8 +79,8 @@ class RenderTexture:
             return 'tundra'
         elif temp < 19.65:
             return 'mountain'
-        #elif temp < 19.75:
-        #    return 'treeline'
+        elif temp < 19.75:
+            return 'treeline'
         elif temp < 19.85:
             return 'grass'
         elif temp < 19.9:
@@ -94,7 +94,7 @@ class RenderTexture:
     def shadow(self, pixels, zs):
         for y in range(self.size[0]):
             highest = self.calc_height(self.size[1]-1, y, zs) - self.SUN_ANGLE
-            darkened = False
+            darkened = 0
             for x in range(self.size[1]-2,-1,-1):
                 z = self.calc_height(x, y, zs)
                 if z > highest:
