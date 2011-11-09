@@ -22,10 +22,10 @@ def calc_face_normals(heights, x_scale, z_scale):
     face = {}
     for z in range(0, len(heights)-1):
         for x in range(0, len(heights[z])-1):
-            p0 = ((x+1)*x_scale, heights[z][x+1], -z*z_scale)
-            p1 = (x*x_scale, heights[z+1][x], -(z+1)*z_scale)
-            p2 = (x*x_scale, heights[z][x], -z*z_scale)
-            p3 = ((x+1)*x_scale, heights[z+1][x+1], -(z+1)*z_scale)
+            p3 = ((x+1)*x_scale, heights[z][x+1], -z*z_scale)
+            p2 = (x*x_scale, heights[z+1][x], -(z+1)*z_scale)
+            p0 = (x*x_scale, heights[z][x], -z*z_scale)
+            p1 = ((x+1)*x_scale, heights[z+1][x+1], -(z+1)*z_scale)
             
             v0 = get_vector(p0, p1)
             v1 = get_vector(p0, p2)
@@ -56,9 +56,9 @@ def calc_face_normals(heights, x_scale, z_scale):
                 face_normals[p3] = [f1]
             else:
                 face_normals[p3].append(f1)
-            
-            face[(p2, p0, p1)] = f0
-            face[(p0, p3, p2)] = f1
+    
+            face[(p0, p1, p2)] = f0
+            face[(p0, p3, p1)] = f1
 
     for point in face_normals.iterkeys():
         face_normals[point] = calc_vert_normals(face_normals[point])

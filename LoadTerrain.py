@@ -41,14 +41,15 @@ class LoadTerrain:
         return heights
 
     def createRenderList(self, heights):
-        rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
+        face_norms, vert_norms = calc_face_normals(heights, self.X_FACTOR, self.Z_FACTOR)
+        rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR), face_norms)
         self.texture = self.loadTexture(rend.run(heights), 0)
         water = 'data/textures/water/water2.bmp'
         water_tex = self.loadTexture(water, 1)
         #face_norms is dict of face (3-tuple of vertices defining face, counterclockwise
         #starting from the upper left) : face normal
         #vert_norms is dict of vertex : normal
-        face_norms, vert_norms = calc_face_normals(heights, self.X_FACTOR, self.Z_FACTOR)
+
         index = glGenLists(1)
         glNewList(index, GL_COMPILE)
 

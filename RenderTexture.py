@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw
 from random import choice
 import random, numpy, os
-
+import LinAlgOps
 class RenderTexture:
 
     counter = 1
@@ -10,12 +10,13 @@ class RenderTexture:
     SUN_ANGLE = 0.3
     FACTOR = 10
 
-    def __init__(self, heights, scale):
+    def __init__(self, heights, scale, norms):
         self.scale = (scale[0]*self.FACTOR, scale[1], scale[2]*self.FACTOR)
         self.SUN_ANGLE = scale[1]*.0008
         self.size = (len(heights)*self.scale[2], len(heights[0])*self.scale[0])
         self.texture = Image.new("RGB", (self.size[1], self.size[0]))
         self.heights = heights
+        self.norms = norms
 
     def run(self, heights):
         self.load_bitmaps()
@@ -93,10 +94,10 @@ class RenderTexture:
 
 
     def shadow(self, pixels, zs):
-        for y in range(self.size[0]):
-            highest = self.calc_height(self.size[1]-1, y, zs) - self.SUN_ANGLE
+        for y in range(1, self.size[0]):
+            highest = self.calc_height(self.size[1]-2, y, zs) - self.SUN_ANGLE
             darkened = False
-            for x in range(self.size[1]-2,-1,-1):
+            for x in range(self.size[1]-1, 1, -1):
                 z = self.calc_height(x, y, zs)
 #                print x/self.scale[0], y/self.scale[2], z
                 if z > highest:
@@ -135,6 +136,47 @@ class RenderTexture:
                 
 
             
+    '''def calc_height(self, x, y, zs):
+        #pos_scale = (self.scale[0]
+        #print zs
+        x_gl = x/self.FACTOR
+        y_gl = y/self.FACTOR
+        x_hmap = x/self.scale[0]
+        y_hmap = y/self.scale[2]
+
+
+        p1 = (x_gl, zs[y_hmap][x_hmap], -y_gl)
+        p2 = (x_gl-1, zs[y_hmap][x_hmap-1], -y_gl)
+        p3 = (x_gl, zs[y_hmap+1][x_hmap], -y_gl-1)
+        p4 = (x_gl-1, zs[y_hmap+1][x_hmap-1], -y_gl-1)
+
+        scale_y = float(y)/self.FACTOR - y_gl
+        scale_x = float(x)/self.FACTOR - x_gl
+
+        if x % self.scale[0] == 0:
+            if y % self.scale[2] == 0:
+                return p1[1]
+            else:                
+                return (p1[1]*(1-scale_y)+p2[1]*scale_y)
+
+        elif y % self.scale[2] == 0:
+            return (p1[1]*(1-scale_x)+p3[1]*scale_x)
+
+        else:
+            if scale_x + scale_y == 1:
+                norm = self.norms[(p2,p1,p3)]
+
+            if scale_x + scale_y < 1:
+                norm = self.norms[(p2,p1,p3)]
+
+            elif scale_x + scale_y > 1:
+                norm = self.norms[(p2,p3,p4)]
+
+            
+            z = -(norm[0]*(x-p3[0])+norm[1]*(y-p3[1]))/norm[2] + p3[2]
+            print z
+            return z'''
+
     def calc_height(self, x, y, zs):
         p1 = zs[x/self.scale[0]][y/self.scale[2]]
         p2 = zs[x/self.scale[0]][min(y/self.scale[2]+1, len(zs[1])-1)]
@@ -147,7 +189,7 @@ class RenderTexture:
         if x % self.scale[0] == 0:
             if y% self.scale[2] == 0:
                 return p1
-            else:                
+            else:
                 return (p1*(1-scale_y)+p2*scale_y)
 
         elif y % self.scale[2] == 0:
@@ -158,7 +200,6 @@ class RenderTexture:
             a2 = (p3*(1-scale_y) + p4*(scale_y))
 
             return (a1*(1-scale_x) + a2*scale_x)
-
 
     def darken(self, pixel, amt):
         r,g,b = pixel
