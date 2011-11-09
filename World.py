@@ -8,6 +8,9 @@ FACTOR = 1
 OFFSET = 128
 from DiamondSquare import DiamondSquare
 from LoadTerrain import LoadTerrain
+import threading
+import Queue
+from RenderThread import RenderThread
 
 PATH = ""
 
@@ -21,9 +24,11 @@ class World:
 		self.index_list = []
 		self.pos_list = []
 		self.init_world()
+		self.index_list = []
+		self.temp_list = []
+		
 		self.create_lists()
 		
-			
 	#Used to create the inital world
 	def init_world(self):
 		for y in range(-FACTOR, self.size-FACTOR):
@@ -38,7 +43,7 @@ class World:
 	
 	#Used to update camera location
 	def update_loc(self,x,y,z):
-		print str(x),",",str(y)+",", str(z)
+		#print str(x),",",str(y)+",", str(z)
 		x = int(x)
 		z = int(z)
 		if not self.is_in_tile(x,z,self.curr_x, self.curr_y):		
@@ -84,27 +89,65 @@ class World:
 					ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
 					print "done updating diamonds"
 		
-		print self.pos_list
-		self.create_lists()
+		def create_stuff(lock):
+			new_list = self.create_lists()
+			print new_list			
+			lock.acquire()
+			self.index_list = new_list
+			lock.release()		
+		#print self.pos_list
+
+		print "making a thread"
+		lock = threading.RLock()
+		t = threading.Thread(target=create_stuff, args=(lock,))#thread.start_new_thread(self.create_lists, (lock))
+		t.start()
+		t.join()		
+		
 		self.curr_x = x
 		self.curr_y = y
 		
 	#Used to create the call lists
 	def create_lists(self):
+		self.temp_list = []
+		new_list = []
+		queue = Queue.Queue()
 		
-		self.index_list = []
-		for location in self.pos_list:
-			x,y = location
-			print location
-			print "/", self.pos_list.index(location)
-			load = LoadTerrain(PATH+str(x)+"_"+str(y)+".bmp", (XFACTOR, YFACTOR, ZFACTOR))
-			heights = load.load()
-			index = load.createRenderList(heights, x*OFFSET, -y*OFFSET,str(x)+"_"+str(y), self.pos_list.index(location))
-			
-			self.index_list.append(index)
-		'''
+		def render_thing(nlist):
+			while True:
+				print "hereE!:"
+				loc = queue.get()		
+				x,y = location
+				load = LoadTerrain(PATH+str(x)+"_"+str(y)+".bmp", (XFACTOR, YFACTOR, ZFACTOR))
+				heights = load.load()
+				index = load.createRenderList(heights, x*OFFSET, -y*OFFSET,str(x)+"_"+str(y), self.pos_list.index(location))
+				#nlock.acquire()
+				nlist.append(index)
+				#nlock.release()
+				queue.task_done()
+			print "end thread"
+		
+		for i in range(9):
+			t = threading.Thread(target=render_thing, args=(new_list,))
+			t.setDaemon(True)
+              		t.start()
 
-		load = LoadTerrain(PATH+str(0)+"_"+str(0)+".bmp")
-		self.index_list.append(load.createRenderList(load.load(), 0*OFFSET, 0*OFFSET,str(0)+"_"+str(0)))'''
+		for location in self.pos_list:
+			queue.put(location)
+
+		queue.join()
+		
+		self.index_list = new_list
+		
+					
+		'''
+		for location in self.pos_list:
+			nlock = threading.RLock()
+			render_thread = threading.Thread(target=render_thing, args=(location, new_list, nlock))
+			render_thread.start()
+			render_thread.join()
+				
+		return new_list'''
+
+
 if __name__ == "__main__":
 	w = World()

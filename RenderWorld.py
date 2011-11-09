@@ -11,6 +11,8 @@ from Camera import Camera
 from LoadTerrain import LoadTerrain
 from World import World
 from Skybox import Skybox
+import threading
+
 
 class RenderWorld:
     '''This is the class that renders maze.
@@ -118,10 +120,14 @@ class RenderWorld:
 #<<<<<<< HEAD
         #self.camera.renderCamera()
         #self.load.rawDraw(self.heights)
+	lock = threading.RLock()
+	lock.acquire()
+	#print self.world.index_list
 	for index in self.world.index_list:
-		#print index
+		#print "INDEX:", index
 		glCallList(index) 
-       
+	lock.release()       
+
 	#print "ROT:", self.camera.rot_X, self.camera.rot_Y, self.camera.rot_Z
 	self.world.update_loc(self.camera.pos_X, self.camera.pos_Y, self.camera.pos_Z)
 #=======

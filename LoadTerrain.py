@@ -7,15 +7,11 @@ import LinAlgOps
 
 class LoadTerrain:
     X_FACTOR = 1
-#<<<<<<< HEAD
-    Y_FACTOR = 25
+    Y_FACTOR = 1
     Z_FACTOR = 1
     MAP_SIZE = 100
-#=======
-#    Y_FACTOR = 1
-#    Z_FACTOR = 1
     SEA_LEVEL = 4
-#>>>>>>> 7aa11e4b4cc7b5834b6eb9d81f667daae0c0b891
+
     counter = 1
 
     def __init__(self, filename, scale):
@@ -24,7 +20,8 @@ class LoadTerrain:
         self.width = self.im.size[0]
         self.height = self.im.size[1]
         self.images = []
-	self.center = 0    	
+	self.center = 0
+	self.index  = 0  	
 
     def load(self):
         '''Load a heightmap bitmap file into the Terrain.
@@ -57,7 +54,6 @@ class LoadTerrain:
         #starting from the upper left) : face normal
         #vert_norms is dict of vertex : normal
         face_norms, vert_norms = LinAlgOps.calc_face_normals(heights, self.X_FACTOR, self.Z_FACTOR)
-#>>>>>>> 7aa11e4b4cc7b5834b6eb9d81f667daae0c0b891
         index = glGenLists(1)
         glNewList(index, GL_COMPILE)
         self.applyTexture(self.texture)
@@ -68,45 +64,31 @@ class LoadTerrain:
         for y in range(1, len(heights)):
             glBegin(GL_TRIANGLE_STRIP)
             for x in range(len(heights[y])):
-#<<<<<<< HEAD
-	
+		
+		#glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])*self.X_FACTOR),-y*self.Z_FACTOR/float(len(heights)*self.Z_FACTOR))
+		#pt = (x*self.X_FACTOR, heights[y][x], -y*self.Z_FACTOR)
 		glTexCoord2f((len(heights)- y) * z_incr,-(x) * x_incr)
-
-	        #glVertex3f((x+offsetx)*self.X_FACTOR, heights[x][-y], -(y-1 + offsetz)*self.Z_FACTOR)
-
-	        glTexCoord2f((len(heights)- y-1) * z_incr,-(x) * x_incr)
-	
-		#glVertex3f((x+offsetx)*self.X_FACTOR, heights[x][-y-1], -(y + offsetz)*self.Z_FACTOR)
-#=======
-                #glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])*self.X_FACTOR),-y*self.Z_FACTOR/float(len(heights)*self.Z_FACTOR))
-		glTexCoord2f((len(heights)- y) * z_incr,-(x) * x_incr)
-                #pt = (x*self.X_FACTOR, heights[y][x], -y*self.Z_FACTOR)
+                
 		pt = ((x+offsetx)*self.X_FACTOR, heights[x][-y], -(y-1 + offsetz)*self.Z_FACTOR)
                 #norm = vert_norms[pt]
                 #glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
 
                 #glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])*self.X_FACTOR),-(y-1)*self.Z_FACTOR/float(len(heights)*self.Z_FACTOR))
+		#pt = (x*self.X_FACTOR, heights[y-1][x], -(y-1)*self.Z_FACTOR)
 		glTexCoord2f((len(heights)- y-1) * z_incr,-(x) * x_incr)
-                #pt = (x*self.X_FACTOR, heights[y-1][x], -(y-1)*self.Z_FACTOR)
+                
 		pt = ((x+offsetx)*self.X_FACTOR, heights[x][-y-1], -(y + offsetz)*self.Z_FACTOR)
                 #norm = vert_norms[pt]
                 #glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
             glEnd()
-                
-#>>>>>>> 7aa11e4b4cc7b5834b6eb9d81f667daae0c0b891
-
-	        
-
-            #glEnd()
         glEndList()
         return index
 
     def loadTexture(self, filenames, texId):
         glGenTextures(1, texId)
         glBindTexture(GL_TEXTURE_2D, texId)
-	#print filenames
         self.images.append(Image.open(filenames))
         glTexImage2D(GL_TEXTURE_2D, 0, 3, self.images[-1].size[0], self.images[-1].size[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, self.images[-1].tostring("raw","RGBX",0,-1))
         return texId
@@ -114,17 +96,8 @@ class LoadTerrain:
     def applyTexture(self, tex_id):
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, tex_id)
-        #glPixelStorei(GL_UNPACK_ALIGNMENT,1)
-        '''glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)'''
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        #glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
-
 
     def newTexture(self, altitude, percip):
         d_temp = altitude / 6.5
