@@ -18,7 +18,7 @@ class RenderWorld:
     WINDOW_WIDTH = 700
     WINDOW_HEIGHT = 700
     X_FACTOR = 10
-    Y_FACTOR = 350
+    Y_FACTOR = 35
     Z_FACTOR = 10
     MAP_SIZE = 100
 
