@@ -37,7 +37,7 @@ class LoadTerrain:
                     pass
                 row.append(pix)
             heights.append(row)
-
+    
         return heights
 
     def createRenderList(self, heights):
