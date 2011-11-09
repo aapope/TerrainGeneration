@@ -5,7 +5,6 @@ import random, numpy, os
 class RenderTexture:
 
     counter = 1
-    SIZE = 20
     SL = (-1,1,-1,1,-1,1)#Sun location: (left, right, bottom, top, near, far)
 
     def __init__(self, heights, scale):
@@ -13,11 +12,11 @@ class RenderTexture:
         self.size = (len(heights)*scale[2], len(heights[0])*scale[0])
         self.texture = Image.new("RGB", (self.size[1], self.size[0]))
         self.scale = scale
+        self.heights = heights
 
     def run(self, heights):
-        #images = self.load_bitmaps()
         self.load_bitmaps()
-        self.create_texture(self.texture.load(), heights)
+        self.create_texture(self.texture.load())
         path = 'data/textures/texture'+str(self.counter)+'.bmp'
         self.texture.save(path)
         self.counter += 1
@@ -38,12 +37,12 @@ class RenderTexture:
         img = self.get_rand_img('data/textures/treeline') 
         self.images['treeline'] = (Image.open('data/textures/treeline/'+img).load(),Image.open('data/textures/treeline/'+img).size)
 
-    def create_texture(self, pix, heights):
+    def create_texture(self, pix):
         for y in range(self.size[0]):
             for x in range(self.size[1]):
-                #print 'Mapping ' +  str(self.texture_type(heights[x/self.scale[0]][y/self.scale[2]], 0)) +" "+ str(x/self.scale[0])+","+str(y/self.scale[2])+' to '+ str(x)+","+str(y)
-                pixl, sizel = self.images[self.texture_type(heights[x/self.scale[0]][y/self.scale[2]], 0)]
-                #pix[y,x] = self.randomize_color(pixl[x%sizel[0], y%sizel[1]], 25)
+                #get type of texture and its size
+                pixl, sizel = self.images[self.texture_type(self.heights[x/self.scale[0]][y/self.scale[2]], 0)]
+                #place according pixel of texture into terrain
                 pix[y,x] = pixl[x%sizel[0], y%sizel[1]]
 
     def get_rand_img(self, path):

@@ -40,9 +40,9 @@ class RenderWorld:
         glutPassiveMotionFunc(self.mouseMove)
 
         if not filename == None:
-            self.load = LoadTerrain(filename)
+            self.load = LoadTerrain(filename, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
         else:
-            self.load = LoadTerrain('data/heightmaps/fractal.bmp')
+            self.load = LoadTerrain('data/heightmaps/fractal.bmp',  (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
         self.heights = self.load.load()
         self.index = self.load.createRenderList(self.heights)
         
@@ -94,21 +94,28 @@ class RenderWorld:
         based on the camera angle. Calls collision detection, handles
         the appropriate objects for keys, doors, etc.'''
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        
         glLoadIdentity()
+        
         self.camera.move()
         self.camera.renderRotateCamera()
         self.camera.renderTranslateCamera()
         self.renderLightSource()
-        #self.load.rawDraw(self.heights)
+        
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
         glEnable(GL_LIGHT1)
+        
         glCallList(self.index)
+        
         glDisable(GL_LIGHTING)
+        
         glLoadIdentity()
+        
         self.camera.renderRotateCamera()
         glTranslate(-self.skybox.x/2, -self.camera.pos_Y, -self.skybox.z/2)
         glCallList(self.sky_index)
+        
         glDisable(GL_TEXTURE_2D)
 
         glutSwapBuffers()
@@ -163,7 +170,6 @@ class RenderWorld:
 
     def keyUp(self, key, x, y):
         '''Called when a key is released.'''
-        # Speed things up by not checking if the key is in the map
         self.camera.keys[key.lower()] = False
         if not glutGetModifiers() == GLUT_ACTIVE_SHIFT:
             self.camera.keys["shift"] = False
