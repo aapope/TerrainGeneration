@@ -6,7 +6,7 @@ class RenderTexture:
 
     counter = 1
     SL = (-1,1,-1,1,-1,1)#Sun location: (left, right, bottom, top, near, far)
-    SHADE = 80
+    SHADE = 40
     SUN_ANGLE = 0.3
 
     def __init__(self, heights, scale):
@@ -97,18 +97,43 @@ class RenderTexture:
             darkened = 0
             for x in range(self.size[1]-2,-1,-1):
                 z = self.calc_height(x, y, zs)
+#                print x/self.scale[0], y/self.scale[2], z
                 if z > highest:
-                    if darkened:
-                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/2)
+                    if darkened == 2:
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/4)
+                    elif darkened == 1:
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/8)
                     highest = z
-                    darkened = False
+                    darkened = max(0, darkened-1)
                 else:
-                    if not darkened:
-                        pixels[y, max(x+1,0)] = self.darken(pixels[y, max(x+1,0)], self.SHADE/2)
-                    pixels[y, x] = self.darken(pixels[y, x], self.SHADE)
-                    darkened = True
+                    if darkened == 0:
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/8)
+                    elif darkened == 1:
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/4)
+                    elif darkened == 2:
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/2)
+                    else:
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE)
+                    darkened += 1
                 highest -= self.SUN_ANGLE
+    
+    def shadow_diagonal(self, pixels, zs):
+        for y in range(self.size[0]):
+            col = y
+            row = 0
+            highest = self.calc_height(0, y, zs) - self.SUN_ANGLE
+            while col < self.size[0] and row < self.size[1]:
+                z = self.calc_height(row, col, zs)
+                if z > highest:
+                    highest = z
+                else:
+                    pixels[col, row] = self.darken(pixels[col, row], self.SHADE)
+                highest -= self.SUN_ANGLE
+                row += 1
+                col += 1
                 
+
+            
     def calc_height(self, x, y, zs):
         p1 = zs[x/self.scale[0]][y/self.scale[2]]
         p2 = zs[x/self.scale[0]][min(y/self.scale[2]+1, len(zs[1])-1)]
