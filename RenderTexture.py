@@ -16,14 +16,24 @@ class RenderTexture:
         self.scale = scale
         self.heights = heights
 
+#<<<<<<< HEAD
     def run(self, heights, name):
         self.load_bitmaps()
         self.create_texture(self.texture.load())
         self.shadow(self.texture.load(), heights)
         path = 'data/textures/texture'+name+'.bmp'
+	self.texture.save(path)
+	return path
+
+    '''old RUN
+    def run(self, heights):
+        self.load_bitmaps()
+        self.create_texture(self.texture.load())
+        self.shadow(self.texture.load(), heights)
+        path = 'data/textures/texture'+str(self.counter)+'.bmp'
         self.texture.save(path)
         self.counter += 1
-        return path
+        return path'''
         
     def load_bitmaps(self):
         self.images = {}

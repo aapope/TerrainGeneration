@@ -10,6 +10,7 @@ import Image
 from Camera import Camera
 from LoadTerrain import LoadTerrain
 from World import World
+from Skybox import Skybox
 
 class RenderWorld:
     '''This is the class that renders maze.
@@ -22,8 +23,10 @@ class RenderWorld:
     def __init__(self, filename):
         '''Sets up camera, modes, lighting, sounds, and objects.'''
         self.set_up_graphics()
+	self.set_up_lighting()
         self.camera = Camera(10,20,-10)	
-	
+	self.poly_view = False	
+
         glutIdleFunc(self.display)
         glutDisplayFunc(self.display)
 
@@ -35,11 +38,21 @@ class RenderWorld:
         glutPassiveMotionFunc(self.mouseMove)
 
         if not filename == None:
-            self.load = LoadTerrain(filename)
+            self.load = LoadTerrain(filename, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
         else:
             self.world = World()
 	
+	#self.skybox = Skybox((5000, 5000, 5000))
+        #self.sky_index = self.skybox.createCallList(1, 3)
 	glutMainLoop()
+	'''
+        self.load = LoadTerrain('data/heightmaps/fractal.bmp',  (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
+        self.heights = self.load.load()
+        self.index = self.load.createRenderList(self.heights)
+        '''
+        #self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
+        
+	#7aa11e4b4cc7b5834b6eb9d81f667daae0c0b891'''
 
     def set_up_graphics(self):
         '''Sets up OpenGL to provide double buffering, RGB coloring,
@@ -51,8 +64,39 @@ class RenderWorld:
         glutCreateWindow('Terrains!')
 
         glMatrixMode(GL_PROJECTION)
-        gluPerspective(45,1,.1,1500)
+
+        gluPerspective(45,1,.1,8000)
         glMatrixMode(GL_MODELVIEW)
+
+        #glClearColor(.529,.8078,.980,0)
+        glEnable(GL_NORMALIZE)
+
+        glEnable (GL_DEPTH_TEST)
+
+        glShadeModel(GL_SMOOTH)
+        #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        #glEnable(GL_DEPTH_TEST)
+
+        glEnable(GL_FOG)
+        glFogi (GL_FOG_MODE, GL_EXP2)
+        glFogfv (GL_FOG_COLOR, (.8,.8,.8,1))
+        glFogf (GL_FOG_DENSITY, .0004)
+        glHint (GL_FOG_HINT, GL_NICEST)
+    
+    def renderLightSource(self):
+        '''Resets the light sources to the right position.'''
+        glLightfv(GL_LIGHT0, GL_POSITION, self.diffuse_pos1)
+
+    def set_up_lighting(self):
+        self.diffuse_pos1 = (0,.5,-1,0)
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, (1, 1, 1, 1))
+        glLightfv(GL_LIGHT0, GL_POSITION, self.diffuse_pos1)
+
+        
+        glLightfv(GL_LIGHT1, GL_AMBIENT, (1, 1, 1, .95))
+        glLightfv(GL_LIGHT1, GL_POSITION, (1,1,1,1))
+        
+#>>>>>>> 7aa11e4b4cc7b5834b6eb9d81f667daae0c0b891
         
         
         #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
@@ -64,17 +108,44 @@ class RenderWorld:
         the appropriate objects for keys, doors, etc.'''
 	#print "loopdy loop"
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        
         glLoadIdentity()
+        
         self.camera.move()
-        self.camera.renderCamera()
+	self.camera.renderRotateCamera()
+        self.camera.renderTranslateCamera()
+	self.renderLightSource()
+#<<<<<<< HEAD
+        #self.camera.renderCamera()
         #self.load.rawDraw(self.heights)
 	for index in self.world.index_list:
+		#print index
 		glCallList(index) 
        
 	#print "ROT:", self.camera.rot_X, self.camera.rot_Y, self.camera.rot_Z
 	self.world.update_loc(self.camera.pos_X, self.camera.pos_Y, self.camera.pos_Z)
+#=======
+        
+        
+        
+        glEnable(GL_LIGHTING)
+        glEnable(GL_LIGHT0)
+        glEnable(GL_LIGHT1)
+        
+        #glCallList(self.index)
+        
+        glDisable(GL_LIGHTING)
+        
+        #glLoadIdentity()
+        
+        #self.camera.renderRotateCamera()
+        #glTranslate(-self.skybox.x/2, -self.camera.pos_Y, -self.skybox.z/2)
+        #glCallList(self.sky_index)
+        
+#>>>>>>> 7aa11e4b4cc7b5834b6eb9d81f667daae0c0b891
         glDisable(GL_TEXTURE_2D)
 
+        
         glutSwapBuffers()
        
     def mouseMove(self, x, y):
@@ -100,10 +171,15 @@ class RenderWorld:
             self.camera.keys["shift"] = True
         elif key == 'x':
             exit(0)
+        if key.lower() == 'q':
+            self.camera.WALK += .1
+            self.camera.SPRINT += .5
+        if key.lower() == 'e':
+            self.camera.WALK -= .1
+            self.camera.SPRINT -= .5
 
     def keyUp(self, key, x, y):
         '''Called when a key is released.'''
-        # Speed things up by not checking if the key is in the map
         self.camera.keys[key.lower()] = False
         if not glutGetModifiers() == GLUT_ACTIVE_SHIFT:
             self.camera.keys["shift"] = False
