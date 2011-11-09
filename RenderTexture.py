@@ -34,8 +34,10 @@ class RenderTexture:
         self.images['dirt'] = (Image.open('data/textures/dirt/'+img).load(),Image.open('data/textures/dirt/'+img).size)
         img = self.get_rand_img('data/textures/treeline') 
         self.images['treeline'] = (Image.open('data/textures/treeline/'+img).load(),Image.open('data/textures/treeline/'+img).size)
-        img = self.get_rand_img('data/textures/treeline') 
-        self.images['treeline'] = (Image.open('data/textures/treeline/'+img).load(),Image.open('data/textures/treeline/'+img).size)
+        img = self.get_rand_img('data/textures/mountain') 
+        self.images['mountain'] = (Image.open('data/textures/mountain/'+img).load(),Image.open('data/textures/mountain/'+img).size)
+        img = self.get_rand_img('data/textures/grass') 
+        self.images['grass'] = (Image.open('data/textures/grass/'+img).load(),Image.open('data/textures/grass/'+img).size)
 
     def create_texture(self, pix):
         for y in range(self.size[0]):
@@ -73,7 +75,11 @@ class RenderTexture:
         if temp <= 19.5:
             return 'tundra'
         elif temp < 19.65:
+            return 'mountain'
+        elif temp < 19.75:
             return 'treeline'
+        elif temp < 19.85:
+            return 'grass'
         elif temp < 19.9:
             return 'deciduous'
         elif temp < 20:
