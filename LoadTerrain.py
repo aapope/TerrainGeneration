@@ -43,7 +43,7 @@ class LoadTerrain:
     def createRenderList(self, heights):
         rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
         self.texture = self.loadTexture(rend.run(heights), 0)
-        water = 'data/textures/water/water.bmp'
+        water = 'data/textures/water/water2.bmp'
         water_tex = self.loadTexture(water, 1)
         #face_norms is dict of face (3-tuple of vertices defining face, counterclockwise
         #starting from the upper left) : face normal
