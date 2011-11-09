@@ -66,10 +66,13 @@ class RenderWorld:
         glMatrixMode(GL_MODELVIEW)
 
         #glClearColor(.529,.8078,.980,0)
-        
+        glEnable(GL_NORMALIZE)
+
+        glEnable (GL_DEPTH_TEST)
+
         glShadeModel(GL_SMOOTH)
         #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-        glEnable(GL_DEPTH_TEST)
+        #glEnable(GL_DEPTH_TEST)
 
         glEnable(GL_FOG)
         glFogi (GL_FOG_MODE, GL_EXP2)
@@ -118,6 +121,7 @@ class RenderWorld:
         
         glDisable(GL_TEXTURE_2D)
 
+        
         glutSwapBuffers()
 
     def renderLightSource(self):
