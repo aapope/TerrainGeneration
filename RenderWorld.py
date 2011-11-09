@@ -81,7 +81,7 @@ class RenderWorld:
         glHint (GL_FOG_HINT, GL_NICEST)
 
     def set_up_lighting(self):
-        self.diffuse_pos1 = (-1,.5,-1,0)
+        self.diffuse_pos1 = (0,.5,-1,0)
         glLightfv(GL_LIGHT0, GL_DIFFUSE, (1, 1, 1, 1))
         glLightfv(GL_LIGHT0, GL_POSITION, self.diffuse_pos1)
 

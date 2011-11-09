@@ -7,6 +7,7 @@ class RenderTexture:
     counter = 1
     SL = (-1,1,-1,1,-1,1)#Sun location: (left, right, bottom, top, near, far)
     SHADE = 80
+    SUN_ANGLE = 0.3
 
     def __init__(self, heights, scale):
  #       self.SIZE = scale[0]
@@ -92,7 +93,7 @@ class RenderTexture:
 
     def shadow(self, pixels, zs):
         for y in range(self.size[0]):
-            highest = self.calc_height(self.size[1]-1, y, zs) - 0.5
+            highest = self.calc_height(self.size[1]-1, y, zs) - self.SUN_ANGLE
             darkened = False
             for x in range(self.size[1]-2,-1,-1):
                 z = self.calc_height(x, y, zs)
@@ -106,7 +107,7 @@ class RenderTexture:
                         pixels[y, max(x+1,0)] = self.darken(pixels[y, max(x+1,0)], self.SHADE/2)
                     pixels[y, x] = self.darken(pixels[y, x], self.SHADE)
                     darkened = True
-                highest -= 0.5
+                highest -= self.SUN_ANGLE
                 
     def calc_height(self, x, y, zs):
         p1 = zs[x/self.scale[0]][y/self.scale[2]]
