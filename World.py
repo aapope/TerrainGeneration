@@ -1,5 +1,9 @@
 #class to control graphics and loading of new terrain
 
+XFACTOR = 1
+YFACTOR = 25
+ZFACTOR = 1
+
 FACTOR = 1
 OFFSET = 128
 from DiamondSquare import DiamondSquare
@@ -93,7 +97,7 @@ class World:
 			x,y = location
 			print location
 			print "/", self.pos_list.index(location)
-			load = LoadTerrain(PATH+str(x)+"_"+str(y)+".bmp")
+			load = LoadTerrain(PATH+str(x)+"_"+str(y)+".bmp", (XFACTOR, YFACTOR, ZFACTOR))
 			heights = load.load()
 			index = load.createRenderList(heights, x*OFFSET, -y*OFFSET,str(x)+"_"+str(y), self.pos_list.index(location))
 			
