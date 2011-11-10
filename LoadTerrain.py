@@ -1,7 +1,4 @@
 import Image
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from OpenGL.GLUT import *
 from RenderTexture import RenderTexture
 import LinAlgOps
 
@@ -45,17 +42,26 @@ class LoadTerrain:
         return heights
 
 
-    def createRenderList(self, heights, offsetx, offsetz, textname, textid):
+    def createRenderList(self, heights, textname):
         rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
+	rend.run(heights, textname)
+	face_norms, vert_norms = (0,0)#LinAlgOps.calc_face_normals(heights, self.X_FACTOR, self.Z_FACTOR)
+	
+	return (face_norms, vert_norms)
+	'''
         self.texture = self.loadTexture(rend.run(heights, textname), textid)
         water = 'data/textures/water/water2.bmp'
         water_tex = self.loadTexture(water, 1)
         #face_norms is dict of face (3-tuple of vertices defining face, counterclockwise
         #starting from the upper left) : face normal
         #vert_norms is dict of vertex : normal
-        face_norms, vert_norms = LinAlgOps.calc_face_normals(heights, self.X_FACTOR, self.Z_FACTOR)
-        index = glGenLists(1)
-        glNewList(index, GL_COMPILE)
+        #face_norms, vert_norms = LinAlgOps.calc_face_normals(heights, self.X_FACTOR, self.Z_FACTOR)
+	print "making new list"        
+	index = glGenLists(1)
+	print "new list made", glindex
+	       
+	glNewList(glindex, GL_COMPILE)
+	
         self.applyTexture(self.texture)
 	
 	z_incr = self.Z_FACTOR/float(len(heights))
@@ -83,9 +89,9 @@ class LoadTerrain:
                 #glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
             glEnd()
-        glEndList()
-        return index
-
+        glEndList()'''
+        #return glindex
+    '''	
     def loadTexture(self, filenames, texId):
         glGenTextures(1, texId)
         glBindTexture(GL_TEXTURE_2D, texId)
@@ -107,4 +113,4 @@ class LoadTerrain:
         elif temp < 20:
             self.applyTexture(self.tex_list[1])
         else:
-            self.applyTexture(self.tex_list[2])
+            self.applyTexture(self.tex_list[2])'''

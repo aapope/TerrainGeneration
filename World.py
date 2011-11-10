@@ -1,4 +1,4 @@
-#class to control graphics and loading of new terrain
+#class to control background
 
 XFACTOR = 1
 YFACTOR = 25
@@ -10,13 +10,14 @@ from DiamondSquare import DiamondSquare
 from LoadTerrain import LoadTerrain
 import threading
 import Queue
+import time
 #from RenderThread import RenderThread
 
 PATH = ""
 
 class World:
 
-	def __init__(self, rw):
+	def __init__(self, rw, transaction):
 		self.rw = rw
 		self.size = 3
 		self.curr_x = 0
@@ -24,26 +25,25 @@ class World:
 		self.diamonds = {}
 		self.index_list = []
 		self.pos_list = []
+		self.total_terr = 1
+		self.trans = transaction
 		
-		#self.index_list = []
-		#self.temp_list = []
 		
-		
-	
+	#used to create the inital world
 	def create_world(self):
 		self.init_world()
 		self.rw.index_list = []
-		nlist = self.create_lists()
-		lock = threading.RLock()
-		lock.acquire()
+		nlist = self.create_lists()	
+		self.rw.lock.acquire()
 		self.rw.index_list = nlist
-		lock.release()
-		self.start()
+		self.rw.lock.release()
+		
 
-	def start(self):
+	def start(self):	
 		while True:
-			self.update_loc(self.rw.camera.camera.pos_X, self.rw.camera.pos_Y, self.rw.camera.pos_Z)
-
+			self.update_loc(self.rw.camera.pos_X, self.rw.camera.pos_Y, self.rw.camera.pos_Z)
+			#print "inside thread"
+			time.sleep(1)
 	#Used to create the inital world
 	def init_world(self):
 		for y in range(-FACTOR, self.size-FACTOR):
@@ -62,7 +62,9 @@ class World:
 		x = int(x)
 		z = int(z)
 		if not self.is_in_tile(x,z,self.curr_x, self.curr_y):		
-			newloc = self.get_tile(x,y,z)
+			newloc = self.get_tile(x,y,z)			
+			self.curr_x = newloc[0]
+			self.curr_y = newloc[1]
 			print "NEWLOC:", newloc
 			self.update_diamonds(newloc)
 
@@ -104,15 +106,21 @@ class World:
 					ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
 					print "done updating diamonds"
 		
+		self.rw.lock.acquire()
 		new_list = self.create_lists()
-		self.index_list = new_list
+		
+		#set new index list
+
+		print new_list
+		self.rw.index_list = new_list
+		self.rw.lock.release()
 		'''
 		def create_stuff(lock):
 			new_list = self.create_lists()
 			print new_list			
 			lock.acquire()
 			self.index_list = new_list
-			lock.release()		
+		w = World(r, trans)	lock.release()		
 		#print self.pos_list
 
 		print "making a thread"
@@ -121,25 +129,27 @@ class World:
 		t.start()
 		t.join()	'''	
 		
-		self.curr_x = x
-		self.curr_y = y
+		
 		
 	#Used to create the call lists
 	def create_lists(self):
-		new_list = []
+		#new_list = []
 		#queue = Queue.Queue()
 		
-		def render_thing(nlist, location):
+		def render_thing(location):
 			print location
 			#loc = queue.get()		
 			x,y = location
+			
 			load = LoadTerrain(PATH+str(x)+"_"+str(y)+".bmp", (XFACTOR, YFACTOR, ZFACTOR))
 			heights = load.load()
-			index = load.createRenderList(heights, x*OFFSET, -y*OFFSET,str(x)+"_"+str(y), self.pos_list.index(location))
-			#nlock.acquire()
-			nlist.append(index)
-			#nlock.release()
-			#queue.task_done()
+			
+			face_norms, vert_norms = load.createRenderList(heights,str(x)+"_"+str(y))
+			
+			self.trans.location_var[location] = (face_norms, vert_norms, heights, x*OFFSET, -y*OFFSET, str(x)+"_"+str(y), self.pos_list.index(location))
+			
+			#nlist.append(index)
+			
 			
 		'''
 		for i in range(9):
@@ -161,9 +171,10 @@ class World:
 			#render_thread = threading.Thread(target=render_thing, args=(location, new_list, nlock))
 			#render_thread.start()
 			#render_thread.join()
-			render_thing(new_list, location)
-				
-		return new_list
+			render_thing(location)
+		
+		self.rw.need_lists = True
+		#return new_list
 
 
 if __name__ == "__main__":
