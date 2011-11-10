@@ -43,18 +43,24 @@ class LoadTerrain:
         return heights
 
     def createRenderList(self, heights):
-        face_norms, vert_norms = calc_face_normals(heights, self.X_FACTOR, self.Z_FACTOR)
-        rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR), face_norms)
-        self.texture = self.loadTexture(rend.run(heights, self.filename.split('/')[-1]), 0)
-        water = 'data/textures/water/water2.bmp'
-        water_tex = self.loadTexture(water, 1)
         #face_norms is dict of face (3-tuple of vertices defining face, counterclockwise
         #starting from the upper left) : face normal
         #vert_norms is dict of vertex : normal
+        face_norms, vert_norms = calc_face_normals(heights, self.X_FACTOR, self.Z_FACTOR)
+        
+        rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR), face_norms)
+<<<<<<< HEAD
+        self.texture = self.loadTexture(rend.run(heights, self.filename.split('/')[-1]), 0)
+=======
+        self.texture = self.loadTexture(rend.run(heights), 0)
+        
+>>>>>>> 6fbedfcc903124ad91de5b354532e97713d8d3b6
+        water = 'data/textures/water/water2.bmp'
+        water_tex = self.loadTexture(water, 1)
 
         index = glGenLists(1)
-        glNewList(index, GL_COMPILE)
 
+        glNewList(index, GL_COMPILE)
         self.applyTexture(self.texture)
 
         for y in range(1, len(heights)):
@@ -91,6 +97,7 @@ class LoadTerrain:
         glEnd()
 
         glEndList()
+
         return index
 
     def loadTexture(self, filenames, i):
@@ -104,26 +111,7 @@ class LoadTerrain:
     def applyTexture(self, tex_id):
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, tex_id)
-        #glPixelStorei(GL_UNPACK_ALIGNMENT,1)
-        '''glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)'''
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-        #glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
-
-
-    def newTexture(self, altitude, percip):
-        d_temp = altitude / 6.5
-        temp = 20 - d_temp
-        if temp <= 18:
-            self.applyTexture(self.tex_list[0])
-        elif temp < 20:
-            self.applyTexture(self.tex_list[1])
-        else:
-            self.applyTexture(self.tex_list[2])
