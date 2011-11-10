@@ -4,30 +4,29 @@ import random, numpy, os
 import LinAlgOps
 class RenderTexture:
 
-    counter = 1
     SL = (-1,1,-1,1,-1,1)#Sun location: (left, right, bottom, top, near, far)
     SHADE = 40
     SUN_ANGLE = 0.3
-    FACTOR = 10
 
-    def __init__(self, heights, scale, norms):
-        self.scale = (scale[0]*self.FACTOR, scale[1], scale[2]*self.FACTOR)
-        self.SUN_ANGLE = scale[1]*.0008
-        self.size = (len(heights)*self.scale[2], len(heights[0])*self.scale[0])
-        self.texture = Image.new("RGB", (self.size[1], self.size[0]))
+    def __init__(self, heights, convert, norms):
+        self.convert = convert
+        self.SUN_ANGLE = self. convert.open_gl_scale[1]*.0008
+        self.texture = Image.new("RGB", (self.convert.texture_x, self.convert.texture_z))
         self.heights = heights
-        self.norms = norms
+        self.norms = norms        
 
-    def run(self, heights):
-        self.load_bitmaps()
-        self.create_texture(self.texture.load())
-        #self.shadow(self.texture.load(), heights)
-        return self.save()
+    def run(self, name):
+        path = 'data/textures/maps/'+name
+        if not os.path.isfile(path):
+            print 'New texture'
+            self.load_bitmaps()
+            self.create_texture(self.texture.load())
+            return self.save(path)
+        else:
+            return path
 
-    def save(self):
-        path = 'data/textures/texture'+str(self.counter)+'.bmp'
+    def save(self, path):        
         self.texture.save(path)
-        self.counter += 1
         return path
         
     def load_bitmaps(self):
@@ -50,12 +49,12 @@ class RenderTexture:
         self.images['deadgrass'] = (Image.open('data/textures/deadgrass/'+img).load(),Image.open('data/textures/deadgrass/'+img).size)
 
     def create_texture(self, pix):
-        for y in range(self.size[0]):
-            for x in range(self.size[1]):
+        for x in range(self.convert.texture_z):
+            for z in range(self.convert.texture_x):
                 #get type of texture and its size
-                pixl, sizel = self.images[self.texture_type(self.heights[x/self.scale[0]][y/self.scale[2]], 0)]
+                pixl, sizel = self.images[self.texture_type(self.heights[x/self.convert.texture_scale[0]][z/self.texture_scale[2]], 0)]
                 #place according pixel of texture into terrain
-                pix[y,x] = pixl[x%sizel[0], y%sizel[1]]
+                pix[x,z] = pixl[x%sizel[0], z%sizel[1]]
 
     def get_rand_img(self, path):
         tmp_imgs= []
@@ -93,12 +92,13 @@ class RenderTexture:
         elif temp < 19.9:
             return 'deciduous'
         elif temp < 20:
-            return 'deadgrass'
-        elif temp < 20.5:
             return 'dirt'
+        elif temp < 20.1:
+            return 'deadgrass'
         else:
             return 'savanna'
 
+'''
     def shadow(self, pixels, zs):
         for y in range(1, self.size[0]):
             highest = self.calc_height(self.size[1]-2, y, zs) - self.SUN_ANGLE
@@ -144,11 +144,9 @@ class RenderTexture:
                     pixels[col, row] = self.darken(pixels[col, row], self.SHADE)
                 highest -= self.SUN_ANGLE
                 row += 1
-                col += 1
-                
+                col += 
 
-            
-    '''def calc_height(self, x, y, zs):
+    def calc_height(self, x, y, zs):
         #pos_scale = (self.scale[0]
         #print zs
         x_gl = x/self.FACTOR
@@ -187,7 +185,7 @@ class RenderTexture:
             
             z = -(norm[0]*(x-p3[0])+norm[1]*(y-p3[1]))/norm[2] + p3[2]
             print z
-            return z'''
+            return z
 
     def calc_height(self, x, y, zs):
         p1 = zs[x/self.scale[0]][y/self.scale[2]]
@@ -219,3 +217,4 @@ class RenderTexture:
         g = max(0, g - amt)
         b = max(0, b - amt)
         return (r,g,b)
+'''

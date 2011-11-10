@@ -4,6 +4,7 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from RenderTexture import RenderTexture
 from LinAlgOps import *
+import os
 
 class LoadTerrain:
     X_FACTOR = 1
@@ -45,9 +46,10 @@ class LoadTerrain:
         #vert_norms is dict of vertex : normal
         face_norms, vert_norms = calc_face_normals(heights, self.convert)
         
+
         rend = RenderTexture(heights, self.convert, face_norms)
-        self.texture = self.loadTexture(rend.run(heights), 0)
-        
+        self.texture = self.loadTexture(rend.run(self.filename.split('/')[-1]), 0)
+
         water = 'data/textures/water/water2.bmp'
         water_tex = self.loadTexture(water, 1)
 
