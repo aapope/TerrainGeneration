@@ -16,8 +16,8 @@ def get_vector(v0, v1):
 
 def calc_face_normals(heights, convert):
     '''dict of face normals with vertex : array of face normals it's a part of'''
-    x_scale = convert.open_gl_scale[0] / convert.height_map[0]
-    z_scale = convert.open_gl_scale[2] / convert.height_map[2]
+    x_scale = convert.open_gl_scale[0] / convert.height_map_scale[0]
+    z_scale = convert.open_gl_scale[2] / convert.height_map_scale[2]
     #vertex : normal
     face_normals = {}
     #points on face (tuple, clockwise starting with the upper left vertex) : normal

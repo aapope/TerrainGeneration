@@ -1,8 +1,3 @@
-'''Contains a class that renders the maze itself.'''
-
-__author__ = "Emily and Andrew"
-__date__ = "21 October 2011"
-
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
@@ -18,9 +13,6 @@ class RenderWorld:
     '''
     WINDOW_WIDTH = 700
     WINDOW_HEIGHT = 700
-    X_FACTOR = 1
-    Y_FACTOR = 35
-    Z_FACTOR = 1
     MAP_SIZE = 100
 
     def __init__(self, filename):
@@ -94,14 +86,14 @@ class RenderWorld:
         self.convert = Convert((1, 1, 1), (10, 1, 10), (1, 35, 1))
         
     def load_map(self, heightmap_filename):
-        self.load = LoadTerrain(heightmap_filename, self.covert)
+        self.load = LoadTerrain(heightmap_filename, self.convert)
         self.heights = self.load.load()
         self.map_index = self.load.createRenderList(self.heights)
 
     def load_skybox(self):
         #self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
         map_length = self.convert.open_gl_scale
-        self.skybox = Skybox((map_length[0]*3, map_
+        self.skybox = Skybox((5000,5000,5000))
         self.sky_index = self.skybox.createCallList(1, 3)
 
     def display(self, x=0, y=0):

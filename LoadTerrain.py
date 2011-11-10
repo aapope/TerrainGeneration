@@ -14,6 +14,7 @@ class LoadTerrain:
     counter = 1
 
     def __init__(self, filename, convert):
+        self.filename = filename
         self.convert = convert
         self.im = Image.open(filename)
         self.convert.set_dimensions(self.im.size[0], self.im.size[1])
@@ -61,14 +62,17 @@ class LoadTerrain:
         for x in range(1, len(heights)):
             glBegin(GL_TRIANGLE_STRIP)
             for z in range(len(heights[x])):
-                glTexCoord2f(x*self.X_FACTOR/float(len(heights)*self.X_FACTOR),-z*self.Z_FACTOR/float(len(heights[x])*self.Z_FACTOR))
-                pt = (x*self.convert.open_gl_scale[0], heights[x][z], -z*self.convert.open_gl_scale[2])
+                glTexCoord2f(self.convert.convert('h', 'g', 'x', x)/float(self.convert.gl_x), self.convert.convert('h', 'g', 'z', -z)/float(self.convert.gl_z))
+
+                pt = (self.convert.convert('h', 'g', 'x', x), heights[x][z-1], self.convert.convert('h','g','z',-z))
                 norm = vert_norms[pt]
                 glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
 
-                glTexCoord2f(x*self.X_FACTOR/float(len(heights)*self.X_FACTOR),-(z-1)*self.Z_FACTOR/float(len(heights[x])*self.Z_FACTOR))
-                pt = (x*self.convert.open_gl_scale[0], heights[x][z-1], -(z-1)*self.convert.open_gl_scale[2])
+                
+                glTexCoord2f(self.convert.convert('h', 'g', 'x', x)/float(self.convert.gl_x), self.convert.convert('h', 'g', 'z', -(z-1))/float(self.convert.gl_z))
+
+                pt = (self.convert.convert('h', 'g', 'x', x), heights[x][z-1], self.convert.convert('h','g','z',-(z-1)))
                 norm = vert_norms[pt]
                 glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
