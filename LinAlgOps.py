@@ -22,12 +22,12 @@ def calc_face_normals(heights, convert):
     face_normals = {}
     #points on face (tuple, clockwise starting with the upper left vertex) : normal
     face = {}
-    for z in range(0, len(heights)-1):
-        for x in range(0, len(heights[z])-1):
-            p3 = ((x+1)*x_scale, heights[z][x+1], -z*z_scale)
-            p2 = (x*x_scale, heights[z+1][x], -(z+1)*z_scale)
-            p0 = (x*x_scale, heights[z][x], -z*z_scale)
-            p1 = ((x+1)*x_scale, heights[z+1][x+1], -(z+1)*z_scale)
+    for x in range(0, len(heights)-1):
+        for z in range(0, len(heights[x])-1):
+            p3 = ((x+1)*x_scale, heights[x][z+1], -z*z_scale)
+            p2 = (x*x_scale, heights[x+1][z], -(z+1)*z_scale)
+            p0 = (x*x_scale, heights[x][z], -z*z_scale)
+            p1 = ((x+1)*x_scale, heights[x+1][z+1], -(z+1)*z_scale)
             
             v0 = get_vector(p0, p1)
             v1 = get_vector(p0, p2)
