@@ -101,7 +101,7 @@ class RenderWorld:
     def load_skybox(self):
         #self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
         map_length = self.convert.open_gl_scale
-        self.skybox = Skybox((map_length[0]*3, map_
+        self.skybox = Skybox((3000,3000,3000))
         self.sky_index = self.skybox.createCallList(1, 3)
 
     def display(self, x=0, y=0):
