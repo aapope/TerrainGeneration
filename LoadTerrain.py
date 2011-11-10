@@ -49,12 +49,7 @@ class LoadTerrain:
         face_norms, vert_norms = calc_face_normals(heights, self.X_FACTOR, self.Z_FACTOR)
         
         rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR), face_norms)
-<<<<<<< HEAD
         self.texture = self.loadTexture(rend.run(heights, self.filename.split('/')[-1]), 0)
-=======
-        self.texture = self.loadTexture(rend.run(heights), 0)
-        
->>>>>>> 6fbedfcc903124ad91de5b354532e97713d8d3b6
         water = 'data/textures/water/water2.bmp'
         water_tex = self.loadTexture(water, 1)
 

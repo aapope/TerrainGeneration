@@ -17,7 +17,6 @@ class RenderTexture:
         self.heights = heights
         self.norms = norms
 
-<<<<<<< HEAD
     def run(self, heights, name):
         path = 'data/textures/maps/'+name
         if not os.path.isfile(path):
@@ -25,19 +24,12 @@ class RenderTexture:
             self.load_bitmaps()
             self.create_texture(self.texture.load())
             #self.shadow(self.texture.load(), heights)
-            self.texture.save(path)
-=======
-    def run(self, heights):
-        self.load_bitmaps()
-        self.create_texture(self.texture.load())
-        #self.shadow(self.texture.load(), heights)
-        return self.save()
+            return self.save(path)
+        else:
+            return path
 
-    def save(self):
-        path = 'data/textures/texture'+str(self.counter)+'.bmp'
+    def save(self, path):        
         self.texture.save(path)
-        self.counter += 1
->>>>>>> 6fbedfcc903124ad91de5b354532e97713d8d3b6
         return path
         
     def load_bitmaps(self):
