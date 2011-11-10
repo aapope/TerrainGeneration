@@ -4,7 +4,6 @@ import random, numpy, os
 import LinAlgOps
 class RenderTexture:
 
-    counter = 1
     SL = (-1,1,-1,1,-1,1)#Sun location: (left, right, bottom, top, near, far)
     SHADE = 40
     SUN_ANGLE = 0.3
@@ -18,13 +17,14 @@ class RenderTexture:
         self.heights = heights
         self.norms = norms
 
-    def run(self, heights):
-        self.load_bitmaps()
-        self.create_texture(self.texture.load())
-        #self.shadow(self.texture.load(), heights)
-        path = 'data/textures/texture'+str(self.counter)+'.bmp'
-        self.texture.save(path)
-        self.counter += 1
+    def run(self, heights, name):
+        path = 'data/textures/maps/'+name
+        if not os.path.isfile(path):
+            print 'New texture'
+            self.load_bitmaps()
+            self.create_texture(self.texture.load())
+            #self.shadow(self.texture.load(), heights)
+            self.texture.save(path)
         return path
         
     def load_bitmaps(self):
@@ -90,9 +90,9 @@ class RenderTexture:
         elif temp < 19.9:
             return 'deciduous'
         elif temp < 20:
-            return 'deadgrass'
-        elif temp < 20.5:
             return 'dirt'
+        elif temp < 20.1:
+            return 'deadgrass'
         else:
             return 'savanna'
 

@@ -4,6 +4,7 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from RenderTexture import RenderTexture
 from LinAlgOps import *
+import os
 
 class LoadTerrain:
     X_FACTOR = 1
@@ -14,6 +15,7 @@ class LoadTerrain:
 
     def __init__(self, filename, scale):
         self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR = scale
+        self.filename = filename
         self.im = Image.open(filename)
         self.width = self.im.size[0]
         self.height = self.im.size[1]
@@ -43,7 +45,7 @@ class LoadTerrain:
     def createRenderList(self, heights):
         face_norms, vert_norms = calc_face_normals(heights, self.X_FACTOR, self.Z_FACTOR)
         rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR), face_norms)
-        self.texture = self.loadTexture(rend.run(heights), 0)
+        self.texture = self.loadTexture(rend.run(heights, self.filename.split('/')[-1]), 0)
         water = 'data/textures/water/water2.bmp'
         water_tex = self.loadTexture(water, 1)
         #face_norms is dict of face (3-tuple of vertices defining face, counterclockwise
