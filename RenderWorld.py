@@ -10,6 +10,7 @@ import Image
 from Camera import Camera
 from LoadTerrain import LoadTerrain
 from Skybox import Skybox
+from Convert import Convert
 
 class RenderWorld:
     '''This is the class that renders maze.
@@ -28,6 +29,7 @@ class RenderWorld:
         self.set_up_lighting()
         self.set_up_glut()
         self.camera = Camera(0,20,0)
+        self.set_up_convert()
         self.poly_view = False
 
         if not filename == None:
@@ -86,15 +88,20 @@ class RenderWorld:
         
         glLightfv(GL_LIGHT1, GL_AMBIENT, (1, 1, 1, .95))
         glLightfv(GL_LIGHT1, GL_POSITION, (1,1,1,1))
+
+    def set_up_convert(self):
+        #heightmap, texture, gl
+        self.convert = Convert((1, 1, 1), (10, 1, 10), (1, 35, 1))
         
     def load_map(self, heightmap_filename):
-        self.load = LoadTerrain(heightmap_filename, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
+        self.load = LoadTerrain(heightmap_filename, self.covert)
         self.heights = self.load.load()
         self.map_index = self.load.createRenderList(self.heights)
 
     def load_skybox(self):
         #self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
-        self.skybox = Skybox((5000, 5000, 5000))
+        map_length = self.convert.open_gl_scale
+        self.skybox = Skybox((map_length[0]*3, map_
         self.sky_index = self.skybox.createCallList(1, 3)
 
     def display(self, x=0, y=0):
@@ -128,7 +135,6 @@ class RenderWorld:
     def renderLightSource(self):
         '''Resets the light sources to the right position.'''
         glLightfv(GL_LIGHT0, GL_POSITION, self.diffuse_pos1)
-
        
     def mouseMove(self, x, y):
         '''Called when the mouse is moved.'''

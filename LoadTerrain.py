@@ -12,11 +12,10 @@ class LoadTerrain:
     SEA_LEVEL = 2
     counter = 1
 
-    def __init__(self, filename, scale):
-        self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR = scale
+    def __init__(self, filename, convert):
+        self.convert = convert
         self.im = Image.open(filename)
-        self.width = self.im.size[0]
-        self.height = self.im.size[1]
+        self.convert.set_dimensions(self.im.size[0], self.im.size[1])
         self.images = []
     
     def load(self):
@@ -26,17 +25,17 @@ class LoadTerrain:
         heights = []
         
         # Down the rows
-        for y in range(self.height):
-            row = []
+        for x in range(self.convert.heightmap_x):
+            col = []
 
             # Across the columns
-            for x in range(self.width):
+            for z in range(self.convert.heightmap_z):
                 try:
-                    pix = (self.im.getpixel((y, x)) / 255.) * self.Y_FACTOR
+                    pix = (self.im.getpixel((x, z)) / 255.) * self.convert.open_gl_scale[1]
                 except:
                     pass
-                row.append(pix)
-            heights.append(row)
+                col.append(pix)
+            heights.append(col)
     
         return heights
 
@@ -44,9 +43,9 @@ class LoadTerrain:
         #face_norms is dict of face (3-tuple of vertices defining face, counterclockwise
         #starting from the upper left) : face normal
         #vert_norms is dict of vertex : normal
-        face_norms, vert_norms = calc_face_normals(heights, self.X_FACTOR, self.Z_FACTOR)
+        face_norms, vert_norms = calc_face_normals(heights, self.convert)
         
-        rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR), face_norms)
+        rend = RenderTexture(heights, self.convert, face_norms)
         self.texture = self.loadTexture(rend.run(heights), 0)
         
         water = 'data/textures/water/water2.bmp'
@@ -57,17 +56,17 @@ class LoadTerrain:
         glNewList(index, GL_COMPILE)
         self.applyTexture(self.texture)
 
-        for y in range(1, len(heights)):
+        for x in range(1, len(heights)):
             glBegin(GL_TRIANGLE_STRIP)
-            for x in range(len(heights[y])):
-                glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])*self.X_FACTOR),-y*self.Z_FACTOR/float(len(heights)*self.Z_FACTOR))
-                pt = (x*self.X_FACTOR, heights[y][x], -y*self.Z_FACTOR)
+            for z in range(len(heights[x])):
+                glTexCoord2f(x*self.X_FACTOR/float(len(heights)*self.X_FACTOR),-z*self.Z_FACTOR/float(len(heights[x])*self.Z_FACTOR))
+                pt = (x*self.convert.open_gl_scale[0], heights[x][z], -z*self.convert.open_gl_scale[2])
                 norm = vert_norms[pt]
                 glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
 
-                glTexCoord2f(x*self.X_FACTOR/float(len(heights[y])*self.X_FACTOR),-(y-1)*self.Z_FACTOR/float(len(heights)*self.Z_FACTOR))
-                pt = (x*self.X_FACTOR, heights[y-1][x], -(y-1)*self.Z_FACTOR)
+                glTexCoord2f(x*self.X_FACTOR/float(len(heights)*self.X_FACTOR),-(z-1)*self.Z_FACTOR/float(len(heights[x])*self.Z_FACTOR))
+                pt = (x*self.convert.open_gl_scale[0], heights[x][z-1], -(z-1)*self.convert.open_gl_scale[2])
                 norm = vert_norms[pt]
                 glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
@@ -77,8 +76,8 @@ class LoadTerrain:
         '''Water plane'''
         self.applyTexture(water_tex)
         tile_size = Image.open(water).size
-        xlen = len(heights[0])*self.X_FACTOR
-        zlen = len(heights)*self.Z_FACTOR
+        xlen = self.convert.gl_x
+        zlen = self.convert.gl_z
         glBegin(GL_QUADS)
         glTexCoord2f(0,0)
         glVertex3f(0, self.SEA_LEVEL, 0)
