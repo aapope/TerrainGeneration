@@ -18,14 +18,12 @@ class RenderTexture:
 
 #<<<<<<< HEAD
     def run(self, heights, name):
-	path = 'data/textures/texture'+name+'.bmp'
-	if not os.path.exists(path):
-		print "not catching"	
-		self.load_bitmaps()
-		self.create_texture(self.texture.load())
-		self.shadow(self.texture.load(), heights)
+	path = 'data/textures/texture'+name+'.bmp'	
+	self.load_bitmaps()
+	self.create_texture(self.texture.load())
+	self.shadow(self.texture.load(), heights)
 		
-		self.texture.save(path)
+	self.texture.save(path)
 	print path
 	return path
 

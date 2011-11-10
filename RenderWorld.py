@@ -68,9 +68,8 @@ class RenderWorld:
     def create_render_newlist(self):
 	self.need_lists = False	
 	new_list = []
-	print "Rendering!!\n\n!!!\n\n!!!!"
 	for location, values in self.trans.location_var.items():
-		print "comes in here"
+		print "RENDERING IN OPEN GL", location
 		face_norms, vert_norms, heights, offsetx, offsetz, textname, textid = values
 	 	filename = 'data/textures/texture'+textname+'.bmp'
 		self.texture = self.loadTexture(filename, textid)		
@@ -110,8 +109,9 @@ class RenderWorld:
 		    glEnd()
 		glEndList()
 		new_list.append(index)
-
+	
 	self.index_list = new_list
+	#self.index_list = new_list
 		
 	
     #used to load a texture from a filename and apply it to triangles
@@ -187,7 +187,7 @@ class RenderWorld:
 	if self.need_lists:
 		self.create_render_newlist()
 
-	self.lock.acquire()
+	#self.lock.acquire()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         
         glLoadIdentity()
@@ -221,7 +221,7 @@ class RenderWorld:
 
         
         glutSwapBuffers()
-	self.lock.release() 
+	#self.lock.release() 
        
     def mouseMove(self, x, y):
         '''Called when the mouse is moved.'''

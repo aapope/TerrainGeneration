@@ -44,6 +44,7 @@ class World:
 			self.update_loc(self.rw.camera.pos_X, self.rw.camera.pos_Y, self.rw.camera.pos_Z)
 			#print "inside thread"
 			time.sleep(1)
+	
 	#Used to create the inital world
 	def init_world(self):
 		for y in range(-FACTOR, self.size-FACTOR):
@@ -106,14 +107,11 @@ class World:
 					ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
 					print "done updating diamonds"
 		
-		self.rw.lock.acquire()
-		new_list = self.create_lists()
+		#self.rw.lock.acquire()
+		print "creating lists"
+		self.create_lists()
 		
-		#set new index list
-
-		print new_list
-		self.rw.index_list = new_list
-		self.rw.lock.release()
+		#self.rw.lock.release()
 		'''
 		def create_stuff(lock):
 			new_list = self.create_lists()
@@ -133,12 +131,14 @@ class World:
 		
 	#Used to create the call lists
 	def create_lists(self):
-		#new_list = []
-		#queue = Queue.Queue()
 		
-		def render_thing(location):
-			print location
-			#loc = queue.get()		
+		self.trans.location_var = {}
+
+		queue = Queue.Queue()
+		
+		def render_thing(queue):
+			
+			location = queue.get()		
 			x,y = location
 			
 			load = LoadTerrain(PATH+str(x)+"_"+str(y)+".bmp", (XFACTOR, YFACTOR, ZFACTOR))
@@ -147,13 +147,10 @@ class World:
 			face_norms, vert_norms = load.createRenderList(heights,str(x)+"_"+str(y))
 			
 			self.trans.location_var[location] = (face_norms, vert_norms, heights, x*OFFSET, -y*OFFSET, str(x)+"_"+str(y), self.pos_list.index(location))
-			
-			#nlist.append(index)
-			
-			
-		'''
+			queue.task_done()
+		
 		for i in range(9):
-			t = threading.Thread(target=render_thing, args=(new_list,))
+			t = threading.Thread(target=render_thing, args=(queue,))
 			t.setDaemon(True)
               		t.start()
 
@@ -162,7 +159,10 @@ class World:
 
 		queue.join()
 		
-		self.index_list = new_list
+		print "setting boolean"
+		self.rw.need_lists = True
+
+		#self.index_list = new_list
 		
 					
 		'''
@@ -178,4 +178,4 @@ class World:
 
 
 if __name__ == "__main__":
-	w = World()
+	w = World()'''
