@@ -9,7 +9,7 @@ class LoadTerrain:
     X_FACTOR = 1
     Y_FACTOR = 1
     Z_FACTOR = 1
-    SEA_LEVEL = 4
+    SEA_LEVEL = 2
     counter = 1
 
     def __init__(self, filename, scale):

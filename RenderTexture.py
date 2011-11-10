@@ -21,7 +21,7 @@ class RenderTexture:
     def run(self, heights):
         self.load_bitmaps()
         self.create_texture(self.texture.load())
-        self.shadow(self.texture.load(), heights)
+        #self.shadow(self.texture.load(), heights)
         path = 'data/textures/texture'+str(self.counter)+'.bmp'
         self.texture.save(path)
         self.counter += 1
@@ -43,6 +43,8 @@ class RenderTexture:
         self.images['mountain'] = (Image.open('data/textures/mountain/'+img).load(),Image.open('data/textures/mountain/'+img).size)
         img = self.get_rand_img('data/textures/grass') 
         self.images['grass'] = (Image.open('data/textures/grass/'+img).load(),Image.open('data/textures/grass/'+img).size)
+        img = self.get_rand_img('data/textures/deadgrass') 
+        self.images['deadgrass'] = (Image.open('data/textures/deadgrass/'+img).load(),Image.open('data/textures/deadgrass/'+img).size)
 
     def create_texture(self, pix):
         for y in range(self.size[0]):
@@ -88,32 +90,39 @@ class RenderTexture:
         elif temp < 19.9:
             return 'deciduous'
         elif temp < 20:
+            return 'deadgrass'
+        elif temp < 20.5:
             return 'dirt'
         else:
             return 'savanna'
 
-
     def shadow(self, pixels, zs):
         for y in range(1, self.size[0]):
             highest = self.calc_height(self.size[1]-2, y, zs) - self.SUN_ANGLE
-            darkened = False
+            darkened = 4
             for x in range(self.size[1]-1, 1, -1):
                 z = self.calc_height(x, y, zs)
 #                print x/self.scale[0], y/self.scale[2], z
                 if z > highest:
+                    if darkened == 4:
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/30)
+                    elif darkened == 3:
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/30)
                     if darkened == 2:
-                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/4)
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/30)
                     elif darkened == 1:
-                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/8)
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/20)
                     highest = z
                     darkened = max(0, darkened-1)
                 else:
                     if darkened == 0:
-                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/8)
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/20)
                     elif darkened == 1:
-                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/4)
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/15)
                     elif darkened == 2:
-                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/2)
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/10)
+                    elif darkened == 3:
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/5)
                     else:
                         pixels[y, x] = self.darken(pixels[y, x], self.SHADE)
                     darkened += 1
@@ -207,3 +216,6 @@ class RenderTexture:
         g = max(0, g - amt)
         b = max(0, b - amt)
         return (r,g,b)
+
+
+

@@ -166,11 +166,11 @@ class RenderWorld:
         if key == 'p':
             exit(0)
         if key.lower() == 'q':
-            self.camera.WALK += .1
-            self.camera.SPRINT += .5
+            self.camera.WALK *= 1.2
+            self.camera.SPRINT *= 1.2
         if key.lower() == 'e':
-            self.camera.WALK -= .1
-            self.camera.SPRINT -= .5
+            self.camera.WALK *= .8
+            self.camera.SPRINT *= .8
 
     def keyUp(self, key, x, y):
         '''Called when a key is released.'''
