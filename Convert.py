@@ -27,11 +27,11 @@ class Convert:
         
         
     def _find_coord_system(self, name):
-        if from_system == 'h':
+        if name == 'h':
             return self.height_map_scale
-        elif from_system == 't':
+        elif name == 't':
             return self.texture_scale
-        elif from_system == 'g':
+        elif name == 'g':
             return self.open_gl_scale
         else:
             return None

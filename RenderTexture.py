@@ -8,12 +8,12 @@ class RenderTexture:
     SHADE = 40
     SUN_ANGLE = 0.3
 
-    def __init__(self, heights, convert, norms):
+    def __init__(self, heights, convert, ):#norms):
         self.convert = convert
         self.SUN_ANGLE = self. convert.open_gl_scale[1]*.0008
         self.texture = Image.new("RGB", (self.convert.texture_x, self.convert.texture_z))
         self.heights = heights
-        self.norms = norms        
+        #self.norms = norms        
 
     def run(self, name):
         path = 'data/textures/maps/'+name
@@ -52,7 +52,7 @@ class RenderTexture:
         for x in range(self.convert.texture_z):
             for z in range(self.convert.texture_x):
                 #get type of texture and its size
-                pixl, sizel = self.images[self.texture_type(self.heights[x/self.convert.texture_scale[0]][z/self.texture_scale[2]], 0)]
+                pixl, sizel = self.images[self.texture_type(self.heights[x/self.convert.texture_scale[0]][z/self.convert.texture_scale[2]], 0)]
                 #place according pixel of texture into terrain
                 pix[x,z] = pixl[x%sizel[0], z%sizel[1]]
 
@@ -78,7 +78,7 @@ class RenderTexture:
     def texture_type(self, altitude, percip):
         temp_blend = .04
         max_elevation = 5000
-        elevation = max_elevation*(altitude/float(self.scale[1]))
+        elevation = max_elevation*(altitude/float(self.convert.gl_y))
         d_temp = (elevation/1000) / 6.5 + random.uniform(-temp_blend,temp_blend)
         temp = 20 - d_temp
         if temp <= 19.5:

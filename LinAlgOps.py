@@ -24,8 +24,8 @@ def calc_face_normals(heights, convert):
     face = {}
     for x in range(0, len(heights)-1):
         for z in range(0, len(heights[x])-1):
-            p3 = ((x+1)*x_scale, heights[x][z+1], -z*z_scale)
-            p2 = (x*x_scale, heights[x+1][z], -(z+1)*z_scale)
+            p3 = ((x+1)*x_scale, heights[x+1][z], -z*z_scale)
+            p2 = (x*x_scale, heights[x][z+1], -(z+1)*z_scale)
             p0 = (x*x_scale, heights[x][z], -z*z_scale)
             p1 = ((x+1)*x_scale, heights[x+1][z+1], -(z+1)*z_scale)
             

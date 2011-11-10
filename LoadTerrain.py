@@ -48,7 +48,7 @@ class LoadTerrain:
         face_norms, vert_norms = calc_face_normals(heights, self.convert)
         
 
-        rend = RenderTexture(heights, self.convert, face_norms)
+        rend = RenderTexture(heights, self.convert)#, face_norms)
         self.texture = self.loadTexture(rend.run(self.filename.split('/')[-1]), 0)
 
         water = 'data/textures/water/water2.bmp'
@@ -64,15 +64,15 @@ class LoadTerrain:
             for z in range(len(heights[x])):
                 glTexCoord2f(self.convert.convert('h', 'g', 'x', x)/float(self.convert.gl_x), self.convert.convert('h', 'g', 'z', -z)/float(self.convert.gl_z))
 
-                pt = (self.convert.convert('h', 'g', 'x', x), heights[x][z-1], self.convert.convert('h','g','z',-z))
+                pt = (self.convert.convert('h', 'g', 'x', x), heights[x][z], self.convert.convert('h','g','z',-z))
                 norm = vert_norms[pt]
                 glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
 
                 
-                glTexCoord2f(self.convert.convert('h', 'g', 'x', x)/float(self.convert.gl_x), self.convert.convert('h', 'g', 'z', -(z-1))/float(self.convert.gl_z))
+                glTexCoord2f(self.convert.convert('h', 'g', 'x', x-1)/float(self.convert.gl_x), self.convert.convert('h', 'g', 'z', -z)/float(self.convert.gl_z))
 
-                pt = (self.convert.convert('h', 'g', 'x', x), heights[x][z-1], self.convert.convert('h','g','z',-(z-1)))
+                pt = (self.convert.convert('h', 'g', 'x', x-1), heights[x-1][z], self.convert.convert('h','g','z',-z))
                 norm = vert_norms[pt]
                 glNormal3f(norm[0],norm[1],norm[2])
                 glVertex3f(pt[0],pt[1],pt[2])
