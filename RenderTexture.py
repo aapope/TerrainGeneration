@@ -22,6 +22,9 @@ class RenderTexture:
         self.load_bitmaps()
         self.create_texture(self.texture.load())
         #self.shadow(self.texture.load(), heights)
+        return self.save()
+
+    def save(self):
         path = 'data/textures/texture'+str(self.counter)+'.bmp'
         self.texture.save(path)
         self.counter += 1
@@ -216,6 +219,3 @@ class RenderTexture:
         g = max(0, g - amt)
         b = max(0, b - amt)
         return (r,g,b)
-
-
-
