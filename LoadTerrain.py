@@ -5,17 +5,14 @@ from OpenGL.GLUT import *
 from RenderTexture import RenderTexture
 from LinAlgOps import *
 import os
+from TextureHolder import TextureHolder
 
 class LoadTerrain:
-    X_FACTOR = 1
-    Y_FACTOR = 1
-    Z_FACTOR = 1
-    SEA_LEVEL = 2
-    counter = 1
 
-    def __init__(self, filename, convert):
+    def __init__(self, filename, convert, tex_holder):
         self.filename = filename
         self.convert = convert
+        self.tex_holder = tex_holder
         self.im = Image.open(filename)
         self.convert.set_dimensions(self.im.size[0], self.im.size[1])
         self.images = []
@@ -48,16 +45,16 @@ class LoadTerrain:
         face_norms, vert_norms = calc_face_normals(heights, self.convert)
         
 
-        rend = RenderTexture(heights, self.convert)#, face_norms)
-        self.texture = self.loadTexture(rend.run(self.filename.split('/')[-1]), 0)
+        rend = RenderTexture(heights, self.convert, self.tex_holder)#, face_norms)
+        self.texture = self.tex_holder.hold_my_texture(rend.run(self.filename.split('/')[-1]), self.filename.split('/')[-1])
 
         water = 'data/textures/water/water2.bmp'
-        water_tex = self.loadTexture(water, 1)
+        water_tex = self.tex_holder.hold_my_texture(water, 'water')
 
         index = glGenLists(1)
 
         glNewList(index, GL_COMPILE)
-        self.applyTexture(self.texture)
+        self.tex_holder.applyTexture(self.texture)
 
         for x in range(1, len(heights)):
             glBegin(GL_TRIANGLE_STRIP)
@@ -80,37 +77,23 @@ class LoadTerrain:
                 
 
         '''Water plane'''
-        self.applyTexture(water_tex)
+        self.tex_holder.applyTexture(water_tex)
         tile_size = Image.open(water).size
         xlen = self.convert.gl_x
         zlen = self.convert.gl_z
         glBegin(GL_QUADS)
         glTexCoord2f(0,0)
-        glVertex3f(0, self.SEA_LEVEL, 0)
+        glVertex3f(0, self.convert.sea_level, 0)
         glTexCoord2f(xlen/tile_size[0],0)
-        glVertex3f(xlen, self.SEA_LEVEL, 0)
+        glVertex3f(xlen, self.convert.sea_level, 0)
         glTexCoord2f(xlen/tile_size[0],zlen/tile_size[1])
-        glVertex3f(xlen, self.SEA_LEVEL, -zlen)
+        glVertex3f(xlen, self.convert.sea_level, -zlen)
         glTexCoord2f(0,zlen/tile_size[1])
-        glVertex3f(0, self.SEA_LEVEL, -zlen)
+        glVertex3f(0, self.convert.sea_level, -zlen)
         glEnd()
 
         glEndList()
 
         return index
 
-    def loadTexture(self, filenames, i):
-        texId = i
-        glGenTextures(1, texId)
-        glBindTexture(GL_TEXTURE_2D, texId)
-        self.images.append(Image.open(filenames))
-        glTexImage2D(GL_TEXTURE_2D, 0, 3, self.images[-1].size[0], self.images[-1].size[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, self.images[-1].tostring("raw","RGBX",0,-1))
-        return texId
-
-    def applyTexture(self, tex_id):
-        glEnable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, tex_id)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+    

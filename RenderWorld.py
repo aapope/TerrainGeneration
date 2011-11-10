@@ -6,6 +6,7 @@ from Camera import Camera
 from LoadTerrain import LoadTerrain
 from Skybox import Skybox
 from Convert import Convert
+from TextureHolder import TextureHolder
 
 class RenderWorld:
     '''This is the class that renders maze.
@@ -13,7 +14,6 @@ class RenderWorld:
     '''
     WINDOW_WIDTH = 700
     WINDOW_HEIGHT = 700
-    MAP_SIZE = 100
 
     def __init__(self, filename):
         '''Sets up camera, modes, lighting, sounds, and objects.'''
@@ -22,6 +22,7 @@ class RenderWorld:
         self.set_up_glut()
         self.camera = Camera(0,20,0)
         self.set_up_convert()
+        self.tex_holder = TextureHolder()
         self.poly_view = False
 
         if not filename == None:
@@ -86,7 +87,7 @@ class RenderWorld:
         self.convert = Convert((1, 1, 1), (10, 1, 10), (1, 35, 1))
         
     def load_map(self, heightmap_filename):
-        self.load = LoadTerrain(heightmap_filename, self.convert)
+        self.load = LoadTerrain(heightmap_filename, self.convert, self.tex_holder)
         self.heights = self.load.load()
         self.map_index = self.load.createRenderList(self.heights)
 

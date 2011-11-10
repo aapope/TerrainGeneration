@@ -2,13 +2,14 @@ from PIL import Image, ImageDraw
 from random import choice
 import random, numpy, os
 import LinAlgOps
+from TextureHolder import TextureHolder
+
 class RenderTexture:
+#    SHADE = 40
+#    SUN_ANGLE = 0.3
 
-    SL = (-1,1,-1,1,-1,1)#Sun location: (left, right, bottom, top, near, far)
-    SHADE = 40
-    SUN_ANGLE = 0.3
-
-    def __init__(self, heights, convert, ):#norms):
+    def __init__(self, heights, convert, tex_holder):#norms):
+        self.tex_holder = tex_holder
         self.convert = convert
         self.SUN_ANGLE = self. convert.open_gl_scale[1]*.0008
         self.texture = Image.new("RGB", (self.convert.texture_x, self.convert.texture_z))
@@ -19,7 +20,6 @@ class RenderTexture:
         path = 'data/textures/maps/'+name
         if not os.path.isfile(path):
             print 'New texture'
-            self.load_bitmaps()
             self.create_texture(self.texture.load())
             return self.save(path)
         else:
@@ -29,39 +29,14 @@ class RenderTexture:
         self.texture.save(path)
         return path
         
-    def load_bitmaps(self):
-        self.images = {}
-        img = self.get_rand_img('data/textures/tundra')
-        self.images['tundra'] = (Image.open('data/textures/tundra/'+img).load(),Image.open('data/textures/tundra/'+img).size)
-        img = self.get_rand_img('data/textures/deciduous')
-        self.images['deciduous'] = (Image.open('data/textures/deciduous/'+img).load(),Image.open('data/textures/deciduous/'+img).size)
-        img = self.get_rand_img('data/textures/savanna') 
-        self.images['savanna'] = (Image.open('data/textures/savanna/'+img).load(),Image.open('data/textures/savanna/'+img).size)
-        img = self.get_rand_img('data/textures/dirt') 
-        self.images['dirt'] = (Image.open('data/textures/dirt/'+img).load(),Image.open('data/textures/dirt/'+img).size)
-        img = self.get_rand_img('data/textures/treeline') 
-        self.images['treeline'] = (Image.open('data/textures/treeline/'+img).load(),Image.open('data/textures/treeline/'+img).size)
-        img = self.get_rand_img('data/textures/mountain') 
-        self.images['mountain'] = (Image.open('data/textures/mountain/'+img).load(),Image.open('data/textures/mountain/'+img).size)
-        img = self.get_rand_img('data/textures/grass') 
-        self.images['grass'] = (Image.open('data/textures/grass/'+img).load(),Image.open('data/textures/grass/'+img).size)
-        img = self.get_rand_img('data/textures/deadgrass') 
-        self.images['deadgrass'] = (Image.open('data/textures/deadgrass/'+img).load(),Image.open('data/textures/deadgrass/'+img).size)
-
     def create_texture(self, pix):
         for x in range(self.convert.texture_z):
             for z in range(self.convert.texture_x):
                 #get type of texture and its size
-                pixl, sizel = self.images[self.texture_type(self.heights[x/self.convert.texture_scale[0]][z/self.convert.texture_scale[2]], 0)]
+                pixl, sizel = self.tex_holder.images[self.texture_type(self.heights[x/self.convert.texture_scale[0]][z/self.convert.texture_scale[2]], 0)]
                 #place according pixel of texture into terrain
                 pix[x,z] = pixl[x%sizel[0], z%sizel[1]]
 
-    def get_rand_img(self, path):
-        tmp_imgs= []
-        for subdir, dirs, imgs in os.walk(path):
-            for img in imgs:
-                tmp_imgs.append(img)
-        return choice(tmp_imgs)
 
     def randomize_color(self, color, randomness=10):
         r,g,b = color
