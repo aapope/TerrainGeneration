@@ -24,7 +24,24 @@ class RenderWorld:
 
     def __init__(self, filename):
         '''Sets up camera, modes, lighting, sounds, and objects.'''
-        self.set_up_graphics()
+        
+
+        self.index_list = []
+	
+	#self.skybox = Skybox((5000, 5000, 5000))
+        #self.sky_index = self.skybox.createCallList(1, 3)
+	
+	'''
+        self.load = LoadTerrain('data/heightmaps/fractal.bmp',  (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
+        self.heights = self.load.load()
+        self.index = self.load.createRenderList(self.heights)
+        '''
+        #self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
+        
+	#7aa11e4b4cc7b5834b6eb9d81f667daae0c0b891'''
+	
+    def set_up(self):
+	self.set_up_graphics()
 	self.set_up_lighting()
         self.camera = Camera(10,20,-10)	
 	self.poly_view = False	
@@ -38,23 +55,8 @@ class RenderWorld:
 
         glutSetCursor(GLUT_CURSOR_NONE)
         glutPassiveMotionFunc(self.mouseMove)
-
-        if not filename == None:
-            self.load = LoadTerrain(filename, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
-        else:
-            self.world = World()
 	
-	#self.skybox = Skybox((5000, 5000, 5000))
-        #self.sky_index = self.skybox.createCallList(1, 3)
 	glutMainLoop()
-	'''
-        self.load = LoadTerrain('data/heightmaps/fractal.bmp',  (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
-        self.heights = self.load.load()
-        self.index = self.load.createRenderList(self.heights)
-        '''
-        #self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
-        
-	#7aa11e4b4cc7b5834b6eb9d81f667daae0c0b891'''
 
     def set_up_graphics(self):
         '''Sets up OpenGL to provide double buffering, RGB coloring,
@@ -120,16 +122,16 @@ class RenderWorld:
 #<<<<<<< HEAD
         #self.camera.renderCamera()
         #self.load.rawDraw(self.heights)
-	lock = threading.RLock()
-	lock.acquire()
+	#lock = threading.RLock()
+	#lock.acquire()
 	#print self.world.index_list
-	for index in self.world.index_list:
+	for index in self.index_list:
 		#print "INDEX:", index
 		glCallList(index) 
-	lock.release()       
+	#lock.release()       
 
 	#print "ROT:", self.camera.rot_X, self.camera.rot_Y, self.camera.rot_Z
-	self.world.update_loc(self.camera.pos_X, self.camera.pos_Y, self.camera.pos_Z)
+	#self.world.update_loc(self.camera.pos_X, self.camera.pos_Y, self.camera.pos_Z)
 #=======
         
         
@@ -189,9 +191,9 @@ class RenderWorld:
         self.camera.keys[key.lower()] = False
         if not glutGetModifiers() == GLUT_ACTIVE_SHIFT:
             self.camera.keys["shift"] = False
-
+'''
 if __name__ == '__main__':
     if len(sys.argv) == 0:
         RENDER = RenderWorld(sys.argv[1])
     else:
-        RENDER = RenderWorld(None)
+        RENDER = RenderWorld(None)'''
