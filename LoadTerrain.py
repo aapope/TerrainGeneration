@@ -48,7 +48,7 @@ class LoadTerrain:
         rend = RenderTexture(heights, self.convert, self.tex_holder)#, face_norms)
         self.texture = self.tex_holder.hold_my_texture(rend.run(self.filename.split('/')[-1]), self.filename.split('/')[-1])
 
-        water = 'data/textures/water/water2.bmp'
+        water = 'data/textures/water/water.bmp'
         water_tex = self.tex_holder.hold_my_texture(water, 'water')
 
         index = glGenLists(1)
@@ -84,11 +84,11 @@ class LoadTerrain:
         glBegin(GL_QUADS)
         glTexCoord2f(0,0)
         glVertex3f(0, self.convert.sea_level, 0)
-        glTexCoord2f(xlen/tile_size[0],0)
+        glTexCoord2f(tile_size[0]/xlen,0)
         glVertex3f(xlen, self.convert.sea_level, 0)
-        glTexCoord2f(xlen/tile_size[0],zlen/tile_size[1])
+        glTexCoord2f(tile_size[0]/xlen,tile_size[1]/zlen)
         glVertex3f(xlen, self.convert.sea_level, -zlen)
-        glTexCoord2f(0,zlen/tile_size[1])
+        glTexCoord2f(0,tile_size[1]/zlen)
         glVertex3f(0, self.convert.sea_level, -zlen)
         glEnd()
 

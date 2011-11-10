@@ -1,12 +1,12 @@
 
 class Convert:
-    sea_level = 2
 
     def __init__(self, height_map, texture, gl):
         #Tuples for each axis's scale
         self.height_map_scale = height_map
         self.texture_scale = texture
         self.open_gl_scale = gl
+        self.sea_level = self.open_gl_scale[1]/float(15)
 
     def set_dimensions(self, x, z):
         self.heightmap_x = x
