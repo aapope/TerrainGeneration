@@ -14,6 +14,7 @@ class RenderWorld:
     '''
     WINDOW_WIDTH = 700
     WINDOW_HEIGHT = 700
+    SCALE = .5
 
     def __init__(self, filename):
         '''Sets up camera, modes, lighting, sounds, and objects.'''
@@ -84,7 +85,7 @@ class RenderWorld:
 
     def set_up_convert(self):
         #heightmap, texture, gl
-        self.convert = Convert((1, 1, 1), (10, 1, 10), (1, 35, 1))
+        self.convert = Convert((1, 1, 1), (10, 1, 10), (1*self.SCALE, 35*self.SCALE, 1*self.SCALE))
         
     def load_map(self, heightmap_filename):
         self.load = LoadTerrain(heightmap_filename, self.convert, self.tex_holder)
