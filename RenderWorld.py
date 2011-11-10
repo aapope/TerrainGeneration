@@ -26,9 +26,20 @@ class RenderWorld:
         '''Sets up camera, modes, lighting, sounds, and objects.'''
         self.set_up_graphics()
         self.set_up_lighting()
+        self.set_up_glut()
         self.camera = Camera(0,20,0)
         self.poly_view = False
 
+        if not filename == None:
+            self.load_map(filename)
+        else:
+            self.load_map('data/heightmaps/fractal.bmp')
+        
+        self.load_skybox()
+        
+        glutMainLoop()
+
+    def set_up_glut(self):
         glutIdleFunc(self.display)
         glutDisplayFunc(self.display)
 
@@ -38,19 +49,6 @@ class RenderWorld:
 
         glutSetCursor(GLUT_CURSOR_NONE)
         glutPassiveMotionFunc(self.mouseMove)
-
-        if not filename == None:
-            self.load = LoadTerrain(filename, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
-        else:
-            self.load = LoadTerrain('data/heightmaps/fractal.bmp',  (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
-        self.heights = self.load.load()
-        self.index = self.load.createRenderList(self.heights)
-        
-        #self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
-        self.skybox = Skybox((5000, 5000, 5000))
-        self.sky_index = self.skybox.createCallList(1, 3)
-        
-        glutMainLoop()
 
     def set_up_graphics(self):
         '''Sets up OpenGL to provide double buffering, RGB coloring,
@@ -89,39 +87,42 @@ class RenderWorld:
         glLightfv(GL_LIGHT1, GL_AMBIENT, (1, 1, 1, .95))
         glLightfv(GL_LIGHT1, GL_POSITION, (1,1,1,1))
         
-        
-        
+    def load_map(self, heightmap_filename):
+        self.load = LoadTerrain(heightmap_filename, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
+        self.heights = self.load.load()
+        self.map_index = self.load.createRenderList(self.heights)
+
+    def load_skybox(self):
+        #self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
+        self.skybox = Skybox((5000, 5000, 5000))
+        self.sky_index = self.skybox.createCallList(1, 3)
 
     def display(self, x=0, y=0):
         '''Called for every refresh; redraws the floor and objects
         based on the camera angle. Calls collision detection, handles
         the appropriate objects for keys, doors, etc.'''
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        
         glLoadIdentity()
-        
+        #Put camera and light in the correct position
         self.camera.move()
         self.camera.renderRotateCamera()
         self.camera.renderTranslateCamera()
         self.renderLightSource()
-        
+        #Re-enable lighting
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
         glEnable(GL_LIGHT1)
-        
-        glCallList(self.index)
-        
+        #Draw map
+        glCallList(self.map_index)
+        #Shut off lighting for skybox; back to identity
         glDisable(GL_LIGHTING)
-        
         glLoadIdentity()
-        
+        #Rotate the box, move back to the center, draw it.
         self.camera.renderRotateCamera()
         glTranslate(-self.skybox.x/2, -self.camera.pos_Y, -self.skybox.z/2)
         glCallList(self.sky_index)
         
         glDisable(GL_TEXTURE_2D)
-
-        
         glutSwapBuffers()
 
     def renderLightSource(self):
