@@ -92,7 +92,7 @@ class RenderWorld:
             		for z in range(len(heights[x])):
                			glTexCoord2f(self.convert.convert('h', 'g', 'x', x)/float(self.convert.gl_x), self.convert.convert('h', 'g', 'z', -z)/float(self.convert.gl_z))
 
-                		pt = (self.convert.convert('h', 'g', 'x', x+offsetx), heights[x][z], self.convert.convert('h','g','z',-(z+offsetz)))
+                		pt = (self.convert.convert('h', 'g', 'x', x+offsetx), heights[x][z], self.convert.convert('h','g','z',-z+offsetz))
 				norm_point = (self.convert.convert('h', 'g', 'x', x), heights[x][z], self.convert.convert('h','g','z',-z))                		
 				norm = vert_norms[norm_point]
                 		glNormal3f(norm[0],norm[1],norm[2])
@@ -101,7 +101,7 @@ class RenderWorld:
                 
                 		glTexCoord2f(self.convert.convert('h', 'g', 'x', x-1)/float(self.convert.gl_x), self.convert.convert('h', 'g', 'z', -z)/float(self.convert.gl_z))
 
-                		pt = (self.convert.convert('h', 'g', 'x', (x-1)+offsetx), heights[x-1][z], self.convert.convert('h','g','z',-(z+offsetz)))
+                		pt = (self.convert.convert('h', 'g', 'x', (x-1)+offsetx), heights[x-1][z], self.convert.convert('h','g','z',-z+offsetz))
 				norm_point = (self.convert.convert('h', 'g', 'x', x-1), heights[x-1][z], self.convert.convert('h','g','z',-z))
                 		norm = vert_norms[norm_point]
                 		glNormal3f(norm[0],norm[1],norm[2])
