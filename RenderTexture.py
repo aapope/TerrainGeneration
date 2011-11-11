@@ -25,9 +25,31 @@ class RenderTexture:
         else:
             return path
 
+
     def save(self, path):
         self.texture.save(path)
         return path
+    '''
+    def run(self, heights, name):
+	path = 'data/textures/texture'+name+'.bmp'	
+	self.load_bitmaps()
+	self.create_texture(self.texture.load())
+	self.shadow(self.texture.load(), heights)
+		
+	self.texture.save(path)
+	print path
+	return path'''
+
+    '''old RUN
+    def run(self, heights):
+        self.load_bitmaps()
+        self.create_texture(self.texture.load())
+        self.shadow(self.texture.load(), heights)
+        path = 'data/textures/texture'+str(self.counter)+'.bmp'
+        self.texture.save(path)
+        self.counter += 1
+        return path'''
+
         
     def create_texture(self, pix):
         for x in range(self.convert.texture_z):
