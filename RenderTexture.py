@@ -25,11 +25,7 @@ class RenderTexture:
         else:
             return path
 
-    def run(self, heights):
-        self.load_bitmaps()
-        self.create_texture(self.texture.load())
-        #self.shadow(self.texture.load(), heights)
-        path = 'data/textures/texture'+str(self.counter)+'.bmp'
+    def save(self, path):
         self.texture.save(path)
         return path
         
