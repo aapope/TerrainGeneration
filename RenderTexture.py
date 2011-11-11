@@ -25,7 +25,7 @@ class RenderTexture:
         else:
             return path
 
-    def save(self, path):        
+    def save(self, path):
         self.texture.save(path)
         return path
         
