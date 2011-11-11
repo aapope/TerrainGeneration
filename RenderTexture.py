@@ -2,21 +2,28 @@ from PIL import Image, ImageDraw
 from random import choice
 import random, numpy, os
 import LinAlgOps
+from TextureHolder import TextureHolder
+
 class RenderTexture:
+#    SHADE = 40
+#    SUN_ANGLE = 0.3
 
-    counter = 1
-    SL = (-1,1,-1,1,-1,1)#Sun location: (left, right, bottom, top, near, far)
-    SHADE = 40
-    SUN_ANGLE = 0.3
-    FACTOR = 10
-
-    def __init__(self, heights, scale, norms):
-        self.scale = (scale[0]*self.FACTOR, scale[1], scale[2]*self.FACTOR)
-        self.SUN_ANGLE = scale[1]*.0008
-        self.size = (len(heights)*self.scale[2], len(heights[0])*self.scale[0])
-        self.texture = Image.new("RGB", (self.size[1], self.size[0]))
+    def __init__(self, heights, convert, tex_holder):#norms):
+        self.tex_holder = tex_holder
+        self.convert = convert
+        self.SUN_ANGLE = self. convert.open_gl_scale[1]*.0008
+        self.texture = Image.new("RGB", (self.convert.texture_x, self.convert.texture_z))
         self.heights = heights
-        self.norms = norms
+        #self.norms = norms        
+
+    def run(self, name):
+        path = 'data/textures/maps/'+name
+        if not os.path.isfile(path):
+            print 'New texture'
+            self.create_texture(self.texture.load())
+            return self.save(path)
+        else:
+            return path
 
     def run(self, heights):
         self.load_bitmaps()
@@ -24,40 +31,16 @@ class RenderTexture:
         #self.shadow(self.texture.load(), heights)
         path = 'data/textures/texture'+str(self.counter)+'.bmp'
         self.texture.save(path)
-        self.counter += 1
         return path
         
-    def load_bitmaps(self):
-        self.images = {}
-        img = self.get_rand_img('data/textures/tundra')
-        self.images['tundra'] = (Image.open('data/textures/tundra/'+img).load(),Image.open('data/textures/tundra/'+img).size)
-        img = self.get_rand_img('data/textures/deciduous')
-        self.images['deciduous'] = (Image.open('data/textures/deciduous/'+img).load(),Image.open('data/textures/deciduous/'+img).size)
-        img = self.get_rand_img('data/textures/savanna') 
-        self.images['savanna'] = (Image.open('data/textures/savanna/'+img).load(),Image.open('data/textures/savanna/'+img).size)
-        img = self.get_rand_img('data/textures/dirt') 
-        self.images['dirt'] = (Image.open('data/textures/dirt/'+img).load(),Image.open('data/textures/dirt/'+img).size)
-        img = self.get_rand_img('data/textures/treeline') 
-        self.images['treeline'] = (Image.open('data/textures/treeline/'+img).load(),Image.open('data/textures/treeline/'+img).size)
-        img = self.get_rand_img('data/textures/mountain') 
-        self.images['mountain'] = (Image.open('data/textures/mountain/'+img).load(),Image.open('data/textures/mountain/'+img).size)
-        img = self.get_rand_img('data/textures/grass') 
-        self.images['grass'] = (Image.open('data/textures/grass/'+img).load(),Image.open('data/textures/grass/'+img).size)
-
     def create_texture(self, pix):
-        for y in range(self.size[0]):
-            for x in range(self.size[1]):
+        for x in range(self.convert.texture_z):
+            for z in range(self.convert.texture_x):
                 #get type of texture and its size
-                pixl, sizel = self.images[self.texture_type(self.heights[x/self.scale[0]][y/self.scale[2]], 0)]
+                pixl, sizel = self.tex_holder.images[self.texture_type(self.heights[x/self.convert.texture_scale[0]][z/self.convert.texture_scale[2]], 0)]
                 #place according pixel of texture into terrain
-                pix[y,x] = pixl[x%sizel[0], y%sizel[1]]
+                pix[x,z] = pixl[x%sizel[0], z%sizel[1]]
 
-    def get_rand_img(self, path):
-        tmp_imgs= []
-        for subdir, dirs, imgs in os.walk(path):
-            for img in imgs:
-                tmp_imgs.append(img)
-        return choice(tmp_imgs)
 
     def randomize_color(self, color, randomness=10):
         r,g,b = color
@@ -74,7 +57,7 @@ class RenderTexture:
     def texture_type(self, altitude, percip):
         temp_blend = .04
         max_elevation = 5000
-        elevation = max_elevation*(altitude/float(self.scale[1]))
+        elevation = max_elevation*(altitude/float(self.convert.gl_y))
         d_temp = (elevation/1000) / 6.5 + random.uniform(-temp_blend,temp_blend)
         temp = 20 - d_temp
         if temp <= 19.5:
@@ -89,31 +72,39 @@ class RenderTexture:
             return 'deciduous'
         elif temp < 20:
             return 'dirt'
+        elif temp < 20.1:
+            return 'deadgrass'
         else:
             return 'savanna'
 
-
+'''
     def shadow(self, pixels, zs):
         for y in range(1, self.size[0]):
             highest = self.calc_height(self.size[1]-2, y, zs) - self.SUN_ANGLE
-            darkened = False
+            darkened = 4
             for x in range(self.size[1]-1, 1, -1):
                 z = self.calc_height(x, y, zs)
 #                print x/self.scale[0], y/self.scale[2], z
                 if z > highest:
+                    if darkened == 4:
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/30)
+                    elif darkened == 3:
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/30)
                     if darkened == 2:
-                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/4)
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/30)
                     elif darkened == 1:
-                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/8)
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/20)
                     highest = z
                     darkened = max(0, darkened-1)
                 else:
                     if darkened == 0:
-                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/8)
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/20)
                     elif darkened == 1:
-                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/4)
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/15)
                     elif darkened == 2:
-                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/2)
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/10)
+                    elif darkened == 3:
+                        pixels[y, x] = self.darken(pixels[y, x], self.SHADE/5)
                     else:
                         pixels[y, x] = self.darken(pixels[y, x], self.SHADE)
                     darkened += 1
@@ -132,11 +123,9 @@ class RenderTexture:
                     pixels[col, row] = self.darken(pixels[col, row], self.SHADE)
                 highest -= self.SUN_ANGLE
                 row += 1
-                col += 1
-                
+                col += 
 
-            
-    '''def calc_height(self, x, y, zs):
+    def calc_height(self, x, y, zs):
         #pos_scale = (self.scale[0]
         #print zs
         x_gl = x/self.FACTOR
@@ -175,7 +164,7 @@ class RenderTexture:
             
             z = -(norm[0]*(x-p3[0])+norm[1]*(y-p3[1]))/norm[2] + p3[2]
             print z
-            return z'''
+            return z
 
     def calc_height(self, x, y, zs):
         p1 = zs[x/self.scale[0]][y/self.scale[2]]
@@ -207,3 +196,4 @@ class RenderTexture:
         g = max(0, g - amt)
         b = max(0, b - amt)
         return (r,g,b)
+'''

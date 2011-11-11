@@ -1,9 +1,15 @@
 #! /usr/bin/env python
 from RenderWorld import RenderWorld
-import sys
+import sys, os
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2:
-        RENDER = RenderWorld(sys.argv[1])
-    else:
+    RENDER = None
+    if len(sys.argv) >= 2:
+        for i in range(1, len(sys.argv)):
+            if sys.argv[i].startswith('n'):
+                os.system('rm data/textures/maps/*')
+                print 'Removing maps'
+            else:
+                RENDER = RenderWorld(sys.argv[i])
+    if RENDER == None:
         RENDER = RenderWorld(None)
