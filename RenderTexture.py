@@ -21,7 +21,7 @@ class RenderTexture:
     def run(self, heights):
         self.load_bitmaps()
         self.create_texture(self.texture.load())
-        self.shadow(self.texture.load(), heights)
+        #self.shadow(self.texture.load(), heights)
         path = 'data/textures/texture'+str(self.counter)+'.bmp'
         self.texture.save(path)
         self.counter += 1
