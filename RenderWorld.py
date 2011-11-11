@@ -128,6 +128,10 @@ class RenderWorld:
 
     def renderLightSource(self):
         '''Resets the light sources to the right position.'''
+        if self.camera.pos_Y <= self.convert.sea_level:
+            glLightfv(GL_LIGHT0, GL_DIFFUSE, (0, .2, 1, 1))
+        else:
+            glLightfv(GL_LIGHT0, GL_DIFFUSE, (1, 1, 1, 1))
         glLightfv(GL_LIGHT0, GL_POSITION, self.diffuse_pos1)
        
     def mouseMove(self, x, y):

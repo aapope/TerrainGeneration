@@ -48,9 +48,6 @@ class LoadTerrain:
         rend = RenderTexture(heights, self.convert, self.tex_holder)#, face_norms)
         self.texture = self.tex_holder.hold_my_texture(rend.run(self.filename.split('/')[-1]), self.filename.split('/')[-1])
 
-        water = 'data/textures/water/water.bmp'
-        water_tex = self.tex_holder.hold_my_texture(water, 'water')
-
         index = glGenLists(1)
 
         glNewList(index, GL_COMPILE)
@@ -77,8 +74,8 @@ class LoadTerrain:
                 
 
         '''Water plane'''
-        self.tex_holder.applyTexture(water_tex)
-        tile_size = Image.open(water).size
+        self.tex_holder.applyTexture('water')
+        tile_size = self.tex_holder.images['water'].size
         xlen = self.convert.gl_x
         zlen = self.convert.gl_z
         glBegin(GL_QUADS)

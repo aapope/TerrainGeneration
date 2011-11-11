@@ -11,6 +11,8 @@ class TextureHolder:
         self.images = {}
         self.texture_ids = {}
         self.load_bitmaps()
+        water_path = 'data/textures/water/water.bmp'
+        self.hold_my_texture(water_path, 'water')
 
     def load_bitmaps(self):
         img = self.get_rand_img('data/textures/tundra')
