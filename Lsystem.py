@@ -1,4 +1,4 @@
-import Image, ImageDraw, math
+import Image, ImageDraw, math, random
 
 class Alphabet:
     def __init__(self, run):
@@ -26,7 +26,8 @@ class Run:
     #Put in changing width and color as well
     #Random numbers plants, random distances apart, random drawing
     ANGLE_STEP = 30
-    STEP = -10
+    PUSH_STEP = 10
+    STEP = -3
     IM_SIZE = 500
 
     def __init__(self, recursions, number_plants):
@@ -54,7 +55,7 @@ class Run:
 
     def draw(self, number):
         self.angle = 0
-        self.pos = (number*(self.IM_SIZE/(1+self.number_plants)),self.IM_SIZE)
+        self.pos = (number*(float(self.IM_SIZE)/(1+self.number_plants)),self.IM_SIZE)
         for i in self.string:
             self.alphabet.symbols[i]()
 
@@ -65,10 +66,10 @@ class Run:
         self.pos = new_pos
 
     def rotate_right(self):
-        self.angle += self.ANGLE_STEP
+        self.angle += self.ANGLE_STEP*random.random()
 
     def rotate_left(self):
-        self.angle -= self.ANGLE_STEP
+        self.angle -= self.ANGLE_STEP*random.random()
 
     def pop(self):
         new_state = self.stack.pop()
@@ -76,7 +77,7 @@ class Run:
         self.angle = new_state[2]
 
     def push(self):
-        self.stack.append((self.pos[0], self.pos[1], self.angle))
+        self.stack.append((self.pos[0], self.pos[1], self.angle+self.PUSH_STEP*random.random()))
 
 if __name__ == '__main__':
-    RUN = Run(3, 30)
+    RUN = Run(2, 125)
