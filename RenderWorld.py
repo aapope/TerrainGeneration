@@ -23,11 +23,10 @@ class RenderWorld:
     WINDOW_WIDTH = 700
     WINDOW_HEIGHT = 700
     SCALE = 1
-    MAP_SIZE =100
+    MAP_SIZE =128
     X_FACTOR = 1
     Y_FACTOR = 1
     Z_FACTOR = 1
-    MAP_SIZE = 100
     SEA_LEVEL = 4
 
     def __init__(self, transaction):
@@ -74,6 +73,12 @@ class RenderWorld:
     def start_loop(self):	
 	glutMainLoop()
 
+    def to_gl(self, axis, oldnum):
+	if axis == 'x':
+		return self.convert.convert_for_triangle('x', oldnum, self.MAP_SIZE)
+	else:
+		return self.convert.convert_for_triangle('z', oldnum, self.MAP_SIZE)
+
     def create_render_newlist(self):
 	self.need_lists = False	
 	new_list = []
@@ -86,28 +91,38 @@ class RenderWorld:
         	index = glGenLists(1)
 		glNewList(index, GL_COMPILE)
         	self.tex_holder.applyTexture(self.texture)
-
-        	for x in range(1, len(heights)):
+		
+		#go by rows
+        	for z in range(len(heights)-1):
             		glBegin(GL_TRIANGLE_STRIP)
-            		for z in range(len(heights[x])):
-               			glTexCoord2f(self.convert.convert('h', 'g', 'x', x)/float(self.convert.gl_x), self.convert.convert('h', 'g', 'z', -z)/float(self.convert.gl_z))
+            		for x in range(len(heights[z])):
+				
+				#start at (0,1)
+				point1x = self.to_gl('x', x)	#first point x value in opengl coordinate
+				point1z = self.to_gl('z', z+1)  #first point z value in opengl coordinate
 
-                		pt = (self.convert.convert('h', 'g', 'x', x+offsetx), heights[x][z], self.convert.convert('h','g','z',-(z+offsetz)))
-				norm_point = (self.convert.convert('h', 'g', 'x', x), heights[x][z], self.convert.convert('h','g','z',-z))                		
-				#norm = vert_norms[norm_point]
+               			glTexCoord2f(x/float(self.convert.gl_x), (z+1)/float(self.convert.gl_z))
+                		pt = (point1x+offsetx, heights[x][z+1], point1z-offsetz)
+				#m_point = (point1x, heights[x][z+1], point1z)
+				#norm = vert_norms[m_point]
+                		#glNormal3f(norm[0],norm[1],norm[2])
+                		glVertex3f(pt[0],pt[1],pt[2])
+				#############################################
+                		#second point (0,0)
+				
+				point2x = self.to_gl('x',x)     #second point x value in opengl coordinate
+				point2z = self.to_gl('z',z)     #second point z value in opengl coordinate
+		
+                		glTexCoord2f(x/float(self.convert.gl_x), z/float(self.convert.gl_z))
+
+                		pt = (point2x+offsetx, heights[x][z], point2z-offsetz)
+				#m_point = (point2x, heights[x][z], point2z)
+                		#norm = vert_norms[m_point]
                 		#glNormal3f(norm[0],norm[1],norm[2])
                 		glVertex3f(pt[0],pt[1],pt[2])
 
-                
-                		glTexCoord2f(self.convert.convert('h', 'g', 'x', x-1)/float(self.convert.gl_x), self.convert.convert('h', 'g', 'z', -z)/float(self.convert.gl_z))
-
-                		pt = (self.convert.convert('h', 'g', 'x', (x-1)+offsetx), heights[x-1][z], self.convert.convert('h','g','z',-(z+offsetz)))
-				norm_point = (self.convert.convert('h', 'g', 'x', x-1), heights[x-1][z], self.convert.convert('h','g','z',-z))
-                		#norm = vert_norms[norm_point]
-                		#glNormal3f(norm[0],norm[1],norm[2])
-                		glVertex3f(pt[0],pt[1],pt[2])
            		glEnd()
-                
+                	#print z
 
         	'''Water plane'''
         	self.tex_holder.applyTexture('water')
@@ -216,6 +231,7 @@ class RenderWorld:
 	for index in self.index_list:
 		#print "INDEX:", index
 		glCallList(index)
+	
 	
         glDisable(GL_LIGHTING)
         glLoadIdentity()

@@ -26,7 +26,13 @@ class Convert:
         
         return converted_amt
         
-        
+    def convert_for_triangle(self, axis, hm_num, size):
+	if axis == 'x':
+		return hm_num
+	else:
+		new_num = hm_num - size
+		return new_num
+
     def _find_coord_system(self, name):
         if name == 'h':
             return self.height_map_scale

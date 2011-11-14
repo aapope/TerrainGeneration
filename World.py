@@ -54,12 +54,14 @@ class World:
 				ds = DiamondSquare((x, y))
 				ds.diamond_square_tile(self.diamonds)
 				self.diamonds[(x,y)] = ds
-				#if (not x == 0 and not y == -1) or (not x == 0 and not y == 0):# or (x != 0 and y != -1):
+				#if (not x == 1 and not y == -1):
+					#if (not x == 0 and not y == 0):
+						#if (not x == -1 and not y == 1):# or (not x == 1 and not y == -1):
 				ds.save(PATH+str(x)+"_"+str(y)+".bmp")
 	
 	#Used to update camera location
 	def update_loc(self,x,y,z):
-		#print str(x),",",str(y)+",", str(z)
+		print str(x),",",str(y)+",", str(z)
 		x = int(x)
 		z = int(z)
 		if not self.is_in_tile(x,z,self.curr_x, self.curr_y):		
@@ -121,7 +123,7 @@ class World:
 		queue = Queue.Queue()
 		
 		def render_thing(queue):
-			
+			print "started..."
 			location = queue.get()		
 			x,y = location
 			

@@ -45,26 +45,15 @@ class LoadTerrain:
     
         return heights
 
-#<<<<<<< HEAD
-    #def createRenderList(self, heights):
-        #face_norms is dict of face (3-tuple of vertices defining face, counterclockwise
-        #starting from the upper left) : face normal
-        #vert_norms is dict of vertex : normal
-        #face_norms, vert_norms = calc_face_normals(heights, self.convert)
-        
-
-        #rend = RenderTexture(heights, self.convert, self.tex_holder)#, face_norms)
-        
-
-        
-#=======
 
     def createRenderList(self, heights, textname):
         #rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
 	rend = RenderTexture(heights, self.convert, self.tex_holder)
 	tex_file_name = rend.run(self.filename.split('/')[-1])
-	face_norms, vert_norms = LinAlgOps.calc_face_normals(heights, self.convert)
-	
-	return (tex_file_name, face_norms, vert_norms)
+	print "start norms"	
+	#face_norms, vert_norms = LinAlgOps.calc_face_normals(heights, self.convert)
+	print "end norms"
+	return (tex_file_name, 0, 0)
+	#return (tex_file_name, face_norms, vert_norms)
 
 
