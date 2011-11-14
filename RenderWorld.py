@@ -242,8 +242,8 @@ class RenderWorld:
 
     def load_skybox(self):
         #self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
-        map_length = self.convert.open_gl_scale
-        self.skybox = Skybox(self.tex_holder, (5000,5000,5000))
+        scale = self.convert.gl_x+self.convert.gl_z
+        self.skybox = Skybox(self.tex_holder, (scale,scale,scale))
         self.sky_index = self.skybox.createCallList(1, 3)
 
     def display(self, x=0, y=0):
@@ -277,7 +277,7 @@ class RenderWorld:
         glLoadIdentity()
 
 	self.camera.renderRotateCamera()
-        glTranslate(-self.skybox.x/2, -10, -self.skybox.z/2)
+        glTranslate(-self.skybox.x/2, -10-self.camera.pos_Y, -self.skybox.z/2)
         glCallList(self.sky_index)
         
         glDisable(GL_TEXTURE_2D)
