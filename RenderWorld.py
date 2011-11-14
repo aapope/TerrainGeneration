@@ -264,18 +264,14 @@ class RenderWorld:
         
 	self.renderLightSource()
 	
+        glEnable(GL_LIGHTING)
+        glEnable(GL_LIGHT0)
+        glEnable(GL_LIGHT1)
 
 	for index in self.index_list:
 		#print "INDEX:", index
 		glCallList(index)
 	
-
-        
-        glEnable(GL_LIGHTING)
-        glEnable(GL_LIGHT0)
-        glEnable(GL_LIGHT1)
-        #glCallList(self.index)
-        
         glDisable(GL_LIGHTING)
 
         glLoadIdentity()
