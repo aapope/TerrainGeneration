@@ -39,11 +39,11 @@ class Run:
         self.stack = []
         self.recursions = recursions
         self.create_string()
-        self.im = Image.new("RGB", (self.IM_SIZE, self.IM_SIZE))
+        self.im = Image.new("RGBA", (self.IM_SIZE, self.IM_SIZE))
         self.im_draw = ImageDraw.Draw(self.im)
         for i in range(1, number_plants+1):
             self.draw(i)
-        self.im.save('l-system.bmp')
+        self.im.save('l-system.jpg')
 
     def create_string(self):
         for times in range(self.recursions):

@@ -103,8 +103,8 @@ class RenderWorld:
                			glTexCoord2f(x/float(self.convert.gl_x), -(z+1)/float(self.convert.gl_z))
                 		pt = (point1x+offsetx, heights[x][z+1], point1z-offsetz)
 				#m_point = (point1x, heights[x][z+1], point1z)
-				#norm = vert_norms[m_point]
-                		#glNormal3f(norm[0],norm[1],norm[2])
+				norm = vert_norms[m_point]
+                		glNormal3f(norm[0],norm[1],norm[2])
                 		glVertex3f(pt[0],pt[1],pt[2])
 				#############################################
                 		#second point (0,0)
@@ -116,8 +116,8 @@ class RenderWorld:
 
                 		pt = (point2x+offsetx, heights[x][z], point2z-offsetz)
 				#m_point = (point2x, heights[x][z], point2z)
-                		#norm = vert_norms[m_point]
-                		#glNormal3f(norm[0],norm[1],norm[2])
+                		norm = vert_norms[m_point]
+                		glNormal3f(norm[0],norm[1],norm[2])
                 		glVertex3f(pt[0],pt[1],pt[2])
 
            		glEnd()
@@ -168,13 +168,12 @@ class RenderWorld:
 
         glShadeModel(GL_SMOOTH)
         #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-        #glEnable(GL_DEPTH_TEST)
 
         glEnable(GL_FOG)
         glFogi (GL_FOG_MODE, GL_EXP2)
         glFogfv (GL_FOG_COLOR, (.8,.8,.8,1))
         glFogf (GL_FOG_DENSITY, .0004)
-        glHint (GL_FOG_HINT, GL_NICEST)
+        glHint (GL_FOG_HINT, GL_FASTEST)
     
     def renderLightSource(self):
         '''Resets the light sources to the right position.'''
