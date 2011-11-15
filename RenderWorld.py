@@ -1,5 +1,4 @@
 '''Contains a class that doesnt renders the maze itself.'''
-
 __author__ = "Andrew, Jordan, Sam"
 __date__ = "10 November 2011"
 
@@ -101,7 +100,7 @@ class RenderWorld:
 				point1x = self.to_gl('x', x)	#first point x value in opengl coordinate
 				point1z = self.to_gl('z', z+1)  #first point z value in opengl coordinate
 
-               			glTexCoord2f(x/float(self.convert.gl_x), (z+1)/float(self.convert.gl_z))
+               			glTexCoord2f(x/float(self.convert.gl_x), -(z+1)/float(self.convert.gl_z))
                 		pt = (point1x+offsetx, heights[x][z+1], point1z-offsetz)
 				#m_point = (point1x, heights[x][z+1], point1z)
 				#norm = vert_norms[m_point]
@@ -113,7 +112,7 @@ class RenderWorld:
 				point2x = self.to_gl('x',x)     #second point x value in opengl coordinate
 				point2z = self.to_gl('z',z)     #second point z value in opengl coordinate
 		
-                		glTexCoord2f(x/float(self.convert.gl_x), z/float(self.convert.gl_z))
+                		glTexCoord2f(x/float(self.convert.gl_x), -z/float(self.convert.gl_z))
 
                 		pt = (point2x+offsetx, heights[x][z], point2z-offsetz)
 				#m_point = (point2x, heights[x][z], point2z)
