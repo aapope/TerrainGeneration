@@ -74,9 +74,9 @@ class RenderWorld:
 
     def to_gl(self, axis, oldnum):
 	if axis == 'x':
-		return self.convert.convert_for_triangle('x', oldnum, self.MAP_SIZE)
+		return self.convert.convert_for_triangle('x', oldnum)
 	else:
-		return self.convert.convert_for_triangle('z', oldnum, self.MAP_SIZE)
+		return self.convert.convert_for_triangle('z', oldnum)
 
     def create_render_newlist(self):
 	self.need_lists = False	
@@ -102,9 +102,9 @@ class RenderWorld:
 
                			glTexCoord2f(x/float(self.convert.gl_x), -(z+1)/float(self.convert.gl_z))
                 		pt = (point1x+offsetx, heights[x][z+1], point1z-offsetz)
-				#m_point = (point1x, heights[x][z+1], point1z)
-				#norm = vert_norms[m_point]
-                		#glNormal3f(norm[0],norm[1],norm[2])
+				m_point = (point1x, heights[x][z+1], point1z)
+				norm = vert_norms[m_point]
+                		glNormal3f(norm[0],norm[1],norm[2])
                 		glVertex3f(pt[0],pt[1],pt[2])
 				#############################################
                 		#second point (0,0)
@@ -115,9 +115,9 @@ class RenderWorld:
                 		glTexCoord2f(x/float(self.convert.gl_x), -z/float(self.convert.gl_z))
 
                 		pt = (point2x+offsetx, heights[x][z], point2z-offsetz)
-				#m_point = (point2x, heights[x][z], point2z)
-                		#norm = vert_norms[m_point]
-                		#glNormal3f(norm[0],norm[1],norm[2])
+				m_point = (point2x, heights[x][z], point2z)
+                		norm = vert_norms[m_point]
+                		glNormal3f(norm[0],norm[1],norm[2])
                 		glVertex3f(pt[0],pt[1],pt[2])
 
            		glEnd()
@@ -191,7 +191,7 @@ class RenderWorld:
 
     def set_up_convert(self):
         #heightmap, texture, gl
-        self.convert = Convert((1, 1, 1), (10, 1, 10), (1*self.SCALE, 35*self.SCALE, 1*self.SCALE))
+        self.convert = Convert((1, 1, 1), (10, 1, 10), (1*self.SCALE, 35*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
         
 
     def load_map(self, heightmap_filename):
