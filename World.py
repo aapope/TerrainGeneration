@@ -45,6 +45,7 @@ class World:
 	def create_world(self):
 		self.init_world()
 		self.rw.index_list = []
+		self.initalize = True
 		nlist = self.create_lists()	
 		self.rw.lock.acquire()
 		self.rw.index_list = nlist
@@ -130,37 +131,45 @@ class World:
 	#Used to create the call lists
 	def create_lists(self):
 		
-		self.trans.location_var = {}
-
+		#
+		new_dic = {}
 		queue = Queue.Queue()
 		
-		def render_thing(queue):
-			print "started..."
-			location = queue.get()		
-			x,y = location
+		def render_thing(queue,):
+			#print "started..."
+			location = queue.get()
+			if not location in self.trans.location_var:		
+				x,y = location
 			
-			load = LoadTerrain(PATH+str(x)+"_"+str(y)+".bmp", self.rw.convert, self.rw.tex_holder)
-			heights = load.load()
+				load = LoadTerrain(PATH+str(x)+"_"+str(y)+".bmp", self.rw.convert, self.rw.tex_holder)
+				heights = load.load()
 			
-			tex_file_name, face_norms, vert_norms = load.createRenderList(heights,str(x)+"_"+str(y))
+				if self.initalize:
+					tex_file_name, face_norms, vert_norms = load.init_createRenderList(heights,str(x)+"_"+str(y))
+				else:
+					tex_file_name, face_norms, vert_norms = load.createRenderList(heights,str(x)+"_"+str(y))
 			
-			self.trans.location_var[location] = (tex_file_name, face_norms, vert_norms, heights, x*self.OFFSET, -y*self.OFFSET, str(x)+"_"+str(y), self.pos_list.index(location))
-			print "CREATED TEXTURE"
+				new_dic[location] = (tex_file_name, face_norms, vert_norms, heights, x*self.OFFSET, -y*self.OFFSET, str(x)+"_"+str(y), self.pos_list.index(location))
+				#print "CREATED TEXTURE"
+			else:
+				new_dic[location] = self.trans.location_var[location]
+
 			queue.task_done()
-		
-		for location in self.pos_list:
-			queue.put(location)
 
 		for i in range(self.size*self.size):
 			t = threading.Thread(target=render_thing, args=(queue,))
 			t.setDaemon(False)
               		t.start()
+		
+		for location in self.pos_list:
+			queue.put(location)
 
 		queue.join()
 		
 		print "setting boolean"
 		self.rw.need_lists = True
-
+		self.initalize = False
+		self.trans.location_var = new_dic
 		#self.index_list = new_list
 		
 					

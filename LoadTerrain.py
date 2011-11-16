@@ -44,13 +44,22 @@ class LoadTerrain:
     
         return heights
 
+    def init_createRenderList(self, heights, textname):
+        #rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
+        rend = RenderTexture(heights, self.convert, self.tex_holder)
+        tex_file_name = rend.initial_run(self.filename.split('/')[-1])
+        #print "start norms"
+        face_norms, vert_norms = LinAlgOps.calc_face_normals(heights, self.convert)
+        #print "end norms"
+        #return (tex_file_name, 0, 0)
+        return (tex_file_name, face_norms, vert_norms)
 
     def createRenderList(self, heights, textname):
         #rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
         rend = RenderTexture(heights, self.convert, self.tex_holder)
         tex_file_name = rend.run(self.filename.split('/')[-1])
-        print "start norms"
+        #print "start norms"
         face_norms, vert_norms = LinAlgOps.calc_face_normals(heights, self.convert)
-        print "end norms"
+        #print "end norms"
         #return (tex_file_name, 0, 0)
         return (tex_file_name, face_norms, vert_norms)

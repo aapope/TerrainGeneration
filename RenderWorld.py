@@ -92,7 +92,7 @@ class RenderWorld:
 	self.need_lists = False	
 	new_list = []
 	for location, values in self.trans.location_var.items():
-		print "RENDERING IN OPEN GL", location
+		#print "RENDERING IN OPEN GL", location
 		tex_file_name, face_norms, vert_norms, heights, offsetx, offsetz, textname, textid = values
 		#print vert_norms
 
