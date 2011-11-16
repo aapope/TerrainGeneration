@@ -16,18 +16,16 @@ def get_vector(v0, v1):
 
 def calc_face_normals(heights, convert):
     '''dict of face normals with vertex : array of face normals it's a part of'''
-    x_scale = convert.open_gl_scale[0] / convert.height_map_scale[0]
-    z_scale = convert.open_gl_scale[2] / convert.height_map_scale[2]
     #vertex : normal
     face_normals = {}
     #points on face (tuple, clockwise starting with the upper left vertex) : normal
     face = {}
     for x in range(0, len(heights)-1):
         for z in range(0, len(heights[x])-1):
-            p3 = ((x+1)*x_scale, heights[x+1][z], -z*z_scale)
-            p2 = (x*x_scale, heights[x][z+1], -(z+1)*z_scale)
-            p0 = (x*x_scale, heights[x][z], -z*z_scale)
-            p1 = ((x+1)*x_scale, heights[x+1][z+1], -(z+1)*z_scale)
+            p3 = (convert.convert_for_triangle('x', (x+1)), heights[x+1][z], convert.convert_for_triangle('z', z))
+            p2 = (convert.convert_for_triangle('x', x), heights[x][z+1], convert.convert_for_triangle('z', (z+1)))
+            p0 = (convert.convert_for_triangle('x', x), heights[x][z], convert.convert_for_triangle('z', z))
+            p1 = (convert.convert_for_triangle('x', (x+1)), heights[x+1][z+1], convert.convert_for_triangle('z', (z+1)))
             
             v0 = get_vector(p0, p1)
             v1 = get_vector(p0, p2)

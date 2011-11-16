@@ -18,12 +18,12 @@ class RenderTexture:
 
     def run(self, name):
         path = 'data/textures/maps/'+name
-        if not os.path.isfile(path):
-            print 'New texture'
-            self.create_texture(self.texture.load())
-            return self.save(path)
-        else:
-            return path
+        #if not os.path.isfile(path):
+        print 'New texture'
+        self.create_texture(self.texture.load())
+        return self.save(path)
+        #else:
+            #return path
 
 
     def save(self, path):

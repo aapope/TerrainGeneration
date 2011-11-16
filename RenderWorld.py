@@ -1,5 +1,4 @@
 '''Contains a class that doesnt renders the maze itself.'''
-
 __author__ = "Andrew, Jordan, Sam"
 __date__ = "10 November 2011"
 
@@ -22,12 +21,11 @@ class RenderWorld:
     '''
     WINDOW_WIDTH = 700
     WINDOW_HEIGHT = 700
-    SCALE = .5
-    MAP_SIZE =100
+    SCALE = 1
+    MAP_SIZE =128
     X_FACTOR = 1
     Y_FACTOR = 1
     Z_FACTOR = 1
-    MAP_SIZE = 100
     SEA_LEVEL = 4
 
     def __init__(self, transaction):
@@ -74,40 +72,57 @@ class RenderWorld:
     def start_loop(self):	
 	glutMainLoop()
 
+    def to_gl(self, axis, oldnum):
+	if axis == 'x':
+		return self.convert.convert_for_triangle('x', oldnum)
+	else:
+		return self.convert.convert_for_triangle('z', oldnum)
+
     def create_render_newlist(self):
 	self.need_lists = False	
 	new_list = []
 	for location, values in self.trans.location_var.items():
 		print "RENDERING IN OPEN GL", location
 		tex_file_name, face_norms, vert_norms, heights, offsetx, offsetz, textname, textid = values
-		
+		#print vert_norms
+
 		self.texture = self.tex_holder.hold_my_texture(tex_file_name, textname)
 
         	index = glGenLists(1)
 		glNewList(index, GL_COMPILE)
         	self.tex_holder.applyTexture(self.texture)
-
-        	for x in range(1, len(heights)):
+		
+		#go by rows
+        	for z in range(len(heights)-1):
             		glBegin(GL_TRIANGLE_STRIP)
-            		for z in range(len(heights[x])):
-               			glTexCoord2f(self.convert.convert('h', 'g', 'x', x)/float(self.convert.gl_x), self.convert.convert('h', 'g', 'z', -z)/float(self.convert.gl_z))
+            		for x in range(len(heights[z])):
+				
+				#start at (0,1)
+				point1x = self.to_gl('x', x)	#first point x value in opengl coordinate
+				point1z = self.to_gl('z', z+1)  #first point z value in opengl coordinate
 
-                		pt = (self.convert.convert('h', 'g', 'x', x+offsetx), heights[x][z], self.convert.convert('h','g','z',-z+offsetz))
-				norm_point = (self.convert.convert('h', 'g', 'x', x), heights[x][z], self.convert.convert('h','g','z',-z))                		
-				norm = vert_norms[norm_point]
+               			glTexCoord2f(x/float(self.convert.gl_x), -(z+1)/float(self.convert.gl_z))
+                		pt = (point1x+offsetx, heights[x][z+1], point1z-offsetz)
+				m_point = (point1x, heights[x][z+1], point1z)
+				norm = vert_norms[m_point]
+                		glNormal3f(norm[0],norm[1],norm[2])
+                		glVertex3f(pt[0],pt[1],pt[2])
+				#############################################
+                		#second point (0,0)
+				
+				point2x = self.to_gl('x',x)     #second point x value in opengl coordinate
+				point2z = self.to_gl('z',z)     #second point z value in opengl coordinate
+		
+                		glTexCoord2f(x/float(self.convert.gl_x), -z/float(self.convert.gl_z))
+
+                		pt = (point2x+offsetx, heights[x][z], point2z-offsetz)
+				m_point = (point2x, heights[x][z], point2z)
+                		norm = vert_norms[m_point]
                 		glNormal3f(norm[0],norm[1],norm[2])
                 		glVertex3f(pt[0],pt[1],pt[2])
 
-                
-                		glTexCoord2f(self.convert.convert('h', 'g', 'x', x-1)/float(self.convert.gl_x), self.convert.convert('h', 'g', 'z', -z)/float(self.convert.gl_z))
-
-                		pt = (self.convert.convert('h', 'g', 'x', (x-1)+offsetx), heights[x-1][z], self.convert.convert('h','g','z',-z+offsetz))
-				norm_point = (self.convert.convert('h', 'g', 'x', x-1), heights[x-1][z], self.convert.convert('h','g','z',-z))
-                		norm = vert_norms[norm_point]
-                		glNormal3f(norm[0],norm[1],norm[2])
-                		glVertex3f(pt[0],pt[1],pt[2])
            		glEnd()
-                
+                	#print z
 
         	'''Water plane'''
         	self.tex_holder.applyTexture('water')
@@ -128,65 +143,10 @@ class RenderWorld:
         	glEndList()
 		
 		new_list.append(index)
-	 	'''
-		filename = 'data/textures/texture'+textname+'.bmp'
-		self.texture = self.loadTexture(filename, textid)		
-		#load water
-			
-		self.texture = self.loadTexture(rend.run(heights, textname), textid)
-		water = 'data/textures/water/water2.bmp'
-		water_tex = self.loadTexture(water, 1)
-	
-		#create new genlist
-		index = glGenLists(1)
-		glNewList(index, GL_COMPILE)
-	
-		self.applyTexture(self.texture)
-	
-		z_incr = self.Z_FACTOR/float(len(heights))
-		x_incr = self.X_FACTOR/float(len(heights[0]))
-	
-		#creates triangle list and applies texture
-		for y in range(1, len(heights)):
-		    glBegin(GL_TRIANGLE_STRIP)
-		    for x in range(len(heights[y])):
-		
-			glTexCoord2f((len(heights)- y) * z_incr,-(x) * x_incr)
-		        
-			pt = ((x+offsetx)*self.X_FACTOR, heights[x][-y], -(y-1 + offsetz)*self.Z_FACTOR)
-		        #norm = vert_norms[pt]
-		        #glNormal3f(norm[0],norm[1],norm[2])
-		        glVertex3f(pt[0],pt[1],pt[2])
-
-			glTexCoord2f((len(heights)- y-1) * z_incr,-(x) * x_incr)
-		        
-			pt = ((x+offsetx)*self.X_FACTOR, heights[x][-y-1], -(y + offsetz)*self.Z_FACTOR)
-		        #norm = vert_norms[pt]
-		        #glNormal3f(norm[0],norm[1],norm[2])
-		        glVertex3f(pt[0],pt[1],pt[2])
-		    glEnd()
-		glEndList()'''
 		
 	
 	self.index_list = new_list
 	#self.index_list = new_list
-		
-	'''
-    #used to load a texture from a filename and apply it to triangles
-    def loadTexture(self, filenames, texId):
-        glGenTextures(1, texId)
-        glBindTexture(GL_TEXTURE_2D, texId)
-	images = []
-        images.append(Image.open(filenames))
-        glTexImage2D(GL_TEXTURE_2D, 0, 3, images[-1].size[0], images[-1].size[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, images[-1].tostring("raw","RGBX",0,-1))
-        return texId
-
-    #used to apply texture used a textID
-    def applyTexture(self, tex_id):
-        glEnable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, tex_id)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)'''
 
     def set_up_graphics(self):
         '''Sets up OpenGL to provide double buffering, RGB coloring,
@@ -209,13 +169,12 @@ class RenderWorld:
 
         glShadeModel(GL_SMOOTH)
         #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-        #glEnable(GL_DEPTH_TEST)
 
         glEnable(GL_FOG)
         glFogi (GL_FOG_MODE, GL_EXP2)
         glFogfv (GL_FOG_COLOR, (.8,.8,.8,1))
         glFogf (GL_FOG_DENSITY, .0004)
-        glHint (GL_FOG_HINT, GL_NICEST)
+        glHint (GL_FOG_HINT, GL_FASTEST)
     
     def renderLightSource(self):
         '''Resets the light sources to the right position.'''
@@ -232,7 +191,7 @@ class RenderWorld:
 
     def set_up_convert(self):
         #heightmap, texture, gl
-        self.convert = Convert((1, 1, 1), (10, 1, 10), (1*self.SCALE, 35*self.SCALE, 1*self.SCALE))
+        self.convert = Convert((1, 1, 1), (10, 1, 10), (1*self.SCALE, 35*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
         
 
     def load_map(self, heightmap_filename):
@@ -271,6 +230,7 @@ class RenderWorld:
 	for index in self.index_list:
 		#print "INDEX:", index
 		glCallList(index)
+	
 	
         glDisable(GL_LIGHTING)
 

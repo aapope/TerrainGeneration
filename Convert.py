@@ -1,12 +1,13 @@
 
 class Convert:
 
-    def __init__(self, height_map, texture, gl):
+    def __init__(self, height_map, texture, gl, map_size):
         #Tuples for each axis's scale
         self.height_map_scale = height_map
         self.texture_scale = texture
         self.open_gl_scale = gl
         self.sea_level = self.open_gl_scale[1]/float(15)
+        self.size = map_size
 
     def set_dimensions(self, x, z):
         self.heightmap_x = x
@@ -26,7 +27,13 @@ class Convert:
         
         return converted_amt
         
-        
+    def convert_for_triangle(self, axis, hm_num):
+	if axis == 'x':
+		return hm_num
+	else:
+		new_num = hm_num - self.size
+		return new_num
+
     def _find_coord_system(self, name):
         if name == 'h':
             return self.height_map_scale
