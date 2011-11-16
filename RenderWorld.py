@@ -22,7 +22,7 @@ class RenderWorld:
     WINDOW_WIDTH = 700
     WINDOW_HEIGHT = 700
     SCALE = 1
-    MAP_SIZE =128
+    MAP_SIZE =8
     X_FACTOR = 1
     Y_FACTOR = 1
     Z_FACTOR = 1
@@ -191,7 +191,7 @@ class RenderWorld:
 
     def set_up_convert(self):
         #heightmap, texture, gl
-        self.convert = Convert((1, 1, 1), (10, 1, 10), (1*self.SCALE, 35*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
+        self.convert = Convert((1, 1, 1), (11, 1, 11), (1*self.SCALE, 5*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
         
 
     def load_map(self, heightmap_filename):

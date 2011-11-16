@@ -5,7 +5,7 @@ YFACTOR = 25
 ZFACTOR = 1
 
 FACTOR = 1
-OFFSET = 128
+OFFSET = 8
 from DiamondSquare import DiamondSquare
 from LoadTerrain import LoadTerrain
 import threading
@@ -51,7 +51,7 @@ class World:
 			for x in range(-FACTOR, self.size-FACTOR):
 				#print "POS:",x,y
 				self.pos_list.append((x,y))				
-				ds = DiamondSquare((x, y))
+				ds = DiamondSquare((x, y), (OFFSET+1, OFFSET+1))
 				ds.diamond_square_tile(self.diamonds)
 				self.diamonds[(x,y)] = ds
 				#if (not x == 1 and not y == -1):
@@ -103,7 +103,7 @@ class World:
 			for newx in range(x-1, x+2):
 				self.pos_list.append((newx,newy))
 				if not (newx, newy) in self.diamonds:
-					ds = DiamondSquare((newx,newy))
+					ds = DiamondSquare((newx,newy), (OFFSET+1, OFFSET+1))
 					ds.diamond_square_tile(self.diamonds)
 					self.diamonds[(newx,newy)] = ds
 					ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")

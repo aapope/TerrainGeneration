@@ -1,6 +1,8 @@
 import os
 from TextureHolder import TextureHolder
 import LinAlgOps
+import Image
+from RenderTexture import *
 
 class LoadTerrain:
     X_FACTOR = 1

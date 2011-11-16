@@ -12,10 +12,10 @@ DOWN = 3
 
 class DiamondSquare:
 
-    def __init__(self, location):
+    def __init__(self, location, size):
 	self.x, self.y = location
-	self.width = 129
-	self.height = 129
+	self.width = size[0]
+	self.height = size[1]
    	self.heights = []
         for r in range(self.height):
             self.heights.append([0] * self.width)
