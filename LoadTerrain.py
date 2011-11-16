@@ -53,7 +53,7 @@ class LoadTerrain:
 	print "start norms"	
 	face_norms, vert_norms = LinAlgOps.calc_face_normals(heights, self.convert)
 	print "end norms"
-	return (tex_file_name, 0, 0)
-	#return (tex_file_name, face_norms, vert_norms)
+	#return (tex_file_name, 0, 0)
+	return (tex_file_name, face_norms, vert_norms)
 
 

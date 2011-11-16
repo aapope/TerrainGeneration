@@ -22,10 +22,10 @@ def calc_face_normals(heights, convert):
     face = {}
     for x in range(0, len(heights)-1):
         for z in range(0, len(heights[x])-1):
-            p3 = (convert.convert_for_triangle('x', (x+1)), heights[x+1][z], convert.convert_for_triangle('z', -z))
-            p2 = (convert.convert_for_triangle('x', x), heights[x][z+1], convert.convert_for_triangle('z', -(z+1)))
-            p0 = (convert.convert_for_triangle('x', x), heights[x][z], convert.convert_for_triangle('z', -z))
-            p1 = (convert.convert_for_triangle('x', (x+1)), heights[x+1][z+1], convert.convert_for_triangle('z', -(z+1)))
+            p3 = (convert.convert_for_triangle('x', (x+1)), heights[x+1][z], convert.convert_for_triangle('z', z))
+            p2 = (convert.convert_for_triangle('x', x), heights[x][z+1], convert.convert_for_triangle('z', (z+1)))
+            p0 = (convert.convert_for_triangle('x', x), heights[x][z], convert.convert_for_triangle('z', z))
+            p1 = (convert.convert_for_triangle('x', (x+1)), heights[x+1][z+1], convert.convert_for_triangle('z', (z+1)))
             
             v0 = get_vector(p0, p1)
             v1 = get_vector(p0, p2)
