@@ -8,7 +8,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from Camera import Camera
-from Structure import Structure
+from Grass import Grass
 
 class TestRender:
     '''This is the class that renders maze.
@@ -63,7 +63,11 @@ class TestRender:
         gluPerspective(45,1,.1,500)
         glMatrixMode(GL_MODELVIEW)
 
-        #glClearColor(.529,.8078,.980,0)
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable (GL_BLEND)
+        
+        
+        glClearColor(.529,.8078,.980,0)
         glEnable(GL_NORMALIZE)
 
         glEnable (GL_DEPTH_TEST)
@@ -71,8 +75,8 @@ class TestRender:
         #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
     
     def load_object(self):
-        self.load = Structure()
-        self.structure = self.load.create_structure()
+        self.load = Grass()
+        self.structure = self.load.create_grass_list()
 
     def display(self, x=0, y=0):
 
