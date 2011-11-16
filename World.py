@@ -4,8 +4,8 @@ XFACTOR = 1
 YFACTOR = 25
 ZFACTOR = 1
 
-FACTOR = 1
-OFFSET = 8
+CONFIG = "constants.conf"
+
 from DiamondSquare import DiamondSquare
 from LoadTerrain import LoadTerrain
 import threading
@@ -16,10 +16,19 @@ import time
 PATH = ""
 
 class World:
+	
 
 	def __init__(self, rw, transaction):
+		f = open(CONFIG)
+		lines = f.read().split("\n")
+		self.OFFSET = int(lines[1].split()[1])
+		self.size = int(lines[2].split()[1])			
+		self.FACTOR = int(self.size)/2
+		print self.size, self.FACTOR
+		f.close()		
+
 		self.rw = rw
-		self.size = 3
+		#self.size = 5
 		self.curr_x = 0
 		self.curr_y = 0
 		self.diamonds = {}
@@ -27,6 +36,9 @@ class World:
 		self.pos_list = []
 		self.total_terr = 1
 		self.trans = transaction
+		
+		
+		
 		#self.text_holder = TextureHolder()
 		
 	#used to create the inital world
@@ -47,11 +59,11 @@ class World:
 	
 	#Used to create the inital world
 	def init_world(self):
-		for y in range(-FACTOR, self.size-FACTOR):
-			for x in range(-FACTOR, self.size-FACTOR):
+		for y in range(-self.FACTOR, self.size-self.FACTOR):
+			for x in range(-self.FACTOR, self.size-self.FACTOR):
 				#print "POS:",x,y
 				self.pos_list.append((x,y))				
-				ds = DiamondSquare((x, y), (OFFSET+1, OFFSET+1))
+				ds = DiamondSquare((x, y), (self.OFFSET+1, self.OFFSET+1))
 				ds.diamond_square_tile(self.diamonds)
 				self.diamonds[(x,y)] = ds
 				#if (not x == 1 and not y == -1):
@@ -85,12 +97,12 @@ class World:
 	def is_in_tile(self,x,z,posx, posy):
 	
 		if posy < 0:
-			if x in range(posx*OFFSET, (posx+1)*(OFFSET)) and z in range((posy)*(OFFSET), (posy-1)*OFFSET, -1):
+			if x in range(posx*self.OFFSET, (posx+1)*(self.OFFSET)) and z in range((posy)*(self.OFFSET), (posy-1)*self.OFFSET, -1):
 				return True
 			else:
 				return False
 		else:
-			if x in range(posx*OFFSET, (posx+1)*(OFFSET)) and z in range((posy-1)*(OFFSET), (posy)*OFFSET):
+			if x in range(posx*self.OFFSET, (posx+1)*(self.OFFSET)) and z in range((posy-1)*(self.OFFSET), (posy)*self.OFFSET):
 				return True
 			else:
 				return False
@@ -99,11 +111,11 @@ class World:
 	def update_diamonds(self, new_loc):
 		x,y = new_loc
 		self.pos_list = []
-		for newy in range(y-1, y+2):
-			for newx in range(x-1, x+2):
+		for newy in range(y-self.FACTOR, y+self.FACTOR+1):
+			for newx in range(x-self.FACTOR, x+self.FACTOR+1):
 				self.pos_list.append((newx,newy))
 				if not (newx, newy) in self.diamonds:
-					ds = DiamondSquare((newx,newy), (OFFSET+1, OFFSET+1))
+					ds = DiamondSquare((newx,newy), (self.OFFSET+1, self.OFFSET+1))
 					ds.diamond_square_tile(self.diamonds)
 					self.diamonds[(newx,newy)] = ds
 					ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
@@ -132,17 +144,17 @@ class World:
 			
 			tex_file_name, face_norms, vert_norms = load.createRenderList(heights,str(x)+"_"+str(y))
 			
-			self.trans.location_var[location] = (tex_file_name, face_norms, vert_norms, heights, x*OFFSET, -y*OFFSET, str(x)+"_"+str(y), self.pos_list.index(location))
+			self.trans.location_var[location] = (tex_file_name, face_norms, vert_norms, heights, x*self.OFFSET, -y*self.OFFSET, str(x)+"_"+str(y), self.pos_list.index(location))
 			print "CREATED TEXTURE"
 			queue.task_done()
 		
-		for i in range(9):
-			t = threading.Thread(target=render_thing, args=(queue,))
-			t.setDaemon(True)
-              		t.start()
-
 		for location in self.pos_list:
 			queue.put(location)
+
+		for i in range(self.size*self.size):
+			t = threading.Thread(target=render_thing, args=(queue,))
+			t.setDaemon(False)
+              		t.start()
 
 		queue.join()
 		
