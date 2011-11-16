@@ -45,20 +45,6 @@ class LoadTerrain:
     
         return heights
 
-#<<<<<<< HEAD
-    #def createRenderList(self, heights):
-        #face_norms is dict of face (3-tuple of vertices defining face, counterclockwise
-        #starting from the upper left) : face normal
-        #vert_norms is dict of vertex : normal
-        #face_norms, vert_norms = calc_face_normals(heights, self.convert)
-        
-
-        #rend = RenderTexture(heights, self.convert, self.tex_holder)#, face_norms)
-        
-
-        
-#=======
-
     def createRenderList(self, heights, textname):
         #rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
 	rend = RenderTexture(heights, self.convert, self.tex_holder)
