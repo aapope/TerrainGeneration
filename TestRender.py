@@ -9,6 +9,7 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from Camera import Camera
 from Grass import Grass
+from Structure import Structure
 
 class TestRender:
     '''This is the class that renders maze.
@@ -75,6 +76,10 @@ class TestRender:
         #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
     
     def load_object(self):
+        self.load = Structure()
+        self.structure = self.load.create_structure()
+
+    def load_object2(self):
         self.load = Grass()
         self.structure = self.load.create_grass_list()
 

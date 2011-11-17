@@ -191,7 +191,7 @@ class RenderWorld:
 
     def set_up_convert(self):
         #heightmap, texture, gl
-        self.convert = Convert((1, 1, 1), (11, 1, 11), (1*self.SCALE, 5*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
+        self.convert = Convert((1, 1, 1), (50, 1, 50), (1*self.SCALE, 5*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
         
 
     def load_map(self, heightmap_filename):
@@ -237,7 +237,7 @@ class RenderWorld:
         glLoadIdentity()
 
 	self.camera.renderRotateCamera()
-        glTranslate(-self.skybox.x/2, -10-self.camera.pos_Y, -self.skybox.z/2)
+        glTranslate(-self.skybox.x/2, -2-self.camera.pos_Y, -self.skybox.z/2)
         glCallList(self.sky_index)
         
         glDisable(GL_TEXTURE_2D)
