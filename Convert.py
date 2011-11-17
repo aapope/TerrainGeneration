@@ -8,6 +8,10 @@ class Convert:
         self.open_gl_scale = gl
         self.sea_level = self.open_gl_scale[1]/float(15)
         self.size = map_size
+        #print self.size
+        self.gl_x = self.size * self.open_gl_scale[0]
+        self.gl_y = self.open_gl_scale[1]
+        self.gl_z = self.size * self.open_gl_scale[2]
 
     def set_dimensions(self, x, z):
         self.heightmap_x = x
