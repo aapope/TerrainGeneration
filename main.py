@@ -17,6 +17,7 @@ if __name__ == '__main__':
         RENDER = RenderWorld(None)
 ======='''
 import sys
+import os
 import threading
 from World import World
 from RenderWorld import RenderWorld
@@ -24,21 +25,24 @@ from ThreadTransaction import ThreadTransaction
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
-	pass
-        #RENDER = RenderWorld(sys.argv[1])
-    else:
-	trans = ThreadTransaction()
-	r = RenderWorld(trans)
-	w = World(r, trans)	
-	
-	w.create_world()
-	r.set_up()	
-	
-	background_thread = threading.Thread(target=w.start)
+        for i in range(1, len(sys.argv)):
+            if sys.argv[i].startswith('n'):
+                os.system('rm data/textures/maps/*')
+                os.system('rm data/heightmaps/*')
+                print 'Removing maps'
+
+    trans = ThreadTransaction()
+    r = RenderWorld(trans)
+    w = World(r, trans)	
+    
+    w.create_world()
+    r.set_up()	
+    
+    background_thread = threading.Thread(target=w.start)
 	#graphic_thread = threading.Thread(target=r.start_loop)
 	
-	background_thread.start()
-	r.start_loop()
+    background_thread.start()
+    r.start_loop()
 
 	
 	#graphic_thread.start()

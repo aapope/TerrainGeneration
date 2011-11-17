@@ -14,7 +14,7 @@ import time
 from multiprocessing import Process, JoinableQueue, Queue, Pipe
 #from RenderThread import RenderThread
 
-PATH = ""
+PATH = "data/heightmaps/"
 
 class World:
 	

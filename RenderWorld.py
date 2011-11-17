@@ -37,6 +37,7 @@ class RenderWorld:
         lines = f.read().split("\n")
         self.QUALITY = int(lines[0].split()[1])
         self.MAP_SIZE = int(lines[1].split()[1])
+        self.SKYBOX_SIZE = float(lines[2].split()[1])/3
         f.close()
         
         self.set_up_convert()
@@ -136,23 +137,32 @@ class RenderWorld:
             #print z
 
             '''Water plane'''
+            glDisable(GL_LIGHTING)
+            water_path = 'data/textures/water/water.bmp'
+            self.tex_holder.hold_my_texture(water_path, 'water')
             self.tex_holder.applyTexture('water')
             tile_size = self.tex_holder.images['water'].size
-            xlen = self.convert.gl_x
-            zlen = self.convert.gl_z
+            
+            xlen = float(self.convert.gl_x)
+            zlen = float(self.convert.gl_z)
             glBegin(GL_QUADS)
-            glTexCoord2f(0,0)
-            glVertex3f(0, self.convert.sea_level, 0)
-            glTexCoord2f(tile_size[0]/xlen,0)
-            glVertex3f(xlen, self.convert.sea_level, 0)
-            glTexCoord2f(tile_size[0]/xlen,tile_size[1]/zlen)
-            glVertex3f(xlen, self.convert.sea_level, -zlen)
-            glTexCoord2f(0,tile_size[1]/zlen)
-            glVertex3f(0, self.convert.sea_level, -zlen)
+
+            glTexCoord2f(0, 0)
+            glVertex3f(0+offsetx, self.convert.sea_level, 0-offsetz)
+
+            glTexCoord2f(tile_size[0]/xlen/10, 0)
+            glVertex3f(xlen+offsetx-1, self.convert.sea_level, 0-offsetz)
+
+            glTexCoord2f(tile_size[0]/xlen/10, tile_size[1]/zlen/10)
+            glVertex3f(xlen+offsetx-1, self.convert.sea_level, -zlen-offsetz+1)
+
+            glTexCoord2f(0, tile_size[1]/zlen/10)
+            glVertex3f(0+offsetx, self.convert.sea_level, -zlen-offsetz+1)
             glEnd()
+            glEnable(GL_LIGHTING)
         
             glEndList()
-        
+            
             new_list.append(index)
 
 
@@ -184,7 +194,7 @@ class RenderWorld:
         glEnable(GL_FOG)
         glFogi (GL_FOG_MODE, GL_EXP2)
         glFogfv (GL_FOG_COLOR, (.8,.8,.8,1))
-        glFogf (GL_FOG_DENSITY, .0004)
+        glFogf (GL_FOG_DENSITY, .02)
         glHint (GL_FOG_HINT, GL_FASTEST)
     
     def renderLightSource(self):
@@ -212,7 +222,7 @@ class RenderWorld:
 
     def load_skybox(self):
         #self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
-        scale = self.convert.gl_x+self.convert.gl_z
+        scale = (self.convert.gl_x+self.convert.gl_z)*self.SKYBOX_SIZE
         self.skybox = Skybox(self.tex_holder, (scale,scale,scale))
         self.sky_index = self.skybox.createCallList(1, 3)
 
@@ -232,11 +242,12 @@ class RenderWorld:
         self.camera.renderRotateCamera()
         self.camera.renderTranslateCamera()
         
-        self.renderLightSource()
+        
         
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
         glEnable(GL_LIGHT1)
+        self.renderLightSource()
 
         for index in self.index_list:
             #print "INDEX:", index
@@ -304,9 +315,3 @@ class RenderWorld:
         self.camera.keys[key.lower()] = False
         if not glutGetModifiers() == GLUT_ACTIVE_SHIFT:
             self.camera.keys["shift"] = False
-'''
-if __name__ == '__main__':
-    if len(sys.argv) == 0:
-        RENDER = RenderWorld(sys.argv[1])
-    else:
-        RENDER = RenderWorld(None)'''

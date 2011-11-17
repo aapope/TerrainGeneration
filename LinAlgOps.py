@@ -1,7 +1,7 @@
 import numpy
 
 def calc_normal(v0, v1):
-    normal = numpy.cross(v0,v1)
+    normal = numpy.cross(v1,v0)
     return normalize(normal)
     
 def normalize(vector):
