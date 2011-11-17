@@ -63,7 +63,8 @@ class RenderTexture:
         for x in range(self.convert.texture_z):
             for z in range(self.convert.texture_x):
                 #get type of texture and its size
-                pixl, sizel = self.tex_holder.images[self.texture_type(self.heights[x/self.convert.texture_scale[0]][z/self.convert.texture_scale[2]], 0)]
+                pixl,sizel = self.tex_holder.images[self.texture_type(self.heights[x/self.convert.texture_scale[0]][z/self.convert.texture_scale[2]], 0)]
+                #pixl = img.load()
                 #place according pixel of texture into terrain
                 pix[x,z] = pixl[x%sizel[0], z%sizel[1]]
 
