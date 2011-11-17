@@ -30,6 +30,7 @@ class RenderTexture:
         if not os.path.isfile(path):
         	#print 'New texture'
         	self.create_texture(self.texture.load())
+                #self.shadow(self.texture.load(), self.heights)
         	return self.save(path)
         else:
             return path	
@@ -103,7 +104,7 @@ class RenderTexture:
         else:
             return 'savanna'
 
-'''
+
     def shadow(self, pixels, zs):
         for y in range(1, self.size[0]):
             highest = self.calc_height(self.size[1]-2, y, zs) - self.SUN_ANGLE
@@ -136,21 +137,6 @@ class RenderTexture:
                     darkened += 1
                 highest -= self.SUN_ANGLE
     
-    def shadow_diagonal(self, pixels, zs):
-        for y in range(self.size[0]):
-            col = y
-            row = 0
-            highest = self.calc_height(0, y, zs) - self.SUN_ANGLE
-            while col < self.size[0] and row < self.size[1]:
-                z = self.calc_height(row, col, zs)
-                if z > highest:
-                    highest = z
-                else:
-                    pixels[col, row] = self.darken(pixels[col, row], self.SHADE)
-                highest -= self.SUN_ANGLE
-                row += 1
-                col += 
-
     def calc_height(self, x, y, zs):
         #pos_scale = (self.scale[0]
         #print zs
@@ -192,34 +178,9 @@ class RenderTexture:
             print z
             return z
 
-    def calc_height(self, x, y, zs):
-        p1 = zs[x/self.scale[0]][y/self.scale[2]]
-        p2 = zs[x/self.scale[0]][min(y/self.scale[2]+1, len(zs[1])-1)]
-        p3 = zs[min(x/self.scale[0]+1, len(zs)-1)][y/self.scale[2]]
-        p4 = zs[min(x/self.scale[0]+1, len(zs)-1)][min(y/self.scale[2]+1, len(zs[1])-1)]
-
-        scale_y = float(y)/self.scale[2] - y/self.scale[2]
-        scale_x = float(x)/self.scale[0] - x/self.scale[0]
-
-        if x % self.scale[0] == 0:
-            if y% self.scale[2] == 0:
-                return p1
-            else:
-                return (p1*(1-scale_y)+p2*scale_y)
-
-        elif y % self.scale[2] == 0:
-            return (p1*(1-scale_x)+p3*scale_x)
-
-        else:
-            a1 = (p1*(1-scale_y) + p2*(scale_y))
-            a2 = (p3*(1-scale_y) + p4*(scale_y))
-
-            return (a1*(1-scale_x) + a2*scale_x)
-
     def darken(self, pixel, amt):
         r,g,b = pixel
         r = max(0, r - amt)
         g = max(0, g - amt)
         b = max(0, b - amt)
         return (r,g,b)
-'''

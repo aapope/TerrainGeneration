@@ -36,6 +36,7 @@ class RenderWorld:
         lines = f.read().split("\n")
         self.QUALITY = int(lines[0].split()[1])
         self.MAP_SIZE = int(lines[1].split()[1])
+        self.SKYBOX_SIZE = float(lines[2].split()[1])/3
         f.close()
         
         self.set_up_convert()
@@ -207,7 +208,7 @@ class RenderWorld:
 
     def load_skybox(self):
         #self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
-        scale = self.convert.gl_x+self.convert.gl_z
+        scale = (self.convert.gl_x+self.convert.gl_z)*self.SKYBOX_SIZE
         self.skybox = Skybox(self.tex_holder, (scale,scale,scale))
         self.sky_index = self.skybox.createCallList(1, 3)
 
@@ -227,12 +228,12 @@ class RenderWorld:
         self.camera.renderRotateCamera()
         self.camera.renderTranslateCamera()
         
-        self.renderLightSource()
+        
         
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
         glEnable(GL_LIGHT1)
-
+        self.renderLightSource()
         for index in self.index_list:
             #print "INDEX:", index
             glCallList(index)
