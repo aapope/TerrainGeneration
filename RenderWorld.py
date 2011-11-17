@@ -75,8 +75,8 @@ class RenderWorld:
         #glNewList(1, GL_COMPILE)
         #glNewList(1, GL_COMPILE)
     
-        def start_loop(self):
-            glutMainLoop()
+    def start_loop(self):
+        glutMainLoop()
 
     def to_gl(self, axis, oldnum):
         if axis == 'x':
@@ -98,12 +98,12 @@ class RenderWorld:
             glNewList(index, GL_COMPILE)
             self.tex_holder.applyTexture(self.texture)
 
-#go by rows
+            #go by rows
             for z in range(len(heights)-1):
                 glBegin(GL_TRIANGLE_STRIP)
                 for x in range(len(heights[z])):
                     
-    #start at (0,1)
+                    #start at (0,1)
                     point1x = self.to_gl('x', x)#first point x value in opengl coordinate
                     point1z = self.to_gl('z', z+1)  #first point z value in opengl coordinate
 
@@ -113,8 +113,8 @@ class RenderWorld:
                     norm = vert_norms[m_point]
                     glNormal3f(norm[0],norm[1],norm[2])
                     glVertex3f(pt[0],pt[1],pt[2])
-#############################################
-#second point (0,0)
+                    #############################################
+                    #second point (0,0)
 
                     point2x = self.to_gl('x',x)     #second point x value in opengl coordinate
                     point2z = self.to_gl('z',z)     #second point z value in opengl coordinate
@@ -127,32 +127,32 @@ class RenderWorld:
                     glNormal3f(norm[0],norm[1],norm[2])
                     glVertex3f(pt[0],pt[1],pt[2])
                     
-                    glEnd()
-#print z
+                glEnd()
+            #print z
 
-        '''Water plane'''
-        self.tex_holder.applyTexture('water')
-        tile_size = self.tex_holder.images['water'].size
-        xlen = self.convert.gl_x
-        zlen = self.convert.gl_z
-        glBegin(GL_QUADS)
-        glTexCoord2f(0,0)
-        glVertex3f(0, self.convert.sea_level, 0)
-        glTexCoord2f(tile_size[0]/xlen,0)
-        glVertex3f(xlen, self.convert.sea_level, 0)
-        glTexCoord2f(tile_size[0]/xlen,tile_size[1]/zlen)
-        glVertex3f(xlen, self.convert.sea_level, -zlen)
-        glTexCoord2f(0,tile_size[1]/zlen)
-        glVertex3f(0, self.convert.sea_level, -zlen)
-        glEnd()
+            '''Water plane'''
+            self.tex_holder.applyTexture('water')
+            tile_size = self.tex_holder.images['water'].size
+            xlen = self.convert.gl_x
+            zlen = self.convert.gl_z
+            glBegin(GL_QUADS)
+            glTexCoord2f(0,0)
+            glVertex3f(0, self.convert.sea_level, 0)
+            glTexCoord2f(tile_size[0]/xlen,0)
+            glVertex3f(xlen, self.convert.sea_level, 0)
+            glTexCoord2f(tile_size[0]/xlen,tile_size[1]/zlen)
+            glVertex3f(xlen, self.convert.sea_level, -zlen)
+            glTexCoord2f(0,tile_size[1]/zlen)
+            glVertex3f(0, self.convert.sea_level, -zlen)
+            glEnd()
         
-        glEndList()
+            glEndList()
         
-        new_list.append(index)
+            new_list.append(index)
 
 
         self.index_list = new_list
-#self.index_list = new_list
+        #self.index_list = new_list
 
     def set_up_graphics(self):
         '''Sets up OpenGL to provide double buffering, RGB coloring,
