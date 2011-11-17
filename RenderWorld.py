@@ -138,25 +138,25 @@ class RenderWorld:
 
             '''Water plane'''
             glDisable(GL_LIGHTING)
-            water_path = 'data/textures/water/water.bmp'
-            self.tex_holder.hold_my_texture(water_path, 'water')
-            self.tex_holder.applyTexture('water')
-            tile_size = self.tex_holder.images['water'].size
+            #water_path = 'data/textures/water/water.bmp'
+            #self.tex_holder.hold_my_texture(water_path, 'water')
+            #self.tex_holder.applyTexture('water')
+            #tile_size = self.tex_holder.images['water'].size
             
             xlen = float(self.convert.gl_x)
             zlen = float(self.convert.gl_z)
             glBegin(GL_QUADS)
 
-            glTexCoord2f(0, 0)
+            #glTexCoord2f(0, 0)
             glVertex3f(0+offsetx, self.convert.sea_level, 0-offsetz)
 
-            glTexCoord2f(tile_size[0]/xlen/10, 0)
+            #glTexCoord2f(tile_size[0]/xlen/10, 0)
             glVertex3f(xlen+offsetx-1, self.convert.sea_level, 0-offsetz)
 
-            glTexCoord2f(tile_size[0]/xlen/10, tile_size[1]/zlen/10)
+            #glTexCoord2f(tile_size[0]/xlen/10, tile_size[1]/zlen/10)
             glVertex3f(xlen+offsetx-1, self.convert.sea_level, -zlen-offsetz+1)
 
-            glTexCoord2f(0, tile_size[1]/zlen/10)
+            #glTexCoord2f(0, tile_size[1]/zlen/10)
             glVertex3f(0+offsetx, self.convert.sea_level, -zlen-offsetz+1)
             glEnd()
             glEnable(GL_LIGHTING)
