@@ -16,6 +16,7 @@ from TextureHolder import TextureHolder
 import threading
 
 CONFIG = "constants.conf"
+HEIGHT_SCALE = 8
 
 class RenderWorld:
     '''This is the class that renders maze.
@@ -87,6 +88,8 @@ class RenderWorld:
     def create_render_newlist(self):
         self.need_lists = False
         new_list = []
+        #print "trying to render"
+        #print self.trans.location_var
         for location, values in self.trans.location_var.items():
             #print "RENDERING IN OPEN GL", location
             tex_file_name, face_norms, vert_norms, heights, offsetx, offsetz, textname, textid = values
@@ -96,6 +99,7 @@ class RenderWorld:
 
             index = glGenLists(1)
             glNewList(index, GL_COMPILE)
+            print "new texture applied"
             self.tex_holder.applyTexture(self.texture)
 
             #go by rows
@@ -104,10 +108,11 @@ class RenderWorld:
                 for x in range(len(heights[z])):
                     
                     #start at (0,1)
-                    point1x = self.to_gl('x', x)#first point x value in opengl coordinate
+                    point1x = self.to_gl('x', x)    #first point x value in opengl coordinate
                     point1z = self.to_gl('z', z+1)  #first point z value in opengl coordinate
 
                     glTexCoord2f(x/float(self.convert.gl_x), -(z+1)/float(self.convert.gl_z))
+                    #print "f1:", x/float(self.convert.gl_x), "f2:", -(z+1)/float(self.convert.gl_z)
                     pt = (point1x+offsetx, heights[x][z+1], point1z-offsetz)
                     m_point = (point1x, heights[x][z+1], point1z)
                     norm = vert_norms[m_point]
@@ -197,7 +202,7 @@ class RenderWorld:
 
     def set_up_convert(self):
         #heightmap, texture, gl
-        self.convert = Convert((1, 1, 1), (self.QUALITY, 1, self.QUALITY), (1*self.SCALE, 10*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
+        self.convert = Convert((1, 1, 1), (self.QUALITY, 1, self.QUALITY), (1*self.SCALE, HEIGHT_SCALE*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
         
 
     def load_map(self, heightmap_filename):

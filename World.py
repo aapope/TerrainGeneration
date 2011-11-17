@@ -9,8 +9,9 @@ CONFIG = "constants.conf"
 from DiamondSquare import DiamondSquare
 from LoadTerrain import LoadTerrain
 import threading
-import Queue
+#import Queue
 import time
+from multiprocessing import Process, JoinableQueue, Queue, Pipe
 #from RenderThread import RenderThread
 
 PATH = ""
@@ -36,7 +37,7 @@ class World:
 		self.pos_list = []
 		self.total_terr = 1
 		self.trans = transaction
-		
+		self.temp_dic = {}
 		
 		
 		#self.text_holder = TextureHolder()
@@ -127,11 +128,81 @@ class World:
 		self.create_lists()
 		
 		#self.rw.lock.release()
+
+	def render_thing(self, que, resp_que, init):
+
+		new_dic = {}
+		old_dic = que.get()
+		pos_list =que.get()
+		offset = que.get()
+		convert = que.get()
+
+		print "process running..."
+		for location in pos_list:
+			if not location in old_dic:
+				x,y = location
 		
-	#Used to create the call lists
+			        load = LoadTerrain(PATH+str(x)+"_"+str(y)+".bmp", convert, self.rw.tex_holder)
+			        heights = load.load()
+			
+			        if self.initalize:
+					#print "initlizing..."
+					tex_file_name, face_norms, vert_norms = load.init_createRenderList(heights,str(x)+"_"+str(y))
+			        else:
+					#print "new place..."
+					tex_file_name, face_norms, vert_norms = load.createRenderList(heights,str(x)+"_"+str(y))
+			
+				big_tup = (tex_file_name, face_norms, vert_norms, heights, x*offset, -y*offset, str(x)+"_"+str(y), pos_list.index(location))
+				#print big_tup
+				new_dic[location] = big_tup
+		        else:
+				new_dic[location] = old_dic[location]
+	        print "have new dic"
+		resp_que.put(new_dic, False)
+		print "enqued"
+		#que.close()
+
 	def create_lists(self):
+	#Used to create the call lists		
+		'''
+		def test_process(q,rq):
+			f = q.get()
+			print f
+			sam = "SAM"
+			rq.put(sam, False)
+			
+
+                to_que = Queue()
+		from_que = Queue()
+		p = Process(target=test_process, args=(to_que,from_que))
+		p.start()
+		to_que.put("frank", False)
+		print from_que.get()
+		p.join()
+		print "process done"'''
 		
-		#
+		to_q= Queue()
+		resp_q = Queue()
+
+		p = Process(target=self.render_thing, args=(to_q,resp_q,self.initalize))
+		p.start()
+		
+		to_q.put(self.trans.location_var, False)
+		to_q.put(self.pos_list, False)
+		to_q.put(self.OFFSET, False)
+		to_q.put(self.rw.convert, False)
+		
+		print "process....."
+		dic = resp_q.get()
+		self.trans.location_var = dic
+		
+		p.join()
+		
+		print "updating...."
+		self.rw.need_lists = True
+		self.initalize = False
+
+		'''
 		new_dic = {}
 		queue = Queue.Queue()
 		
@@ -164,26 +235,11 @@ class World:
 		for location in self.pos_list:
 			queue.put(location)
 
-		queue.join()
+		queue.join()'''
 		
-		print "setting boolean"
-		self.rw.need_lists = True
-		self.initalize = False
-		self.trans.location_var = new_dic
-		#self.index_list = new_list
+		#print "setting boolean"
 		
-					
-		'''
-		for location in self.pos_list:
-			#nlock = threading.RLock()
-			#render_thread = threading.Thread(target=render_thing, args=(location, new_list, nlock))
-			#render_thread.start()
-			#render_thread.join()
-			render_thing(location)
-		
-		self.rw.need_lists = True
-		#return new_list
-
+		#self.trans.location_var = new_dic
 
 if __name__ == "__main__":
-	w = World()'''
+	w = World()
