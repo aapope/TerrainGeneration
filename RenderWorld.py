@@ -16,7 +16,7 @@ from TextureHolder import TextureHolder
 import threading
 
 CONFIG = "constants.conf"
-HEIGHT_SCALE = 8
+HEIGHT_SCALE = 4
 
 class RenderWorld:
     '''This is the class that renders maze.
@@ -100,7 +100,7 @@ class RenderWorld:
 
             index = glGenLists(1)
             glNewList(index, GL_COMPILE)
-            print "new texture applied"
+            #print "new texture applied"
             self.tex_holder.applyTexture(self.texture)
 
             #go by rows

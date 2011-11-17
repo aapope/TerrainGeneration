@@ -46,8 +46,9 @@ class TextureHolder:
         glBindTexture(GL_TEXTURE_2D, self.texture_ids[name])
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+        #print "commented out"
+        #glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+        #glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
 
     def get_rand_img(self, path):
         tmp_imgs= []
@@ -55,3 +56,6 @@ class TextureHolder:
             for img in imgs:
                 tmp_imgs.append(img)
         return choice(tmp_imgs)
+    
+    def __getstate__(self):
+        pass
