@@ -32,36 +32,36 @@ class RenderWorld:
 
     def __init__(self, transaction):
         '''Sets up camera, modes, lighting, sounds, and objects.'''
-	f = open(CONFIG)
-	lines = f.read().split("\n")
-	self.QUALITY = int(lines[0].split()[1])
-	self.MAP_SIZE = int(lines[1].split()[1])
-	f.close()
-	
-	self.set_up_convert()
-	self.tex_holder = TextureHolder()
+        f = open(CONFIG)
+        lines = f.read().split("\n")
+        self.QUALITY = int(lines[0].split()[1])
+        self.MAP_SIZE = int(lines[1].split()[1])
+        f.close()
+        
+        self.set_up_convert()
+        self.tex_holder = TextureHolder()
         self.index_list = []
-	self.lock = threading.RLock()
-	self.need_lists = False
-	
-	self.trans = transaction
+        self.lock = threading.RLock()
+        self.need_lists = False
+        
+        self.trans = transaction
 
-	
-	
-	#self.skybox = Skybox((5000, 5000, 5000))
+        
+        
+        #self.skybox = Skybox((5000, 5000, 5000))
         #self.sky_index = self.skybox.createCallList(1, 3)
         #self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
         
-	
+        
     def set_up(self):
-	self.set_up_graphics()
-	self.set_up_lighting()
-	self.set_up_glut()
-	
-        self.camera = Camera(10,20,-10)	
-	
-	self.poly_view = False	
-	self.load_skybox()
+        self.set_up_graphics()
+        self.set_up_lighting()
+        self.set_up_glut()
+        
+        self.camera = Camera(10,20,-10)
+        
+        self.poly_view = False
+        self.load_skybox()
 
 
     def set_up_glut(self):
@@ -74,89 +74,89 @@ class RenderWorld:
 
         glutSetCursor(GLUT_CURSOR_NONE)
         glutPassiveMotionFunc(self.mouseMove)
-	
-	#glGenLists(50)
-	#glNewList(1, GL_COMPILE)
-	#glNewList(1, GL_COMPILE)
+        
+        #glGenLists(50)
+        #glNewList(1, GL_COMPILE)
+        #glNewList(1, GL_COMPILE)
     
-    def start_loop(self):	
-	glutMainLoop()
+        def start_loop(self):
+            glutMainLoop()
 
     def to_gl(self, axis, oldnum):
-	if axis == 'x':
-		return self.convert.convert_for_triangle('x', oldnum)
-	else:
-		return self.convert.convert_for_triangle('z', oldnum)
+        if axis == 'x':
+            return self.convert.convert_for_triangle('x', oldnum)
+        else:
+            return self.convert.convert_for_triangle('z', oldnum)
 
     def create_render_newlist(self):
-	self.need_lists = False	
-	new_list = []
-	for location, values in self.trans.location_var.items():
-		#print "RENDERING IN OPEN GL", location
-		tex_file_name, face_norms, vert_norms, heights, offsetx, offsetz, textname, textid = values
-		#print vert_norms
+        self.need_lists = False
+        new_list = []
+        for location, values in self.trans.location_var.items():
+            #print "RENDERING IN OPEN GL", location
+            tex_file_name, face_norms, vert_norms, heights, offsetx, offsetz, textname, textid = values
+#print vert_norms
 
-		self.texture = self.tex_holder.hold_my_texture(tex_file_name, textname)
+self.texture = self.tex_holder.hold_my_texture(tex_file_name, textname)
 
-        	index = glGenLists(1)
-		glNewList(index, GL_COMPILE)
-        	self.tex_holder.applyTexture(self.texture)
-		
-		#go by rows
-        	for z in range(len(heights)-1):
-            		glBegin(GL_TRIANGLE_STRIP)
-            		for x in range(len(heights[z])):
-				
-				#start at (0,1)
-				point1x = self.to_gl('x', x)	#first point x value in opengl coordinate
-				point1z = self.to_gl('z', z+1)  #first point z value in opengl coordinate
+index = glGenLists(1)
+glNewList(index, GL_COMPILE)
+self.tex_holder.applyTexture(self.texture)
 
-               			glTexCoord2f(x/float(self.convert.gl_x), -(z+1)/float(self.convert.gl_z))
-                		pt = (point1x+offsetx, heights[x][z+1], point1z-offsetz)
-				m_point = (point1x, heights[x][z+1], point1z)
-				norm = vert_norms[m_point]
-                		glNormal3f(norm[0],norm[1],norm[2])
-                		glVertex3f(pt[0],pt[1],pt[2])
-				#############################################
-                		#second point (0,0)
-				
-				point2x = self.to_gl('x',x)     #second point x value in opengl coordinate
-				point2z = self.to_gl('z',z)     #second point z value in opengl coordinate
-		
-                		glTexCoord2f(x/float(self.convert.gl_x), -z/float(self.convert.gl_z))
+#go by rows
+for z in range(len(heights)-1):
+    glBegin(GL_TRIANGLE_STRIP)
+for x in range(len(heights[z])):
+    
+    #start at (0,1)
+    point1x = self.to_gl('x', x)#first point x value in opengl coordinate
+point1z = self.to_gl('z', z+1)  #first point z value in opengl coordinate
 
-                		pt = (point2x+offsetx, heights[x][z], point2z-offsetz)
-				m_point = (point2x, heights[x][z], point2z)
-                		norm = vert_norms[m_point]
-                		glNormal3f(norm[0],norm[1],norm[2])
-                		glVertex3f(pt[0],pt[1],pt[2])
+glTexCoord2f(x/float(self.convert.gl_x), -(z+1)/float(self.convert.gl_z))
+pt = (point1x+offsetx, heights[x][z+1], point1z-offsetz)
+m_point = (point1x, heights[x][z+1], point1z)
+norm = vert_norms[m_point]
+glNormal3f(norm[0],norm[1],norm[2])
+glVertex3f(pt[0],pt[1],pt[2])
+#############################################
+#second point (0,0)
 
-           		glEnd()
-                	#print z
+point2x = self.to_gl('x',x)     #second point x value in opengl coordinate
+point2z = self.to_gl('z',z)     #second point z value in opengl coordinate
 
-        	'''Water plane'''
-        	self.tex_holder.applyTexture('water')
-        	tile_size = self.tex_holder.images['water'].size
-        	xlen = self.convert.gl_x
-        	zlen = self.convert.gl_z
-        	glBegin(GL_QUADS)
-        	glTexCoord2f(0,0)
-        	glVertex3f(0, self.convert.sea_level, 0)
-        	glTexCoord2f(tile_size[0]/xlen,0)
-        	glVertex3f(xlen, self.convert.sea_level, 0)
-        	glTexCoord2f(tile_size[0]/xlen,tile_size[1]/zlen)
-        	glVertex3f(xlen, self.convert.sea_level, -zlen)
-        	glTexCoord2f(0,tile_size[1]/zlen)
-        	glVertex3f(0, self.convert.sea_level, -zlen)
-        	glEnd()
+glTexCoord2f(x/float(self.convert.gl_x), -z/float(self.convert.gl_z))
 
-        	glEndList()
-		
-		new_list.append(index)
-		
-	
-	self.index_list = new_list
-	#self.index_list = new_list
+pt = (point2x+offsetx, heights[x][z], point2z-offsetz)
+m_point = (point2x, heights[x][z], point2z)
+norm = vert_norms[m_point]
+glNormal3f(norm[0],norm[1],norm[2])
+glVertex3f(pt[0],pt[1],pt[2])
+
+glEnd()
+#print z
+
+'''Water plane'''
+self.tex_holder.applyTexture('water')
+tile_size = self.tex_holder.images['water'].size
+xlen = self.convert.gl_x
+zlen = self.convert.gl_z
+glBegin(GL_QUADS)
+glTexCoord2f(0,0)
+glVertex3f(0, self.convert.sea_level, 0)
+glTexCoord2f(tile_size[0]/xlen,0)
+glVertex3f(xlen, self.convert.sea_level, 0)
+glTexCoord2f(tile_size[0]/xlen,tile_size[1]/zlen)
+glVertex3f(xlen, self.convert.sea_level, -zlen)
+glTexCoord2f(0,tile_size[1]/zlen)
+glVertex3f(0, self.convert.sea_level, -zlen)
+glEnd()
+
+glEndList()
+
+new_list.append(index)
+
+
+self.index_list = new_list
+#self.index_list = new_list
 
     def set_up_graphics(self):
         '''Sets up OpenGL to provide double buffering, RGB coloring,
@@ -201,11 +201,7 @@ class RenderWorld:
 
     def set_up_convert(self):
         #heightmap, texture, gl
-<<<<<<< HEAD
-        self.convert = Convert((1, 1, 1), (50, 1, 50), (1*self.SCALE, 5*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
-=======
         self.convert = Convert((1, 1, 1), (self.QUALITY, 1, self.QUALITY), (1*self.SCALE, 10*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
->>>>>>> 2b582269d2a6392a8c0f9c4561d309c23f7d85c1
         
 
     def load_map(self, heightmap_filename):
@@ -223,39 +219,35 @@ class RenderWorld:
         '''Called for every refresh; redraws the floor and objects
         based on the camera angle. Calls collision detection, handles
         the appropriate objects for keys, doors, etc.'''
-	#print "loopdy loop"
-	if self.need_lists:
-		self.create_render_newlist()
+        #print "loopdy loop"
+        if self.need_lists:
+            self.create_render_newlist()
 
-	#self.lock.acquire()
+            #self.lock.acquire()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
         #Put camera and light in the correct position
         self.camera.move()
-	self.camera.renderRotateCamera()
+        self.camera.renderRotateCamera()
         self.camera.renderTranslateCamera()
         
-	self.renderLightSource()
-	
+        self.renderLightSource()
+        
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
         glEnable(GL_LIGHT1)
 
-	for index in self.index_list:
-		#print "INDEX:", index
-		glCallList(index)
-	
-	
+        for index in self.index_list:
+            #print "INDEX:", index
+            glCallList(index)
+            
+            
         glDisable(GL_LIGHTING)
 
         glLoadIdentity()
 
-	self.camera.renderRotateCamera()
-<<<<<<< HEAD
-        glTranslate(-self.skybox.x/2, -2-self.camera.pos_Y, -self.skybox.z/2)
-=======
+        self.camera.renderRotateCamera()
         glTranslate(-self.skybox.x/2, -1-self.camera.pos_Y, -self.skybox.z/2)
->>>>>>> 2b582269d2a6392a8c0f9c4561d309c23f7d85c1
         glCallList(self.sky_index)
         
         glDisable(GL_TEXTURE_2D)
