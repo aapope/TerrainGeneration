@@ -45,14 +45,10 @@ class RenderWorld:
         self.need_lists = False
         
         self.trans = transaction
-
-        
-        
         #self.skybox = Skybox((5000, 5000, 5000))
         #self.sky_index = self.skybox.createCallList(1, 3)
         #self.skybox = Skybox((len(self.heights[0])*self.X_FACTOR, self.Y_FACTOR, len(self.heights)*self.Z_FACTOR))
-        
-        
+               
     def set_up(self):
         self.set_up_graphics()
         self.set_up_lighting()
@@ -96,66 +92,66 @@ class RenderWorld:
             tex_file_name, face_norms, vert_norms, heights, offsetx, offsetz, textname, textid = values
 #print vert_norms
 
-self.texture = self.tex_holder.hold_my_texture(tex_file_name, textname)
+            self.texture = self.tex_holder.hold_my_texture(tex_file_name, textname)
 
-index = glGenLists(1)
-glNewList(index, GL_COMPILE)
-self.tex_holder.applyTexture(self.texture)
+            index = glGenLists(1)
+            glNewList(index, GL_COMPILE)
+            self.tex_holder.applyTexture(self.texture)
 
 #go by rows
-for z in range(len(heights)-1):
-    glBegin(GL_TRIANGLE_STRIP)
-for x in range(len(heights[z])):
-    
+            for z in range(len(heights)-1):
+                glBegin(GL_TRIANGLE_STRIP)
+                for x in range(len(heights[z])):
+                    
     #start at (0,1)
-    point1x = self.to_gl('x', x)#first point x value in opengl coordinate
-point1z = self.to_gl('z', z+1)  #first point z value in opengl coordinate
+                    point1x = self.to_gl('x', x)#first point x value in opengl coordinate
+                    point1z = self.to_gl('z', z+1)  #first point z value in opengl coordinate
 
-glTexCoord2f(x/float(self.convert.gl_x), -(z+1)/float(self.convert.gl_z))
-pt = (point1x+offsetx, heights[x][z+1], point1z-offsetz)
-m_point = (point1x, heights[x][z+1], point1z)
-norm = vert_norms[m_point]
-glNormal3f(norm[0],norm[1],norm[2])
-glVertex3f(pt[0],pt[1],pt[2])
+                    glTexCoord2f(x/float(self.convert.gl_x), -(z+1)/float(self.convert.gl_z))
+                    pt = (point1x+offsetx, heights[x][z+1], point1z-offsetz)
+                    m_point = (point1x, heights[x][z+1], point1z)
+                    norm = vert_norms[m_point]
+                    glNormal3f(norm[0],norm[1],norm[2])
+                    glVertex3f(pt[0],pt[1],pt[2])
 #############################################
 #second point (0,0)
 
-point2x = self.to_gl('x',x)     #second point x value in opengl coordinate
-point2z = self.to_gl('z',z)     #second point z value in opengl coordinate
-
-glTexCoord2f(x/float(self.convert.gl_x), -z/float(self.convert.gl_z))
-
-pt = (point2x+offsetx, heights[x][z], point2z-offsetz)
-m_point = (point2x, heights[x][z], point2z)
-norm = vert_norms[m_point]
-glNormal3f(norm[0],norm[1],norm[2])
-glVertex3f(pt[0],pt[1],pt[2])
-
-glEnd()
+                    point2x = self.to_gl('x',x)     #second point x value in opengl coordinate
+                    point2z = self.to_gl('z',z)     #second point z value in opengl coordinate
+                    
+                    glTexCoord2f(x/float(self.convert.gl_x), -z/float(self.convert.gl_z))
+                    
+                    pt = (point2x+offsetx, heights[x][z], point2z-offsetz)
+                    m_point = (point2x, heights[x][z], point2z)
+                    norm = vert_norms[m_point]
+                    glNormal3f(norm[0],norm[1],norm[2])
+                    glVertex3f(pt[0],pt[1],pt[2])
+                    
+                    glEnd()
 #print z
 
-'''Water plane'''
-self.tex_holder.applyTexture('water')
-tile_size = self.tex_holder.images['water'].size
-xlen = self.convert.gl_x
-zlen = self.convert.gl_z
-glBegin(GL_QUADS)
-glTexCoord2f(0,0)
-glVertex3f(0, self.convert.sea_level, 0)
-glTexCoord2f(tile_size[0]/xlen,0)
-glVertex3f(xlen, self.convert.sea_level, 0)
-glTexCoord2f(tile_size[0]/xlen,tile_size[1]/zlen)
-glVertex3f(xlen, self.convert.sea_level, -zlen)
-glTexCoord2f(0,tile_size[1]/zlen)
-glVertex3f(0, self.convert.sea_level, -zlen)
-glEnd()
+        '''Water plane'''
+        self.tex_holder.applyTexture('water')
+        tile_size = self.tex_holder.images['water'].size
+        xlen = self.convert.gl_x
+        zlen = self.convert.gl_z
+        glBegin(GL_QUADS)
+        glTexCoord2f(0,0)
+        glVertex3f(0, self.convert.sea_level, 0)
+        glTexCoord2f(tile_size[0]/xlen,0)
+        glVertex3f(xlen, self.convert.sea_level, 0)
+        glTexCoord2f(tile_size[0]/xlen,tile_size[1]/zlen)
+        glVertex3f(xlen, self.convert.sea_level, -zlen)
+        glTexCoord2f(0,tile_size[1]/zlen)
+        glVertex3f(0, self.convert.sea_level, -zlen)
+        glEnd()
+        
+        glEndList()
+        
+        new_list.append(index)
 
-glEndList()
 
-new_list.append(index)
-
-
-self.index_list = new_list
+        self.index_list = new_list
 #self.index_list = new_list
 
     def set_up_graphics(self):
