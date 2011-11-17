@@ -15,14 +15,16 @@ from Convert import Convert
 from TextureHolder import TextureHolder
 import threading
 
+CONFIG = "constants.conf"
+
 class RenderWorld:
     '''This is the class that renders maze.
     Camera angles are handled by Camera.py.
     '''
+    
     WINDOW_WIDTH = 700
     WINDOW_HEIGHT = 700
     SCALE = 1
-    MAP_SIZE =8
     X_FACTOR = 1
     Y_FACTOR = 1
     Z_FACTOR = 1
@@ -30,6 +32,12 @@ class RenderWorld:
 
     def __init__(self, transaction):
         '''Sets up camera, modes, lighting, sounds, and objects.'''
+	f = open(CONFIG)
+	lines = f.read().split("\n")
+	self.QUALITY = int(lines[0].split()[1])
+	self.MAP_SIZE = int(lines[1].split()[1])
+	f.close()
+	
 	self.set_up_convert()
 	self.tex_holder = TextureHolder()
         self.index_list = []
@@ -37,6 +45,8 @@ class RenderWorld:
 	self.need_lists = False
 	
 	self.trans = transaction
+
+	
 	
 	#self.skybox = Skybox((5000, 5000, 5000))
         #self.sky_index = self.skybox.createCallList(1, 3)
@@ -82,7 +92,7 @@ class RenderWorld:
 	self.need_lists = False	
 	new_list = []
 	for location, values in self.trans.location_var.items():
-		print "RENDERING IN OPEN GL", location
+		#print "RENDERING IN OPEN GL", location
 		tex_file_name, face_norms, vert_norms, heights, offsetx, offsetz, textname, textid = values
 		#print vert_norms
 
@@ -191,7 +201,11 @@ class RenderWorld:
 
     def set_up_convert(self):
         #heightmap, texture, gl
+<<<<<<< HEAD
         self.convert = Convert((1, 1, 1), (50, 1, 50), (1*self.SCALE, 5*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
+=======
+        self.convert = Convert((1, 1, 1), (self.QUALITY, 1, self.QUALITY), (1*self.SCALE, 10*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
+>>>>>>> 2b582269d2a6392a8c0f9c4561d309c23f7d85c1
         
 
     def load_map(self, heightmap_filename):
@@ -237,7 +251,11 @@ class RenderWorld:
         glLoadIdentity()
 
 	self.camera.renderRotateCamera()
+<<<<<<< HEAD
         glTranslate(-self.skybox.x/2, -2-self.camera.pos_Y, -self.skybox.z/2)
+=======
+        glTranslate(-self.skybox.x/2, -1-self.camera.pos_Y, -self.skybox.z/2)
+>>>>>>> 2b582269d2a6392a8c0f9c4561d309c23f7d85c1
         glCallList(self.sky_index)
         
         glDisable(GL_TEXTURE_2D)

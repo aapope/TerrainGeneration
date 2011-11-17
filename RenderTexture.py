@@ -16,15 +16,23 @@ class RenderTexture:
         self.heights = heights
         #self.norms = norms        
 
-    def run(self, name):
+    def initial_run(self, name):
         path = 'data/textures/maps/'+name
         #if not os.path.isfile(path):
-        print 'New texture'
+        #print 'New texture'
         self.create_texture(self.texture.load())
         return self.save(path)
         #else:
             #return path
-
+    
+    def run(self, name):
+	path = 'data/textures/maps/'+name
+        if not os.path.isfile(path):
+        	#print 'New texture'
+        	self.create_texture(self.texture.load())
+        	return self.save(path)
+        else:
+            return path	
 
     def save(self, path):
         self.texture.save(path)
