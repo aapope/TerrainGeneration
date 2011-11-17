@@ -104,7 +104,6 @@ class RenderTexture:
         else:
             return 'savanna'
 
-
     def shadow(self, pixels, zs):
         for y in range(1, self.size[0]):
             highest = self.calc_height(self.size[1]-2, y, zs) - self.SUN_ANGLE

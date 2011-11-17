@@ -13,7 +13,7 @@ import Queue
 import time
 #from RenderThread import RenderThread
 
-PATH = ""
+PATH = "data/heightmaps"
 
 class World:
 	
