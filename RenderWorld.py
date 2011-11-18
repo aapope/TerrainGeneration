@@ -16,7 +16,7 @@ from TextureHolder import TextureHolder
 import threading
 
 CONFIG = "constants.conf"
-HEIGHT_SCALE = 4
+HEIGHT_SCALE = 7
 
 class RenderWorld:
     '''This is the class that renders maze.
@@ -97,12 +97,14 @@ class RenderWorld:
 #print vert_norms
 
             self.texture = self.tex_holder.hold_my_texture(tex_file_name, textname)
-
+    
+            #offsetx *= .999
+            #offsetz *= .999 
             index = glGenLists(1)
             glNewList(index, GL_COMPILE)
             #print "new texture applied"
             self.tex_holder.applyTexture(self.texture)
-
+            divide = float(self.MAP_SIZE+1)
             #go by rows
             for z in range(len(heights)-1):
                 glBegin(GL_TRIANGLE_STRIP)
@@ -112,8 +114,9 @@ class RenderWorld:
                     point1x = self.to_gl('x', x)    #first point x value in opengl coordinate
                     point1z = self.to_gl('z', z+1)  #first point z value in opengl coordinate
 
-                    glTexCoord2f(x/float(self.convert.gl_x), -(z+1)/float(self.convert.gl_z))
-                    #print "f1:", x/float(self.convert.gl_x), "f2:", -(z+1)/float(self.convert.gl_z)
+                    glTexCoord2f(point1x/divide, -point1z/divide)
+                    print "f1:", point1x/divide, "f2:", -point1z/divide
+
                     pt = (point1x+offsetx, heights[x][z+1], point1z-offsetz)
                     m_point = (point1x, heights[x][z+1], point1z)
                     norm = vert_norms[m_point]
@@ -125,8 +128,9 @@ class RenderWorld:
                     point2x = self.to_gl('x',x)     #second point x value in opengl coordinate
                     point2z = self.to_gl('z',z)     #second point z value in opengl coordinate
                     
-                    glTexCoord2f(x/float(self.convert.gl_x), -z/float(self.convert.gl_z))
-                    
+                    glTexCoord2f(point2x/divide, -point2z/divide)
+                    print "f1:", point2x/divide, "f2:", -point2z/divide
+
                     pt = (point2x+offsetx, heights[x][z], point2z-offsetz)
                     m_point = (point2x, heights[x][z], point2z)
                     norm = vert_norms[m_point]

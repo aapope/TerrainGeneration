@@ -11,6 +11,7 @@ from LoadTerrain import LoadTerrain
 import threading
 #import Queue
 import time
+import copy
 from multiprocessing import Process, JoinableQueue, Queue, Pipe
 #from RenderThread import RenderThread
 
@@ -112,6 +113,7 @@ class World:
 	#Used to update the world list
 	def update_diamonds(self, new_loc):
 		x,y = new_loc
+		copy_list = copy.deepcopy(self.pos_list)
 		self.pos_list = []
 		for newy in range(y-self.FACTOR, y+self.FACTOR+1):
 			for newx in range(x-self.FACTOR, x+self.FACTOR+1):
@@ -130,12 +132,20 @@ class World:
 		#self.rw.lock.release()
 
 	def render_thing(self, que, resp_que, init):
+		#print "in method"
 		from TextureHolder import TextureHolder
+		#print "new_dic"
 		new_dic = {}
+		#print "old_dic"
 		old_dic = que.get()
+		#print "old dictionary size:", len(old_dic)
+		#print "pos_list"
 		pos_list =que.get()
+		#print "offset"
 		offset = que.get()
+		#print "convert"
 		convert = que.get()
+		#print "creating text holder"
 		text_holder = TextureHolder()
 		print "process running..."
 		for location in pos_list:
@@ -187,6 +197,7 @@ class World:
 		p = Process(target=self.render_thing, args=(to_q,resp_q,self.initalize))
 		p.start()
 		
+		
 		to_q.put(self.trans.location_var, False)
 		to_q.put(self.pos_list, False)
 		to_q.put(self.OFFSET, False)
@@ -202,44 +213,7 @@ class World:
 		self.rw.need_lists = True
 		self.initalize = False
 
-		'''
-		new_dic = {}
-		queue = Queue.Queue()
 		
-		def render_thing(queue,):
-			#print "started..."
-			location = queue.get()
-			if not location in self.trans.location_var:		
-				x,y = location
-			
-				load = LoadTerrain(PATH+str(x)+"_"+str(y)+".bmp", self.rw.convert, self.rw.tex_holder)
-				heights = load.load()
-			
-				if self.initalize:
-					tex_file_name, face_norms, vert_norms = load.init_createRenderList(heights,str(x)+"_"+str(y))
-				else:
-					tex_file_name, face_norms, vert_norms = load.createRenderList(heights,str(x)+"_"+str(y))
-			
-				new_dic[location] = (tex_file_name, face_norms, vert_norms, heights, x*self.OFFSET, -y*self.OFFSET, str(x)+"_"+str(y), self.pos_list.index(location))
-				#print "CREATED TEXTURE"
-			else:
-				new_dic[location] = self.trans.location_var[location]
-
-			queue.task_done()
-
-		for i in range(self.size*self.size):
-			t = threading.Thread(target=render_thing, args=(queue,))
-			t.setDaemon(False)
-              		t.start()
-		
-		for location in self.pos_list:
-			queue.put(location)
-
-		queue.join()'''
-		
-		#print "setting boolean"
-		
-		#self.trans.location_var = new_dic
 
 if __name__ == "__main__":
 	w = World()
