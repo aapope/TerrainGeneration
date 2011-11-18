@@ -130,19 +130,19 @@ class World:
 		#self.rw.lock.release()
 
 	def render_thing(self, que, resp_que, init):
-
+		from TextureHolder import TextureHolder
 		new_dic = {}
 		old_dic = que.get()
 		pos_list =que.get()
 		offset = que.get()
 		convert = que.get()
-
+		text_holder = TextureHolder()
 		print "process running..."
 		for location in pos_list:
 			if not location in old_dic:
 				x,y = location
 		
-			        load = LoadTerrain(PATH+str(x)+"_"+str(y)+".bmp", convert, self.rw.tex_holder)
+			        load = LoadTerrain(PATH+str(x)+"_"+str(y)+".bmp", convert, text_holder)
 			        heights = load.load()
 			
 			        if self.initalize:
