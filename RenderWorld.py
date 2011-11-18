@@ -16,7 +16,8 @@ from TextureHolder import TextureHolder
 import threading
 
 CONFIG = "constants.conf"
-HEIGHT_SCALE = 7
+HEIGHT_SCALE = 8
+
 
 class RenderWorld:
     '''This is the class that renders maze.
@@ -38,6 +39,7 @@ class RenderWorld:
         self.QUALITY = int(lines[0].split()[1])
         self.MAP_SIZE = int(lines[1].split()[1])
         self.SKYBOX_SIZE = float(lines[2].split()[1])/3
+        self.HEIGHT_SCALE = int(float(lines[3].split()[1])*self.MAP_SIZE)
         f.close()
         
         self.set_up_convert()
@@ -55,7 +57,8 @@ class RenderWorld:
         self.set_up_graphics()
         self.set_up_lighting()
         self.set_up_glut()
-        
+        water_path = 'data/textures/water/water.bmp'
+        self.tex_holder.hold_my_texture(water_path, 'water')        
         self.camera = Camera(10,20,-10)
         
         self.poly_view = False
@@ -94,7 +97,7 @@ class RenderWorld:
         for location, values in self.trans.location_var.items():
             #print "RENDERING IN OPEN GL", location
             tex_file_name, face_norms, vert_norms, heights, offsetx, offsetz, textname, textid = values
-#print vert_norms
+            #print vert_norms
 
             self.texture = self.tex_holder.hold_my_texture(tex_file_name, textname)
     
@@ -105,6 +108,7 @@ class RenderWorld:
             #print "new texture applied"
             self.tex_holder.applyTexture(self.texture)
             divide = float(self.MAP_SIZE+1)
+
             #go by rows
             for z in range(len(heights)-1):
                 glBegin(GL_TRIANGLE_STRIP)
@@ -142,29 +146,33 @@ class RenderWorld:
 
             '''Water plane'''
             glDisable(GL_LIGHTING)
-            #water_path = 'data/textures/water/water.bmp'
-            #self.tex_holder.hold_my_texture(water_path, 'water')
-            #self.tex_holder.applyTexture('water')
-            #tile_size = self.tex_holder.images['water'].size
+        
+
+            self.tex_holder.applyTexture('water')
+            tile_size = self.tex_holder.images['water'].size
             
             xlen = float(self.convert.gl_x)
             zlen = float(self.convert.gl_z)
+            glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+            glEnable (GL_BLEND)
+            glColor4f(1,1,1,.5)
             glBegin(GL_QUADS)
 
-            #glTexCoord2f(0, 0)
+            glTexCoord2f(0, 0)
             glVertex3f(0+offsetx, self.convert.sea_level, 0-offsetz)
 
-            #glTexCoord2f(tile_size[0]/xlen/10, 0)
-            glVertex3f(xlen+offsetx-1, self.convert.sea_level, 0-offsetz)
+            glTexCoord2f(tile_size[0]/xlen/10, 0)
+            glVertex3f(xlen+offsetx, self.convert.sea_level, 0-offsetz)
 
-            #glTexCoord2f(tile_size[0]/xlen/10, tile_size[1]/zlen/10)
-            glVertex3f(xlen+offsetx-1, self.convert.sea_level, -zlen-offsetz+1)
+            glTexCoord2f(tile_size[0]/xlen/10, tile_size[1]/zlen/10)
+            glVertex3f(xlen+offsetx, self.convert.sea_level, -zlen-offsetz)
 
-            #glTexCoord2f(0, tile_size[1]/zlen/10)
-            glVertex3f(0+offsetx, self.convert.sea_level, -zlen-offsetz+1)
+            glTexCoord2f(0, tile_size[1]/zlen/10)
+            glVertex3f(0+offsetx, self.convert.sea_level, -zlen-offsetz)
             glEnd()
+            glDisable(GL_BLEND)
             glEnable(GL_LIGHTING)
-        
+
             glEndList()
             
             new_list.append(index)
@@ -211,12 +219,12 @@ class RenderWorld:
         glLightfv(GL_LIGHT0, GL_POSITION, self.diffuse_pos1)
 
         
-        glLightfv(GL_LIGHT1, GL_AMBIENT, (1, 1, 1, .95))
+        glLightfv(GL_LIGHT1, GL_AMBIENT, (1, 1, 1, .5))
         glLightfv(GL_LIGHT1, GL_POSITION, (1,1,1,1))
 
     def set_up_convert(self):
         #heightmap, texture, gl
-        self.convert = Convert((1, 1, 1), (self.QUALITY, 1, self.QUALITY), (1*self.SCALE, HEIGHT_SCALE*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
+        self.convert = Convert((1, 1, 1), (self.QUALITY, 1, self.QUALITY), (1*self.SCALE, self.HEIGHT_SCALE*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
         
 
     def load_map(self, heightmap_filename):
@@ -240,14 +248,13 @@ class RenderWorld:
 
             #self.lock.acquire()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
         glLoadIdentity()
         #Put camera and light in the correct position
         self.camera.move()
         self.camera.renderRotateCamera()
         self.camera.renderTranslateCamera()
-        
-        
-        
+
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
         glEnable(GL_LIGHT1)
@@ -256,15 +263,13 @@ class RenderWorld:
         for index in self.index_list:
             #print "INDEX:", index
             glCallList(index)
-            
-            
+        
+
+        glLoadIdentity()        
         glDisable(GL_LIGHTING)
-
-        glLoadIdentity()
-
         self.camera.renderRotateCamera()
         glTranslate(-self.skybox.x/2, -1-self.camera.pos_Y, -self.skybox.z/2)
-        glCallList(self.sky_index)
+        glCallList(self.sky_index)    
         
         glDisable(GL_TEXTURE_2D)
         glutSwapBuffers()

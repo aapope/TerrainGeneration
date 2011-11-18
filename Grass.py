@@ -16,8 +16,8 @@ class Grass:
         ids = self.load_texture('l-system.png')
         glNewList(item, GL_COMPILE)
         self.applyTexture(ids)
-        #glColor4f(0,0,0,0)
-
+        glColor4f(1,1,1,0)
+        
         glBegin(GL_QUADS)
         glTexCoord2f(1, 0) ; glVertex(0,0,0)
         glTexCoord2f(1, 1) ; glVertex(0,10,0)
