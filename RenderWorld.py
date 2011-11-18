@@ -38,6 +38,7 @@ class RenderWorld:
         self.QUALITY = int(lines[0].split()[1])
         self.MAP_SIZE = int(lines[1].split()[1])
         self.SKYBOX_SIZE = float(lines[2].split()[1])/3
+        self.HEIGHT_SCALE = int(float(lines[3].split()[1])*self.MAP_SIZE)
         f.close()
         
         self.set_up_convert()
@@ -216,7 +217,7 @@ class RenderWorld:
 
     def set_up_convert(self):
         #heightmap, texture, gl
-        self.convert = Convert((1, 1, 1), (self.QUALITY, 1, self.QUALITY), (1*self.SCALE, HEIGHT_SCALE*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
+        self.convert = Convert((1, 1, 1), (self.QUALITY, 1, self.QUALITY), (1*self.SCALE, self.HEIGHT_SCALE*self.SCALE, 1*self.SCALE), self.MAP_SIZE)
         
 
     def load_map(self, heightmap_filename):
