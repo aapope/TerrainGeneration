@@ -107,19 +107,18 @@ class RenderWorld:
             glNewList(index, GL_COMPILE)
             #print "new texture applied"
             self.tex_holder.applyTexture(self.texture)
-            divide = float(self.MAP_SIZE+1)
-
+            zdivide = float(self.MAP_SIZE)
+            xdivide = float(self.MAP_SIZE+1)
             #go by rows
             for z in range(len(heights)-1):
                 glBegin(GL_TRIANGLE_STRIP)
                 for x in range(len(heights[z])):
-                    
                     #start at (0,1)
                     point1x = self.to_gl('x', x)    #first point x value in opengl coordinate
                     point1z = self.to_gl('z', z+1)  #first point z value in opengl coordinate
 
-                    glTexCoord2f(point1x/divide, -point1z/divide)
-                    print "f1:", point1x/divide, "f2:", -point1z/divide
+                    glTexCoord2f(point1x/xdivide, -point1z/zdivide)
+                    #print "f1:", point1x/divide, "f2:", -point1z/divide
 
                     pt = (point1x+offsetx, heights[x][z+1], point1z-offsetz)
                     m_point = (point1x, heights[x][z+1], point1z)
@@ -132,8 +131,8 @@ class RenderWorld:
                     point2x = self.to_gl('x',x)     #second point x value in opengl coordinate
                     point2z = self.to_gl('z',z)     #second point z value in opengl coordinate
                     
-                    glTexCoord2f(point2x/divide, -point2z/divide)
-                    print "f1:", point2x/divide, "f2:", -point2z/divide
+                    glTexCoord2f(point2x/xdivide, -point2z/zdivide)
+                    #print "f1:", point2x/divide, "f2:", -point2z/divide
 
                     pt = (point2x+offsetx, heights[x][z], point2z-offsetz)
                     m_point = (point2x, heights[x][z], point2z)

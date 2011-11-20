@@ -48,7 +48,7 @@ class World:
 		self.init_world()
 		self.rw.index_list = []
 		self.initalize = True
-		nlist = self.create_lists()	
+		nlist = self.create_lists([])	
 		self.rw.lock.acquire()
 		self.rw.index_list = nlist
 		self.rw.lock.release()
@@ -125,21 +125,18 @@ class World:
 					ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
 					print "done updating diamonds"
 		
-		#self.rw.lock.acquire()
 		print "creating lists"
-		self.create_lists()
+		self.create_lists(copy_list)
 		
-		#self.rw.lock.release()
-
 	def render_thing(self, que, resp_que, init):
 		#print "in method"
 		from TextureHolder import TextureHolder
 		#print "new_dic"
 		new_dic = {}
-		#print "old_dic"
-		old_dic = que.get()
+		print "old_dic"
+		copy_list = que.get()
 		#print "old dictionary size:", len(old_dic)
-		#print "pos_list"
+		print "pos_list"
 		pos_list =que.get()
 		#print "offset"
 		offset = que.get()
@@ -149,7 +146,7 @@ class World:
 		text_holder = TextureHolder()
 		print "process running..."
 		for location in pos_list:
-			if not location in old_dic:
+			if not location in copy_list:
 				x,y = location
 		
 			        load = LoadTerrain(PATH+str(x)+"_"+str(y)+".bmp", convert, text_holder)
@@ -165,31 +162,14 @@ class World:
 				big_tup = (tex_file_name, face_norms, vert_norms, heights, x*offset, -y*offset, str(x)+"_"+str(y), pos_list.index(location))
 				#print big_tup
 				new_dic[location] = big_tup
-		        else:
-				new_dic[location] = old_dic[location]
+
 	        print "have new dic"
 		resp_que.put(new_dic, False)
 		print "enqued"
 		#que.close()
 
-	def create_lists(self):
+	def create_lists(self, copy_list):
 	#Used to create the call lists		
-		'''
-		def test_process(q,rq):
-			f = q.get()
-			print f
-			sam = "SAM"
-			rq.put(sam, False)
-			
-
-                to_que = Queue()
-		from_que = Queue()
-		p = Process(target=test_process, args=(to_que,from_que))
-		p.start()
-		to_que.put("frank", False)
-		print from_que.get()
-		p.join()
-		print "process done"'''
 		
 		to_q= Queue()
 		resp_q = Queue()
@@ -198,13 +178,14 @@ class World:
 		p.start()
 		
 		
-		to_q.put(self.trans.location_var, False)
+		to_q.put(copy_list, False)
 		to_q.put(self.pos_list, False)
 		to_q.put(self.OFFSET, False)
 		to_q.put(self.rw.convert, False)
 		
 		print "process....."
-		dic = resp_q.get()
+		new_dic = resp_q.get()
+		dic = self.combine(self.pos_list, new_dic, self.trans.location_var)
 		self.trans.location_var = dic
 		
 		p.join()
@@ -213,6 +194,14 @@ class World:
 		self.rw.need_lists = True
 		self.initalize = False
 
+	def combine(self, pos_list, new_dic, old_dic):
+		temp = {}
+		for location in pos_list:
+			if location in old_dic:
+				temp[location] = old_dic[location]
+
+		d = dict(temp.items() + new_dic.items())
+		return d
 		
 
 if __name__ == "__main__":
