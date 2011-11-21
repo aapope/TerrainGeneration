@@ -18,11 +18,11 @@ class LoadTerrain:
         f = open(CONSTANTS, 'r')
         lines = f.read().split('\n')
         self.MAP_SIZE = int(lines[1].split()[1])
-        roadc = int(lines[4].split()[1])
+        self.roadc = int(lines[4].split()[1])
         f.close()
         
-        self.road_range1 = (self.MAP_SIZE/2)-roadc
-        self.road_range2 = (self.MAP_SIZE/2)+roadc
+        #self.road_range1 = (self.MAP_SIZE/2)-roadc
+        #self.road_range2 = (self.MAP_SIZE/2)+roadc
         
         self.filename = filename
         self.convert = convert
@@ -44,16 +44,24 @@ class LoadTerrain:
             col = []
             # Across the columns
             for z in range(self.convert.heightmap_z):
-                if x in range(self.road_range1, self.road_range2):
-                    pix = 2.0
-                else:
-                    pix = (self.im.getpixel((x, z)) / 255.) * self.convert.open_gl_scale[1]
+                pix = (self.im.getpixel((x, z)) / 255.) * self.convert.open_gl_scale[1]
                 
                 col.append(pix)
-            heights.append(col)
-    
-        return heights
 
+            heights.append(col)
+        
+        heights2 = self.create_road(heights)
+        return heights2
+
+    def create_road(self, heights):
+        curr_pix = self.MAP_SIZE/2
+        for row in heights:
+            for val in row:
+                if heights.index(row) in range(curr_pix-self.roadc, curr_pix+self.roadc):
+                    col = 2.0
+        return heights
+                
+                
     def init_createRenderList(self, heights, textname):
         #rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
         rend = RenderTexture(heights, self.convert, self.tex_holder)
