@@ -1,13 +1,9 @@
 import random
 import Image
 import math
-<<<<<<< HEAD
-
-ROUGHNESS = .99
-=======
 from Erode import ErodeLandscape
+
 ROUGHNESS = .9
->>>>>>> 8b42566e0a4070347eca445285fe53780afdae23
 HEIGHT_RANGE = 255
 
 RIGHT = 0
@@ -180,7 +176,7 @@ class DiamondSquare:
 
 		self.iterate()
                 #self.erode.smooth_edges(self, edges)
-        self.erode.run(2, self)
+        #self.erode.run(2, self)
 
     def save(self, filename):
         '''Save the HeightMap into an image file (.bmp)'''
