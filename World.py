@@ -76,7 +76,7 @@ class World:
 	
 	#Used to update camera location
 	def update_loc(self,x,y,z):
-		print str(x),",",str(y)+",", str(z)
+		#print str(x),",",str(y)+",", str(z)
 		x = int(x)
 		z = int(z)
 		if not self.is_in_tile(x,z,self.curr_x, self.curr_y):		
@@ -161,7 +161,7 @@ class World:
 			
 				big_tup = (tex_file_name, face_norms, vert_norms, heights, x*offset, -y*offset, str(x)+"_"+str(y), pos_list.index(location))
 				#print big_tup
-				new_dic[location] = big_tup
+              			new_dic[location] = big_tup
 
 	        print "have new dic"
 		resp_que.put(new_dic, False)

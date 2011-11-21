@@ -2,6 +2,7 @@ import os
 from TextureHolder import TextureHolder
 import LinAlgOps
 import Image
+from Road import *
 from RenderTexture import *
 
 CONSTANTS = "constants.conf"
@@ -18,11 +19,11 @@ class LoadTerrain:
         f = open(CONSTANTS, 'r')
         lines = f.read().split('\n')
         self.MAP_SIZE = int(lines[1].split()[1])
-        roadc = int(lines[4].split()[1])
+        self.roadc = int(lines[4].split()[1])
         f.close()
         
-        self.road_range1 = (self.MAP_SIZE/2)-roadc
-        self.road_range2 = (self.MAP_SIZE/2)+roadc
+        #self.road_range1 = (self.MAP_SIZE/2)-roadc
+        #self.road_range2 = (self.MAP_SIZE/2)+roadc
         
         self.filename = filename
         self.convert = convert
@@ -39,18 +40,23 @@ class LoadTerrain:
         '''      
         heights = []
         
+        curr_pix = self.MAP_SIZE/2
+
         # Down the rows
         for x in range(self.convert.heightmap_x):
             col = []
             # Across the columns
             for z in range(self.convert.heightmap_z):
                 pix = (self.im.getpixel((x, z)) / 255.) * self.convert.open_gl_scale[1]
-                
                 col.append(pix)
             heights.append(col)
-    
-        return heights
 
+
+        r = Road()
+        heights2 = r.create_yroad(heights,(0,0), self.roadc)
+        #heights2 = self.create_road(heights)
+        return heights2              
+                
     def init_createRenderList(self, heights, textname):
         #rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))
         rend = RenderTexture(heights, self.convert, self.tex_holder)
