@@ -1,13 +1,8 @@
 import random
 import Image
 import math
-<<<<<<< HEAD
-
-ROUGHNESS = .99
-=======
 from Erode import ErodeLandscape
-ROUGHNESS = .9
->>>>>>> 8b42566e0a4070347eca445285fe53780afdae23
+ROUGHNESS = .99
 HEIGHT_RANGE = 255
 
 RIGHT = 0
