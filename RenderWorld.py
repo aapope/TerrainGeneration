@@ -16,7 +16,7 @@ from TextureHolder import TextureHolder
 import threading
 
 CONFIG = "constants.conf"
-HEIGHT_SCALE = 8
+HEIGHT_SCALE = 32
 
 
 class RenderWorld:
@@ -98,17 +98,17 @@ class RenderWorld:
             #print "RENDERING IN OPEN GL", location
             tex_file_name, face_norms, vert_norms, heights, offsetx, offsetz, textname, textid = values
             #print vert_norms
-
+            
             self.texture = self.tex_holder.hold_my_texture(tex_file_name, textname)
     
-            #offsetx *= .999
-            #offsetz *= .999 
+            #offsetx *= .995
+            #offsetz *= .995 
             index = glGenLists(1)
             glNewList(index, GL_COMPILE)
             #print "new texture applied"
             self.tex_holder.applyTexture(self.texture)
             zdivide = float(self.MAP_SIZE)
-            xdivide = float(self.MAP_SIZE+1)
+            xdivide = float(self.MAP_SIZE)
             #go by rows
             for z in range(len(heights)-1):
                 glBegin(GL_TRIANGLE_STRIP)
@@ -116,7 +116,7 @@ class RenderWorld:
                     #start at (0,1)
                     point1x = self.to_gl('x', x)    #first point x value in opengl coordinate
                     point1z = self.to_gl('z', z+1)  #first point z value in opengl coordinate
-
+                    
                     glTexCoord2f(point1x/xdivide, -point1z/zdivide)
                     #print "f1:", point1x/divide, "f2:", -point1z/divide
 
@@ -132,6 +132,7 @@ class RenderWorld:
                     point2z = self.to_gl('z',z)     #second point z value in opengl coordinate
                     
                     glTexCoord2f(point2x/xdivide, -point2z/zdivide)
+
                     #print "f1:", point2x/divide, "f2:", -point2z/divide
 
                     pt = (point2x+offsetx, heights[x][z], point2z-offsetz)
@@ -207,6 +208,8 @@ class RenderWorld:
         glFogfv (GL_FOG_COLOR, (.8,.8,.8,1))
         glFogf (GL_FOG_DENSITY, .02)
         glHint (GL_FOG_HINT, GL_FASTEST)
+        
+        #glEnable(GL_POINT_SMOOTH)
     
     def renderLightSource(self):
         '''Resets the light sources to the right position.'''

@@ -2,7 +2,7 @@ import random
 import Image
 import math
 
-ROUGHNESS = .9
+ROUGHNESS = .99
 HEIGHT_RANGE = 255
 
 RIGHT = 0

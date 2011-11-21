@@ -4,16 +4,26 @@ import LinAlgOps
 import Image
 from RenderTexture import *
 
+CONSTANTS = "constants.conf"
+
 class LoadTerrain:
     X_FACTOR = 1
     Y_FACTOR = 1
     Z_FACTOR = 1
-    MAP_SIZE = 100
     SEA_LEVEL = 4
     counter = 1
 
 
     def __init__(self, filename, convert, tex_holder):
+        f = open(CONSTANTS, 'r')
+        lines = f.read().split('\n')
+        self.MAP_SIZE = int(lines[1].split()[1])
+        roadc = int(lines[4].split()[1])
+        f.close()
+        
+        self.road_range1 = (self.MAP_SIZE/2)-roadc
+        self.road_range2 = (self.MAP_SIZE/2)+roadc
+        
         self.filename = filename
         self.convert = convert
         self.tex_holder = tex_holder
@@ -32,13 +42,13 @@ class LoadTerrain:
         # Down the rows
         for x in range(self.convert.heightmap_x):
             col = []
-
             # Across the columns
             for z in range(self.convert.heightmap_z):
-                try:
+                if x in range(self.road_range1, self.road_range2):
+                    pix = 2.0
+                else:
                     pix = (self.im.getpixel((x, z)) / 255.) * self.convert.open_gl_scale[1]
-                except:
-                    pass
+                
                 col.append(pix)
             heights.append(col)
     
