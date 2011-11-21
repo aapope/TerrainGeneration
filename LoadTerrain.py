@@ -44,10 +44,7 @@ class LoadTerrain:
             col = []
             # Across the columns
             for z in range(self.convert.heightmap_z):
-                if x in range(self.road_range1, self.road_range2):
-                    pix = 2.0
-                else:
-                    pix = (self.im.getpixel((x, z)) / 255.) * self.convert.open_gl_scale[1]
+                pix = (self.im.getpixel((x, z)) / 255.) * self.convert.open_gl_scale[1]
                 
                 col.append(pix)
             heights.append(col)

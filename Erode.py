@@ -3,17 +3,16 @@ import Image
 class ErodeLandscape:
     TALUS_N = 16
 
-    def run(self, iterations, im):
+    def run(self, iterations, im, edges):
         self.talus = float(self.TALUS_N)/len(im)
         self.pix = im
         self.new_pix = im
+        self.grab_edges(edges)
         for i in range(iterations):
             self.erode()
+        #self.replace_edges()
         return self.new_pix
 
-
-
-    #Need to keep the edge the same, then the next few lines similar. Maybe constrain the slope somehow?
     def erode(self):
         for x in range(0, len(self.pix)):
             for y in range(0, len(self.pix)):
@@ -26,13 +25,85 @@ class ErodeLandscape:
                     if d_i > d_max:
                         d_max = d_i
                         d_max_spot = neighbor
-                if 0 < d_max and d_max >= self.talus:
+                if 0 < d_max and d_max < self.talus:
                     dh = d_max/2
                     if not self.is_edge(x,y):
                         self.new_pix[x, y] = self.pix[x, y] - dh
                     if not self.is_edge(d_max_spot[0], d_max_spot[1]):
                         self.new_pix[d_max_spot[0], d_max_spot[1]] = self.pix[d_max_spot[0], d_max_spot[1]] + dh
 
+    def grab_edges(self, edges):
+        self.edges = [[],[],[],[]]
+        if edges[0]:
+            for x in range(len(self.pix)):
+                self.edges[0].append(self.pix[x, 0])
+        if edges[1]:
+            for y in range(len(self.pix)):
+                self.edges[1].append(self.pix[len(self.pix)-1,y])
+        if edges[2]:
+            for x in range(len(self.pix)):
+                self.edges[2].append(self.pix[x, len(self.pix)-1])
+        if edges[3]:
+            for y in range(len(self.pix)):
+                self.edges[3].append(self.pix[0, y])
+
+    def replace_edges(self):
+        es = [False,False,False,False]
+
+        if self.edges[0]:
+            es[0] = True
+            diffs = []
+            for x in range(len(self.pix)):
+                diffs.append(self.pix[x, 0] - self.edges[0][x])
+
+            for y in range(len(self.pix)):
+                for x in range(len(self.pix)):
+                    self.pix[x, 0] -= diffs[x] / (2 ** y)
+        if self.edges[1]:
+            es[1] = True
+            st = 0
+            if es[0]:
+                st = 1
+            diffs = []
+            for y in range(len(self.pix)):
+                diffs.append(self.pix[len(self.pix)-1, y] - self.edges[1][y])
+
+            for x in range(len(self.pix),0,-1):
+                for y in range(1, len(self.pix)):
+                    self.pix[len(self.pix)-1, y] -= diffs[y] / (2 ** x)
+        if self.edges[2]:
+            es[2] = True
+            st = 0
+            ed = 0
+            if es[0]:
+                st = 1
+            if es[1]:
+                ed = 1
+            diffs = []
+            for x in range(len(self.pix)):
+                diffs.append(self.pix[x, len(self.pix)-1] - self.edges[2][x])
+
+            for y in range(len(self.pix),st,-1):
+                for x in range(len(self.pix)-ed):
+                    self.pix[x, len(self.pix)-1] -= diffs[x] / (2 ** y)
+        if self.edges[3]:
+            st = 0
+            ed = 0
+            mv = 0
+            if es[0]:
+                st = 1
+            if es[1]:
+                ed = 1
+            if es[2]:
+                mv = 1
+            diffs = []
+            for y in range(len(self.pix)):
+                diffs.append(self.pix[0, y] - self.edges[3][y])
+
+            for x in range(len(self.pix)-ed):
+                for y in range(st, len(self.pix)-mv):
+                    self.pix[0, y] -= diffs[y] / (2 ** x)
+            
     def get_neighbors(self, x, y):
         x0 = x-1
         x1 = x
@@ -52,7 +123,7 @@ class ErodeLandscape:
 
     def is_edge(self, x, y):
         if x==0 or y==0 or x==len(self.pix)-1 or y==len(self.pix)-1:
-            return False
+            return True
         else:
             return False
 

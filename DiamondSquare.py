@@ -115,12 +115,12 @@ class DiamondSquare:
         This is used for tiling the Heightmaps in a relatively seamless way.'''
 	        
 	corners = [(0,0), (-1,0), (-1,-1), (0,-1)]#counter-clockwise from top-left
-		
+        edges = [True,True,True,True]
+
 	if len(neighbors) == 0:
 		self.diamond_square()
+                
 	else:
-                edges = [True,True,True,True]
-            
 		#if has neighbor to left
 	    	if (self.x-1, self.y) in neighbors:
 		  # Left side of new Heightmap is seeded
@@ -176,7 +176,7 @@ class DiamondSquare:
 
 		self.iterate()
                 #self.erode.smooth_edges(self, edges)
-        #self.erode.run(2, self)
+        self.erode.run(50, self, edges)
 
     def save(self, filename):
         '''Save the HeightMap into an image file (.bmp)'''
