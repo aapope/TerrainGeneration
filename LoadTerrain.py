@@ -2,6 +2,7 @@ import os
 from TextureHolder import TextureHolder
 import LinAlgOps
 import Image
+from Road import *
 from RenderTexture import *
 
 CONSTANTS = "constants.conf"
@@ -39,28 +40,22 @@ class LoadTerrain:
         '''      
         heights = []
         
+        curr_pix = self.MAP_SIZE/2
+
         # Down the rows
         for x in range(self.convert.heightmap_x):
             col = []
             # Across the columns
             for z in range(self.convert.heightmap_z):
                 pix = (self.im.getpixel((x, z)) / 255.) * self.convert.open_gl_scale[1]
-                
                 col.append(pix)
-
             heights.append(col)
-        
-        heights2 = self.create_road(heights)
-        return heights2
 
-    def create_road(self, heights):
-        curr_pix = self.MAP_SIZE/2
-        for row in heights:
-            for val in row:
-                if heights.index(row) in range(curr_pix-self.roadc, curr_pix+self.roadc):
-                    col = 2.0
-        return heights
-                
+
+        r = Road()
+        heights2 = r.create_yroad(heights,(0,0), self.roadc)
+        #heights2 = self.create_road(heights)
+        return heights2              
                 
     def init_createRenderList(self, heights, textname):
         #rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))

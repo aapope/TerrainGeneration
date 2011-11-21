@@ -14,6 +14,8 @@ from Skybox import Skybox
 from Convert import Convert
 from TextureHolder import TextureHolder
 import threading
+import time
+from datetime import datetime
 
 CONFIG = "constants.conf"
 HEIGHT_SCALE = 32
@@ -61,6 +63,8 @@ class RenderWorld:
         self.tex_holder.hold_my_texture(water_path, 'water')        
         self.camera = Camera(10,20,-10)
         
+        self.curr_time = time.time()
+        self.count = 0
         self.poly_view = False
         self.load_skybox()
 
@@ -251,6 +255,14 @@ class RenderWorld:
         based on the camera angle. Calls collision detection, handles
         the appropriate objects for keys, doors, etc.'''
         #print "loopdy loop"
+        # print self.curr_time - time.time()
+        if abs(self.curr_time - time.time()) >= 1:
+            print "FPS:", self.count
+            self.count = 0
+            self.curr_time = time.time()
+        else:
+            self.count+=1
+        
         if self.need_lists:
             self.create_render_newlist()
 
