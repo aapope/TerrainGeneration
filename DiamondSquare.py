@@ -1,7 +1,7 @@
 import random
 import Image
 import math
-
+from Erode import ErodeLandscape
 ROUGHNESS = .9
 HEIGHT_RANGE = 255
 
@@ -21,6 +21,7 @@ class DiamondSquare:
             self.heights.append([0] * self.width)
 
         self.current_roughness = ROUGHNESS
+        self.erode = ErodeLandscape()
     
     def __getitem__(self, xy):
         x, y = xy
@@ -29,6 +30,9 @@ class DiamondSquare:
     def __setitem__(self, xy, value):
         x, y = xy
         self.heights[x][y] = value
+
+    def __len__(self):
+        return self.width
 
     def get_random_height(self):
         '''Get a completely random height'''
@@ -102,6 +106,7 @@ class DiamondSquare:
         self[-1,0] = self.get_random_height()
         self[-1,-1] = self.get_random_height()
         self.iterate()
+        #self.erode.smooth_edges(self, [True,True,True,True])
 
 
     def diamond_square_tile(self, neighbors):
@@ -113,7 +118,8 @@ class DiamondSquare:
 	if len(neighbors) == 0:
 		self.diamond_square()
 	else:
-		    
+                edges = [True,True,True,True]
+            
 		#if has neighbor to left
 	    	if (self.x-1, self.y) in neighbors:
 		  # Left side of new Heightmap is seeded
@@ -126,6 +132,7 @@ class DiamondSquare:
 				corners.remove((0,0))
 			if (0,-1) in corners:
 				corners.remove((0,-1))
+                        edges[3] == False
 		    
 			#if has neighbor to right
 	    	if (self.x+1, self.y) in neighbors:
@@ -137,7 +144,8 @@ class DiamondSquare:
 				corners.remove((-1,0))
 			if (-1,-1) in corners:
 				corners.remove((-1,-1))	
-			
+			edges[1] = False
+
 			#if has neighbor down
 		if (self.x, self.y+1) in neighbors:
 		        # Bottom of new Heightmap is seeded
@@ -148,7 +156,8 @@ class DiamondSquare:
 				corners.remove((0,-1))
 			if (-1,-1) in corners:
 				corners.remove((-1,-1))	
-			
+                        edges[2] = False
+
 			#if has neighbor up		       
 		if (self.x, self.y-1) in neighbors:
 		        # Top of new Heightmap is seeded
@@ -159,11 +168,14 @@ class DiamondSquare:
 				corners.remove((0,0))
 			if (-1,0) in corners:
 				corners.remove((-1,0))	
-		    
+                        edges[0] = False
+
 		for corner in corners:   
 			self[corner[0], corner[1]] = self.get_random_height()
 
 		self.iterate()
+                #self.erode.smooth_edges(self, edges)
+        self.erode.run(2, self)
 
     def save(self, filename):
         '''Save the HeightMap into an image file (.bmp)'''

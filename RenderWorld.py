@@ -92,6 +92,7 @@ class RenderWorld:
     def create_render_newlist(self):
         self.need_lists = False
         new_list = []
+        w_list = []
         #print "trying to render"
         #print self.trans.location_var
         for location, values in self.trans.location_var.items():
@@ -142,8 +143,11 @@ class RenderWorld:
                     
                 glEnd()
             #print z
+            glEndList()
 
             '''Water plane'''
+            indexw = glGenLists(1)
+            glNewList(indexw, GL_COMPILE)
             glDisable(GL_LIGHTING)
         
 
@@ -175,9 +179,11 @@ class RenderWorld:
             glEndList()
             
             new_list.append(index)
+            w_list.append(indexw)
 
 
-        self.index_list = new_list
+        self.land_index_list = new_list
+        self.water_index_list = w_list
         #self.index_list = new_list
 
     def set_up_graphics(self):
@@ -259,8 +265,11 @@ class RenderWorld:
         glEnable(GL_LIGHT1)
         self.renderLightSource()
 
-        for index in self.index_list:
+        for index in self.land_index_list:
             #print "INDEX:", index
+            glCallList(index)
+
+        for index in self.water_index_list:
             glCallList(index)
         
 
@@ -310,7 +319,7 @@ class RenderWorld:
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
             self.poly_view = False
         elif key == 't':
-            exit(0)
+            exit(9)
         if key.lower() == 'q':
             self.camera.WALK *= 1.2
             self.camera.SPRINT *= 1.2
