@@ -15,7 +15,7 @@ import copy
 from multiprocessing import Process, JoinableQueue, Queue, Pipe
 #from RenderThread import RenderThread
 
-PATH = "data/heightmaps/"
+PATH = "data/heightmaps/maps/"
 
 class World:
 	

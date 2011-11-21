@@ -28,7 +28,7 @@ if __name__ == '__main__':
         for i in range(1, len(sys.argv)):
             if sys.argv[i].startswith('n'):
                 os.system('rm data/textures/maps/*')
-                os.system('rm data/heightmaps/*')
+                os.system('rm data/heightmaps/maps/*')
                 print 'Removing maps'
 
     trans = ThreadTransaction()
