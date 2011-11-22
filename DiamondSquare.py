@@ -13,7 +13,8 @@ DOWN = 3
 
 class DiamondSquare:
 
-    def __init__(self, location, size):
+    def __init__(self, location, size, h_range):
+        self.hrange1, self.hrange2 = h_range
 	self.x, self.y = location
 	self.width = size[0]
 	self.height = size[1]
@@ -37,12 +38,13 @@ class DiamondSquare:
 
     def get_random_height(self):
         '''Get a completely random height'''
-        return random.randrange(0, HEIGHT_RANGE)
+        perc = random.random()
+        return random.randrange(self.hrange1, self.hrange2)
 
     def get_noise(self, roughness):
         '''Get a random number between -roughness and roughness
         and use that to scale based on the HEIGHT_RANGE'''
-        return random.uniform(-roughness, roughness) * HEIGHT_RANGE
+        return random.uniform(-roughness, roughness) * self.hrange2
 
     def average(self, *args):
         '''Average a bunch of numbers.'''
