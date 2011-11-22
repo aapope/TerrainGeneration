@@ -218,7 +218,7 @@ class RenderWorld:
         glFogfv (GL_FOG_COLOR, (.8,.8,.8,1))
         glFogf (GL_FOG_DENSITY, .02)
         glHint (GL_FOG_HINT, GL_FASTEST)
-        
+        self.last_time = 0
         #glEnable(GL_POINT_SMOOTH)
     
     def renderLightSource(self):
@@ -256,46 +256,55 @@ class RenderWorld:
         the appropriate objects for keys, doors, etc.'''
         #print "loopdy loop"
         # print self.curr_time - time.time()
-        if abs(self.curr_time - time.time()) >= 1:
-            print "FPS:", self.count
-            self.count = 0
-            self.curr_time = time.time()
-        else:
-            self.count+=1
+        f_rate = 1.0/60
+        if self.last_time+f_rate <= time.time():
+            self.last_time = time.time()
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+            glLoadIdentity()        
+            glDisable(GL_LIGHTING)
+            self.camera.renderRotateCamera()
+            glTranslate(-self.skybox.x/2, -1-self.camera.pos_Y, -self.skybox.z/2)
+            glCallList(self.sky_index)
+
+            if abs(self.curr_time - time.time()) >= 1:
+                print "FPS:", self.count
+                print time.time()
+                self.count = 0
+                self.curr_time = time.time()
+            else:
+                self.count+=1
         
-        if self.need_lists:
-            self.create_render_newlist()
+            if self.need_lists:
+                self.create_render_newlist()
 
             #self.lock.acquire()
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+                
 
-        glLoadIdentity()
+            glLoadIdentity()
         #Put camera and light in the correct position
-        self.camera.move()
-        self.camera.renderRotateCamera()
-        self.camera.renderTranslateCamera()
+            self.camera.move()
+            self.camera.renderRotateCamera()
+            self.camera.renderTranslateCamera()
 
-        glEnable(GL_LIGHTING)
-        glEnable(GL_LIGHT0)
-        glEnable(GL_LIGHT1)
-        self.renderLightSource()
-
-        for index in self.land_index_list:
+            glEnable(GL_LIGHTING)
+            glEnable(GL_LIGHT0)
+            glEnable(GL_LIGHT1)
+            self.renderLightSource()
+            
+            for index in self.land_index_list:
             #print "INDEX:", index
-            glCallList(index)
-
-        for index in self.water_index_list:
-            glCallList(index)
+                glCallList(index)
+            
+            for index in self.water_index_list:
+                glCallList(index)
         
 
-        glLoadIdentity()        
-        glDisable(GL_LIGHTING)
-        self.camera.renderRotateCamera()
-        glTranslate(-self.skybox.x/2, -1-self.camera.pos_Y, -self.skybox.z/2)
-        glCallList(self.sky_index)    
-        
-        glDisable(GL_TEXTURE_2D)
-        glutSwapBuffers()
+            
+            
+            glDisable(GL_TEXTURE_2D)
+            glutSwapBuffers()
 
     def renderLightSource(self):
         '''Resets the light sources to the right position.'''
