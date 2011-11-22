@@ -45,10 +45,10 @@ class World:
 		
 	#used to create the inital world
 	def create_world(self):
-		self.init_world()
+		#self.init_world()
 		self.rw.index_list = []
 		self.initalize = True
-		nlist = self.create_lists([])	
+		nlist = self.create_lists([], (0,0))	
 		self.rw.lock.acquire()
 		self.rw.index_list = nlist
 		self.rw.lock.release()
@@ -114,53 +114,54 @@ class World:
 	def update_diamonds(self, new_loc):
 		x,y = new_loc
 		copy_list = copy.deepcopy(self.pos_list)
-		self.pos_list = []
-		for newy in range(y-self.FACTOR, y+self.FACTOR+1):
-			for newx in range(x-self.FACTOR, x+self.FACTOR+1):
-				self.pos_list.append((newx,newy))
-				if not (newx, newy) in self.diamonds:
-					ds = DiamondSquare((newx,newy), (self.OFFSET+1, self.OFFSET+1))
-					ds.diamond_square_tile(self.diamonds)
-					self.diamonds[(newx,newy)] = ds
-					ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
-					print "done updating diamonds"
+		
 		
 		print "creating lists"
-		self.create_lists(copy_list)
+		self.create_lists(copy_list, new_loc)
 		
-	def render_thing(self, que, resp_que, init):
-		#print "in method"
+	def render_thing(self, que, resp_que, init, new_loc, offset, factor):
 		from TextureHolder import TextureHolder
-		#print "new_dic"
+		
+		#create new heightmaps
+		nwlx, nwly = new_loc
+		diamonds = que.get()
+		pos_list = []
+
+		for newy in range(nwly-factor, nwly+factor+1):
+			for newx in range(nwlx-factor, nwlx+factor+1):
+				pos_list.append((newx,newy))
+				if not (newx, newy) in diamonds:
+					#print "making squares..."
+					ds = DiamondSquare((newx,newy), (offset+1, offset+1))
+					ds.diamond_square_tile(diamonds)
+					diamonds[(newx,newy)] = ds
+					ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
+		
+		resp_que.put(pos_list, False)
+		resp_que.put(diamonds, False)
+
+		#creat new textures
 		new_dic = {}
-		print "old_dic"
 		copy_list = que.get()
-		#print "old dictionary size:", len(old_dic)
-		print "pos_list"
-		pos_list =que.get()
-		#print "offset"
 		offset = que.get()
-		#print "convert"
 		convert = que.get()
-		#print "creating text holder"
 		text_holder = TextureHolder()
+
 		print "process running..."
 		for location in pos_list:
 			if not location in copy_list:
+				#print "created someting"
 				x,y = location
 		
 			        load = LoadTerrain(PATH+str(x)+"_"+str(y)+".bmp", convert, text_holder)
 			        heights = load.load()
 			
-			        if self.initalize:
-					#print "initlizing..."
+			        if init:
 					tex_file_name, face_norms, vert_norms = load.init_createRenderList(heights,str(x)+"_"+str(y))
 			        else:
-					#print "new place..."
 					tex_file_name, face_norms, vert_norms = load.createRenderList(heights,str(x)+"_"+str(y))
 			
 				big_tup = (tex_file_name, face_norms, vert_norms, heights, x*offset, -y*offset, str(x)+"_"+str(y), pos_list.index(location))
-				#print big_tup
               			new_dic[location] = big_tup
 
 	        print "have new dic"
@@ -168,22 +169,25 @@ class World:
 		print "enqued"
 		#que.close()
 
-	def create_lists(self, copy_list):
+	def create_lists(self, copy_list, new_loc):
 	#Used to create the call lists		
 		
 		to_q= Queue()
 		resp_q = Queue()
 
-		p = Process(target=self.render_thing, args=(to_q,resp_q,self.initalize))
+		p = Process(target=self.render_thing, args=(to_q,resp_q,self.initalize,new_loc,self.OFFSET, self.FACTOR))
 		p.start()
 		
-		
+		to_q.put(self.diamonds, False)
 		to_q.put(copy_list, False)
-		to_q.put(self.pos_list, False)
 		to_q.put(self.OFFSET, False)
 		to_q.put(self.rw.convert, False)
 		
 		print "process....."
+		print "get pos_list"
+		self.pos_list = resp_q.get()
+		self.diamonds = resp_q.get()
+		print self.pos_list
 		new_dic = resp_q.get()
 		dic = self.combine(self.pos_list, new_dic, self.trans.location_var)
 		self.trans.location_var = dic
