@@ -121,7 +121,7 @@ class World:
 		
 	def render_thing(self, que, resp_que, init, new_loc, offset, factor):
 		from TextureHolder import TextureHolder
-		
+		h_range = (200, 255)
 		#create new heightmaps
 		nwlx, nwly = new_loc
 		diamonds = que.get()
@@ -132,7 +132,7 @@ class World:
 				pos_list.append((newx,newy))
 				if not (newx, newy) in diamonds:
 					#print "making squares..."
-					ds = DiamondSquare((newx,newy), (offset+1, offset+1))
+					ds = DiamondSquare((newx,newy), (offset+1, offset+1), h_range)
 					ds.diamond_square_tile(diamonds)
 					diamonds[(newx,newy)] = ds
 					ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
