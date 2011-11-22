@@ -121,7 +121,7 @@ class World:
 		
 	def render_thing(self, que, resp_que, init, new_loc, offset, factor):
 		from TextureHolder import TextureHolder
-		h_range = (200, 255)
+		h_range = (0, 255)
 		#create new heightmaps
 		nwlx, nwly = new_loc
 		diamonds = que.get()
