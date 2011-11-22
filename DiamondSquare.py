@@ -176,7 +176,7 @@ class DiamondSquare:
 
 		self.iterate()
                 #self.erode.smooth_edges(self, edges)
-        self.erode.run(10, self, edges)
+        self.erode.run(2, self, edges)
 
     def save(self, filename):
         '''Save the HeightMap into an image file (.bmp)'''

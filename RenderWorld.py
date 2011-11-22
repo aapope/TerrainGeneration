@@ -18,7 +18,7 @@ import time
 from datetime import datetime
 
 CONFIG = "constants.conf"
-HEIGHT_SCALE = 32
+
 
 
 class RenderWorld:
@@ -33,6 +33,7 @@ class RenderWorld:
     Y_FACTOR = 1
     Z_FACTOR = 1
     SEA_LEVEL = 4
+    HEIGHT_SCALE = 32
 
     def __init__(self, transaction):
         '''Sets up camera, modes, lighting, sounds, and objects.'''

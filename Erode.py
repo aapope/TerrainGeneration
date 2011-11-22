@@ -26,7 +26,7 @@ class ErodeLandscape:
                         d_max = d_i
                         d_max_spot = neighbor
                 if 0 < d_max and d_max < self.talus:
-                    dh = d_max/2
+                    dh = d_max/16
                     if not self.is_edge(x,y):
                         self.new_pix[x, y] = self.pix[x, y] - dh
                     if not self.is_edge(d_max_spot[0], d_max_spot[1]):
