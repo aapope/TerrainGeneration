@@ -43,7 +43,7 @@ class World:
 		self.total_terr = 1
 		self.trans = transaction
 		self.temp_dic = {}
-		
+		self.height_ranges = [(0,71),(61,132),(122,173),(163,214),(204,255)]		
 		
 		#self.text_holder = TextureHolder()
 		
@@ -125,6 +125,7 @@ class World:
 		
 	def render_thing(self, que, resp_que, init, new_loc, offset, factor, use_old):
 		from TextureHolder import TextureHolder
+		h_ranges = {}
 		h_range = (0, 255)
 		#create new heightmaps
 		nwlx, nwly = new_loc
