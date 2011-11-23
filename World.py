@@ -14,6 +14,7 @@ import time
 import copy
 import os
 import random
+import Image
 from multiprocessing import Process, JoinableQueue, Queue, Pipe
 #from RenderThread import RenderThread
 
@@ -132,18 +133,33 @@ class World:
 		if init and use_old:
 			for newy in range(nwly-factor, nwly+factor+1):
 				for newx in range(nwlx-factor, nwlx+factor+1):
-					name = str(newx)+"_"+str(newy)
+					name = str(newx)+"_"+str(newy)+".bmp"
 					pos_list.append((newx,newy))
 					if not os.path.isfile(PATH+name):
+						if (newx-1, newy) in h_ranges:
+							h_ranges[(newx,newy)] = min(max(random.choice(range(h_ranges[(newx-1,newy)]-2, h_ranges[(newx-1,newy)]+3)), 0), 4)
+						elif (newx+1, newy) in h_ranges:
+							h_ranges[(newx,newy)] = min(max(random.choice(range(h_ranges[(newx+1,newy)]-2, h_ranges[(newx+1,newy)]+3)), 0), 4)
+						elif (newx, newy-1) in h_ranges:
+							h_ranges[(newx,newy)] = min(max(random.choice(range(h_ranges[(newx,newy-1)]-2, h_ranges[(newx,newy-1)]+3)), 0), 4)
+						elif (newx, newy+1) in h_ranges:
+							h_ranges[(newx,newy)] = min(max(random.choice(range(h_ranges[(newx,newy+1)]-2, h_ranges[(newx,newy+1)]+3)), 0), 4)
+						else:
+							h_ranges[(newx,newy)] = 0
+
+
+						pos_list.append((newx,newy))
 						if not (newx, newy) in diamonds:
-							ds = DiamondSquare((newx,newy), (offset+1, offset+1), h_range)
+					#print "making squares..."
+							ds = DiamondSquare((newx,newy), (offset+1, offset+1), self.height_ranges[h_ranges[(newx,newy)]])
 							ds.diamond_square_tile(diamonds)
 							diamonds[(newx,newy)] = ds
 							ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
+						
 				        else:
 						im = Image.open(PATH+name)
 						pix = im.load()
-						ds = DiamondSquare((newx,newy), (offset+1, offset+1), h_range)
+						ds = DiamondSquare((newx,newy), (offset+1, offset+1), (0,255))
 						for y in range(ds.height):
 							for x in range(ds.width):
 								ds[(x, y)] = pix[x, y]
@@ -163,13 +179,13 @@ class World:
 						h_ranges[(newx,newy)] = 0
 
 
-						pos_list.append((newx,newy))
-						if not (newx, newy) in diamonds:
+					pos_list.append((newx,newy))
+					if not (newx, newy) in diamonds:
 					#print "making squares..."
-							ds = DiamondSquare((newx,newy), (offset+1, offset+1), self.height_ranges[h_ranges[(newx,newy)]])
-							ds.diamond_square_tile(diamonds)
-							diamonds[(newx,newy)] = ds
-							ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
+						ds = DiamondSquare((newx,newy), (offset+1, offset+1), self.height_ranges[h_ranges[(newx,newy)]])
+						ds.diamond_square_tile(diamonds)
+						diamonds[(newx,newy)] = ds
+						ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
 
 		
 		resp_que.put(pos_list, False)

@@ -28,8 +28,8 @@ class Road():
             for indx in range(x-size, x+size):
                 #print indx, y
                 heights[indx][y] = height
-                if heights[indx][y] < 2.0:
-                    heights[indx][y] = 2.0
+                if heights[indx][y] < 1.0:
+                    heights[indx][y] = 1.0
 
     #find a route betweent two points
     def find_route(self, bx, ex, by, ey, axis, heights):
