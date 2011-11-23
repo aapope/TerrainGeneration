@@ -36,6 +36,7 @@ class TextureHolder:
         self.texture_ids[name] = self.index_counter
         glGenTextures(1, self.texture_ids[name])
         glBindTexture(GL_TEXTURE_2D, self.texture_ids[name])
+        print "N:", name, "F:", filename 
         self.images[name] = Image.open(filename)
         glTexImage2D(GL_TEXTURE_2D, 0, 3, self.images[name].size[0], self.images[name].size[1], 0, GL_RGBA, GL_UNSIGNED_BYTE, self.images[name].tostring("raw","RGBX",0,-1))
         self.index_counter += 1

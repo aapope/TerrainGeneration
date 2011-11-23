@@ -12,6 +12,7 @@ import threading
 #import Queue
 import time
 import copy
+import os
 from multiprocessing import Process, JoinableQueue, Queue, Pipe
 #from RenderThread import RenderThread
 
@@ -20,7 +21,7 @@ PATH = "data/heightmaps/maps/"
 class World:
 	
 
-	def __init__(self, rw, transaction):
+	def __init__(self, rw, transaction, use_old_maps):
 		f = open(CONFIG)
 		lines = f.read().split("\n")
 		self.OFFSET = int(lines[1].split()[1])
@@ -29,6 +30,7 @@ class World:
 		print self.size, self.FACTOR
 		f.close()		
 
+		self.use_old = use_old_maps
 		self.rw = rw
 		#self.size = 5
 		self.curr_x = 0
@@ -119,23 +121,42 @@ class World:
 		print "creating lists"
 		self.create_lists(copy_list, new_loc)
 		
-	def render_thing(self, que, resp_que, init, new_loc, offset, factor):
+	def render_thing(self, que, resp_que, init, new_loc, offset, factor, use_old):
 		from TextureHolder import TextureHolder
 		h_range = (200, 255)
 		#create new heightmaps
 		nwlx, nwly = new_loc
 		diamonds = que.get()
 		pos_list = []
-
-		for newy in range(nwly-factor, nwly+factor+1):
-			for newx in range(nwlx-factor, nwlx+factor+1):
-				pos_list.append((newx,newy))
-				if not (newx, newy) in diamonds:
-					#print "making squares..."
-					ds = DiamondSquare((newx,newy), (offset+1, offset+1), h_range)
-					ds.diamond_square_tile(diamonds)
-					diamonds[(newx,newy)] = ds
-					ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
+		
+		if init and use_old:
+			for newy in range(nwly-factor, nwly+factor+1):
+				for newx in range(nwlx-factor, nwlx+factor+1):
+					name = str(newx)+"_"+str(newy)
+					pos_list.append((newx,newy))
+					if not os.path.isfile(PATH+name):
+						if not (newx, newy) in diamonds:
+							ds = DiamondSquare((newx,newy), (offset+1, offset+1), h_range)
+							ds.diamond_square_tile(diamonds)
+							diamonds[(newx,newy)] = ds
+							ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
+				        else:
+						im = Image.open(PATH+name)
+						pix = im.load()
+						ds = DiamondSquare((newx,newy), (offset+1, offset+1), h_range)
+						for y in range(ds.height):
+							for x in range(ds.width):
+								ds[(x, y)] = pix[x, y]
+						diamonds[(newx,newy)] = ds
+		else:
+			for newy in range(nwly-factor, nwly+factor+1):
+				for newx in range(nwlx-factor, nwlx+factor+1):
+					pos_list.append((newx,newy))
+					if not (newx, newy) in diamonds:
+						ds = DiamondSquare((newx,newy), (offset+1, offset+1), h_range)
+						ds.diamond_square_tile(diamonds)
+						diamonds[(newx,newy)] = ds
+						ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
 		
 		resp_que.put(pos_list, False)
 		resp_que.put(diamonds, False)
@@ -175,7 +196,7 @@ class World:
 		to_q= Queue()
 		resp_q = Queue()
 
-		p = Process(target=self.render_thing, args=(to_q,resp_q,self.initalize,new_loc,self.OFFSET, self.FACTOR))
+		p = Process(target=self.render_thing, args=(to_q,resp_q,self.initalize,new_loc,self.OFFSET, self.FACTOR, self.use_old))
 		p.start()
 		
 		to_q.put(self.diamonds, False)

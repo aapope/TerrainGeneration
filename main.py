@@ -1,21 +1,5 @@
 #! /usr/bin/env python
-'''
-from RenderWorld import RenderWorld
-<<<<<<< HEAD
-import sys, os
 
-if __name__ == '__main__':
-    RENDER = None
-    if len(sys.argv) >= 2:
-        for i in range(1, len(sys.argv)):
-            if sys.argv[i].startswith('n'):
-                os.system('rm data/textures/maps/*')
-                print 'Removing maps'
-            else:
-                RENDER = RenderWorld(sys.argv[i])
-    if RENDER == None:
-        RENDER = RenderWorld(None)
-======='''
 import sys
 import os
 import threading
@@ -30,19 +14,41 @@ if __name__ == '__main__':
                 os.system('rm data/textures/maps/*')
                 os.system('rm data/heightmaps/maps/*')
                 print 'Removing maps'
+                trans = ThreadTransaction()
+                r = RenderWorld(trans)
+                w = World(r, trans, False)	
+                w.create_world()
+                r.set_up()     
+                background_thread = threading.Thread(target=w.start)
+                background_thread.start()
+                r.start_loop()
 
-    trans = ThreadTransaction()
-    r = RenderWorld(trans)
-    w = World(r, trans)	
+            elif sys.argv[i].startswith('i'):
+                os.system('rm data/textures/maps/*')
+                os.system('rm data/heightmaps/maps/*')
+                
+                trans = ThreadTransaction()
+                r = RenderWorld(trans)
+                w = World(r, trans, True)	
+                w.create_world()
+                r.set_up()     
+                background_thread = threading.Thread(target=w.start)
+                background_thread.start()
+                r.start_loop()
+                
+    else:
+        trans = ThreadTransaction()
+        r = RenderWorld(trans)
+        w = World(r, trans, True)	
     
-    w.create_world()
-    r.set_up()	
+        w.create_world()
+        r.set_up()	
     
-    background_thread = threading.Thread(target=w.start)
+        background_thread = threading.Thread(target=w.start)
 	#graphic_thread = threading.Thread(target=r.start_loop)
 	
-    background_thread.start()
-    r.start_loop()
+        background_thread.start()
+        r.start_loop()
 
 	
 	#graphic_thread.start()
