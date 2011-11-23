@@ -13,6 +13,7 @@ import threading
 import time
 import copy
 import os
+import random
 from multiprocessing import Process, JoinableQueue, Queue, Pipe
 #from RenderThread import RenderThread
 
@@ -41,7 +42,7 @@ class World:
 		self.total_terr = 1
 		self.trans = transaction
 		self.temp_dic = {}
-		
+		self.height_ranges = [(0,71),(61,132),(122,173),(163,214),(204,255)]
 		
 		#self.text_holder = TextureHolder()
 		
@@ -123,12 +124,11 @@ class World:
 		
 	def render_thing(self, que, resp_que, init, new_loc, offset, factor, use_old):
 		from TextureHolder import TextureHolder
-		h_range = (200, 255)
+		h_ranges = {}
 		#create new heightmaps
 		nwlx, nwly = new_loc
 		diamonds = que.get()
 		pos_list = []
-		
 		if init and use_old:
 			for newy in range(nwly-factor, nwly+factor+1):
 				for newx in range(nwlx-factor, nwlx+factor+1):
@@ -151,12 +151,26 @@ class World:
 		else:
 			for newy in range(nwly-factor, nwly+factor+1):
 				for newx in range(nwlx-factor, nwlx+factor+1):
-					pos_list.append((newx,newy))
-					if not (newx, newy) in diamonds:
-						ds = DiamondSquare((newx,newy), (offset+1, offset+1), h_range)
-						ds.diamond_square_tile(diamonds)
-						diamonds[(newx,newy)] = ds
-						ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
+					if (newx-1, newy) in h_ranges:
+						h_ranges[(newx,newy)] = min(max(random.choice(range(h_ranges[(newx-1,newy)]-2, h_ranges[(newx-1,newy)]+3)), 0), 4)
+					elif (newx+1, newy) in h_ranges:
+						h_ranges[(newx,newy)] = min(max(random.choice(range(h_ranges[(newx+1,newy)]-2, h_ranges[(newx+1,newy)]+3)), 0), 4)
+					elif (newx, newy-1) in h_ranges:
+						h_ranges[(newx,newy)] = min(max(random.choice(range(h_ranges[(newx,newy-1)]-2, h_ranges[(newx,newy-1)]+3)), 0), 4)
+					elif (newx, newy+1) in h_ranges:
+						h_ranges[(newx,newy)] = min(max(random.choice(range(h_ranges[(newx,newy+1)]-2, h_ranges[(newx,newy+1)]+3)), 0), 4)
+					else:
+						h_ranges[(newx,newy)] = 0
+
+
+						pos_list.append((newx,newy))
+						if not (newx, newy) in diamonds:
+					#print "making squares..."
+							ds = DiamondSquare((newx,newy), (offset+1, offset+1), self.height_ranges[h_ranges[(newx,newy)]])
+							ds.diamond_square_tile(diamonds)
+							diamonds[(newx,newy)] = ds
+							ds.save(PATH+str(newx)+"_"+str(newy)+".bmp")
+
 		
 		resp_que.put(pos_list, False)
 		resp_que.put(diamonds, False)
