@@ -214,6 +214,7 @@ class World:
 			
 				big_tup = (tex_file_name, face_norms, vert_norms, heights, x*offset, -y*offset, str(x)+"_"+str(y), pos_list.index(location))
               			new_dic[location] = big_tup
+				print "CREATED A TILE!"
 
 	        print "have new dic"
 		resp_que.put(new_dic, False)
