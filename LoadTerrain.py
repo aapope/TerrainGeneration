@@ -52,10 +52,10 @@ class LoadTerrain:
             heights.append(col)
 
 
-        r = Road()
-        heights2 = r.create_yroad(heights,(0,0), self.roadc)
+       # r = Road()
+       # heights2 = r.create_yroad(heights,(0,0), self.roadc)
         #heights2 = self.create_road(heights)
-        return heights2              
+        return heights             
                 
     def init_createRenderList(self, heights, textname):
         #rend = RenderTexture(heights, (self.X_FACTOR, self.Y_FACTOR, self.Z_FACTOR))

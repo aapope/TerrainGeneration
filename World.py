@@ -134,7 +134,6 @@ class World:
 			for newy in range(nwly-factor, nwly+factor+1):
 				for newx in range(nwlx-factor, nwlx+factor+1):
 					name = str(newx)+"_"+str(newy)+".bmp"
-					pos_list.append((newx,newy))
 					if not os.path.isfile(PATH+name):
 						if (newx-1, newy) in h_ranges:
 							h_ranges[(newx,newy)] = min(max(random.choice(range(h_ranges[(newx-1,newy)]-2, h_ranges[(newx-1,newy)]+3)), 0), 4)
