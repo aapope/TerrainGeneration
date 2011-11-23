@@ -16,6 +16,7 @@ from TextureHolder import TextureHolder
 import threading
 import time
 from datetime import datetime
+from Structure import Structure
 
 CONFIG = "constants.conf"
 
@@ -68,6 +69,8 @@ class RenderWorld:
         self.count = 0
         self.poly_view = False
         self.load_skybox()
+        self.building_index_list = []
+        self.create_building(5,3,-5)
 
 
     def set_up_glut(self):
@@ -251,6 +254,11 @@ class RenderWorld:
         self.skybox = Skybox(self.tex_holder, (scale,scale,scale))
         self.sky_index = self.skybox.createCallList(1, 3)
 
+    def create_building(self, x, y, z):
+        self.load = Structure(self.tex_holder)
+        self.building_index_list.append([self.load.create_structure(), (x,y,z)])
+        print self.building_index_list
+
     def display(self, x=0, y=0):
         '''Called for every refresh; redraws the floor and objects
         based on the camera angle. Calls collision detection, handles
@@ -297,11 +305,12 @@ class RenderWorld:
             for index in self.land_index_list:
             #print "INDEX:", index
                 glCallList(index)
-            
+
             for index in self.water_index_list:
                 glCallList(index)
-        
 
+            for index in self.building_index_list:
+                glCallList(index[0])
             
             
             glDisable(GL_TEXTURE_2D)
@@ -318,7 +327,7 @@ class RenderWorld:
        
     def mouseMove(self, x, y):
         '''Called when the mouse is moved.'''
-        factor = 2
+        factor = 3
         
         tmp_x = (self.camera.mouse_x - x)/factor
         tmp_y = (self.camera.mouse_y - y)/factor
