@@ -27,8 +27,8 @@ class RenderWorld:
     Camera angles are handled by Camera.py.
     '''
     
-    WINDOW_WIDTH = 700
-    WINDOW_HEIGHT = 700
+    WINDOW_WIDTH = 1000
+    WINDOW_HEIGHT = 1000
     SCALE = 1
     X_FACTOR = 1
     Y_FACTOR = 1
@@ -70,7 +70,7 @@ class RenderWorld:
         self.poly_view = False
         self.load_skybox()
         self.building_index_list = []
-        self.create_building(5,3,-5)
+        #self.create_building(5,3,-5)
 
 
     def set_up_glut(self):
@@ -83,7 +83,7 @@ class RenderWorld:
 
         glutSetCursor(GLUT_CURSOR_NONE)
         glutPassiveMotionFunc(self.mouseMove)
-        
+
         #glGenLists(50)
         #glNewList(1, GL_COMPILE)
         #glNewList(1, GL_COMPILE)
