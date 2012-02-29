@@ -1,0 +1,13 @@
+This project is was an independent study project at Colorado College 
+by Jordan Haber, Sam Johnson and Andrew Pope.
+
+This program is meant to produce virtual terrain in OpenGL. The terrain and textures
+are procedurally generated at runtime and as the user moves through the scene. As the
+user moves, new 'tiles' of terrain are created and seamlessly added to the scene. When
+the user moves back to older tiles, the old ones are loaded again.
+
+This program was written on computers using OpenGL 1.4. We've had problems with the
+multiproccessing library used in creating and loading the terrain while the program 
+is running on newer versions.
+
+The code's super messy. We'll clean it up eventually.
